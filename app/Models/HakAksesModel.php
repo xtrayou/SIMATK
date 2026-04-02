@@ -13,11 +13,18 @@ class HakAksesModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = ['name', 'group', 'description'];
 
+    private function normalizeRole(string $role): string
+    {
+        return $role === 'superadmin' ? 'admin' : $role;
+    }
+
     /**
      * Ambil semua permission berdasarkan role
      */
     public function getPermissionsByRole(string $role): array
     {
+        $role = $this->normalizeRole($role);
+
         return $this->select('permissions.*')
             ->join('role_permissions', 'role_permissions.permission_id = permissions.id')
             ->where('role_permissions.role', $role)
@@ -38,6 +45,8 @@ class HakAksesModel extends Model
      */
     public function roleHasPermission(string $role, string $permissionName): bool
     {
+        $role = $this->normalizeRole($role);
+
         $count = $this->join('role_permissions', 'role_permissions.permission_id = permissions.id')
             ->where('role_permissions.role', $role)
             ->where('permissions.name', $permissionName)
@@ -63,6 +72,7 @@ class HakAksesModel extends Model
      */
     public function setRolePermissions(string $role, array $permissionIds): bool
     {
+        $role = $this->normalizeRole($role);
         $db = \Config\Database::connect();
 
         // Hapus semua permission role ini
@@ -84,6 +94,7 @@ class HakAksesModel extends Model
      */
     public function getRolePermissionIds(string $role): array
     {
+        $role = $this->normalizeRole($role);
         $db = \Config\Database::connect();
         $results = $db->table('role_permissions')
             ->where('role', $role)

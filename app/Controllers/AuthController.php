@@ -36,10 +36,25 @@ class AuthController extends BaseController
             return redirect()->back()->withInput()->with('loginError', 'Username dan password wajib diisi.');
         }
 
-        $user = $this->modelPengguna->findByUsername((string)$username);
+        $user = $this->modelPengguna->findByUsername((string) $username);
 
-        // Verify user and password
-        if ($user && password_verify((string) $password, $user['password'])) {
+        // Verify hashed password, with fallback for legacy plain-text password.
+        $isPasswordValid = false;
+        if ($user) {
+            $storedPassword = (string) ($user['password'] ?? '');
+            $plainPassword  = (string) $password;
+
+            if ($storedPassword !== '' && password_verify($plainPassword, $storedPassword)) {
+                $isPasswordValid = true;
+            } elseif ($storedPassword !== '' && hash_equals($storedPassword, $plainPassword)) {
+                $isPasswordValid = true;
+                $this->modelPengguna->update((int) $user['id'], [
+                    'password' => password_hash($plainPassword, PASSWORD_DEFAULT),
+                ]);
+            }
+        }
+
+        if ($user && $isPasswordValid) {
 
             // Check if user is active
             if (isset($user['is_active']) && $user['is_active'] == 0) {
@@ -47,11 +62,16 @@ class AuthController extends BaseController
             }
 
             // Set dynamic session data
+            $role = (string) ($user['role'] ?? 'admin');
+            if (!in_array($role, ['superadmin', 'admin'], true)) {
+                $role = 'admin';
+            }
+
             $sessionData = [
                 'userId'     => $user['id'],
                 'username'   => $user['username'],
                 'name'       => $user['name'],
-                'role'          => $user['role'] ?? 'user',
+                'role'       => $role,
                 'isLoggedIn'    => true,
                 'last_activity' => time(),
             ];
@@ -59,7 +79,7 @@ class AuthController extends BaseController
             // Load permissions for user's role
             try {
                 $modelHakAkses = new HakAksesModel();
-                $sessionData['permissions'] = $modelHakAkses->getPermissionNamesByRole($user['role'] ?? 'staff');
+                $sessionData['permissions'] = $modelHakAkses->getPermissionNamesByRole($role);
             } catch (\Exception $e) {
                 $sessionData['permissions'] = [];
             }

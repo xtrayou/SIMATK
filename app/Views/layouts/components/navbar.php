@@ -9,7 +9,7 @@
 
             <!-- Title -->
             <span class="navbar-brand mb-0 h1">
-                SIMATIK
+                SIMATK
             </span>
 
             <!-- Right -->

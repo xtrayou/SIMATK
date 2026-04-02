@@ -27,15 +27,6 @@ class UserSeeder extends Seeder
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ],
-            [
-                'username'   => 'user',
-                'password'   => password_hash('user123', PASSWORD_DEFAULT),
-                'name'       => 'Pemohon',
-                'role'       => 'user',
-                'is_active'  => 1,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
         ];
 
         // Using Query Builder

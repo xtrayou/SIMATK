@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'Lacak Permintaan ATK | SIMATIK' ?></title>
+    <title><?= $title ?? 'Lacak Permintaan ATK | SIMATK' ?></title>
 
     <link rel="shortcut icon" href="<?= base_url('assets/static/images/logo/favicon.svg') ?>" type="image/x-icon">
     <link rel="stylesheet" href="<?= base_url('assets/compiled/css/app.css') ?>">
@@ -192,7 +192,7 @@
             <div class="track-body">
                 <!-- Brand -->
                 <div class="brand text-center mb-3">
-                    <i class="bi bi-box-seam-fill me-1"></i> SIMATIK
+                    <i class="bi bi-box-seam-fill me-1"></i> SIMATK
                 </div>
 
                 <!-- Info Box -->
@@ -219,16 +219,15 @@
                             <i class="bi bi-hash me-1"></i> Nomor Referensi
                         </label>
                         <div class="input-icon">
-                            <input 
-                                type="text" 
-                                class="form-control" 
+                            <input
+                                type="text"
+                                class="form-control"
                                 id="reference_no"
                                 name="reference_no"
                                 placeholder="Contoh: REQ-0001"
                                 value="<?= old('reference_no') ?>"
                                 required
-                                pattern="^REQ-\d+$"
-                            >
+                                pattern="^REQ-\d+$">
                             <i class="bi bi-search"></i>
                         </div>
                         <small class="text-muted d-block mt-2">
@@ -241,15 +240,14 @@
                             <i class="bi bi-envelope me-1"></i> Email
                         </label>
                         <div class="input-icon">
-                            <input 
-                                type="email" 
-                                class="form-control" 
+                            <input
+                                type="email"
+                                class="form-control"
                                 id="email"
                                 name="email"
                                 placeholder="Masukkan email Anda"
                                 value="<?= old('email') ?>"
-                                required
-                            >
+                                required>
                             <i class="bi bi-envelope-check"></i>
                         </div>
                     </div>
@@ -265,7 +263,7 @@
                 </a>
 
                 <p class="mt-4 mb-0 text-center" style="font-size:0.78rem; color:#adb5bd;">
-                    &copy; <?= date('Y') ?> SIMATIK &mdash; Sistem Informasi Manajemen ATK
+                    &copy; <?= date('Y') ?> SIMATK &mdash; Sistem Informasi Manajemen ATK
                 </p>
             </div>
         </div>

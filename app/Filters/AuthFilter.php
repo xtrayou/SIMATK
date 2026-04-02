@@ -3,6 +3,7 @@
 namespace App\Filters;
 
 use CodeIgniter\Filters\FilterInterface;
+use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -44,13 +45,13 @@ class AuthFilter implements FilterInterface
                 }
             }
 
-            // Admin bypass semua permission
-            if (session()->get('role') === 'admin') {
+            // Admin dan superadmin bypass semua permission
+            if (in_array((string) session()->get('role'), ['admin', 'superadmin'], true)) {
                 $hasPermission = true;
             }
 
             if (!$hasPermission) {
-                if ($request->isAJAX()) {
+                if ($request instanceof IncomingRequest && $request->isAJAX()) {
                     return service('response')
                         ->setStatusCode(403)
                         ->setJSON(['status' => false, 'message' => 'Anda tidak memiliki akses untuk fitur ini.']);

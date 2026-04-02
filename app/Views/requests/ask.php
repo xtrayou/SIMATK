@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'Ajukan Permintaan ATK | SIMATIK' ?></title>
+    <title><?= $title ?? 'Ajukan Permintaan ATK | SIMATK' ?></title>
 
     <link rel="shortcut icon" href="<?= base_url('assets/static/images/logo/favicon.svg') ?>" type="image/x-icon">
     <link rel="stylesheet" href="<?= base_url('assets/compiled/css/app.css') ?>">
@@ -277,7 +277,7 @@
 
                 <!-- Footer -->
                 <p class="text-center footer-note mt-4">
-                    &copy; <?= date('Y') ?> SIMATIK &mdash; Sistem Informasi Manajemen ATK
+                    &copy; <?= date('Y') ?> SIMATK &mdash; Sistem Informasi Manajemen ATK
                 </p>
 
             </div>

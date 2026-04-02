@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'Hasil Lacak Permintaan | SIMATIK' ?></title>
+    <title><?= $title ?? 'Hasil Lacak Permintaan | SIMATK' ?></title>
 
     <link rel="shortcut icon" href="<?= base_url('assets/static/images/logo/favicon.svg') ?>" type="image/x-icon">
     <link rel="stylesheet" href="<?= base_url('assets/compiled/css/app.css') ?>">
@@ -220,7 +220,8 @@
             flex-wrap: wrap;
         }
 
-        .btn-back, .btn-track-new {
+        .btn-back,
+        .btn-track-new {
             flex: 1;
             min-width: 150px;
             padding: 0.7rem 1rem;
@@ -278,7 +279,7 @@
     <div class="container">
         <!-- Brand -->
         <div class="brand text-center mb-3">
-            <i class="bi bi-box-seam-fill me-1"></i> SIMATIK
+            <i class="bi bi-box-seam-fill me-1"></i> SIMATK
         </div>
 
         <!-- Header Info -->
@@ -428,7 +429,7 @@
         </div>
 
         <p class="mt-4 mb-4 text-center" style="font-size:0.78rem; color:#adb5bd;">
-            &copy; <?= date('Y') ?> SIMATIK &mdash; Sistem Informasi Manajemen ATK
+            &copy; <?= date('Y') ?> SIMATK &mdash; Sistem Informasi Manajemen ATK
         </p>
     </div>
 

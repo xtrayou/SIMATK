@@ -6,22 +6,22 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
-// Landing page
+// ── Landing Page (publik - berisi modal login) ──────────────────────
 $routes->get('/', 'BerandaController::index');
 
-// Auth
-$routes->get('login', 'BerandaController::index');
+// ── Auth ─────────────────────────────────────────────────────────────
+$routes->get('login', 'BerandaController::index');   // fallback: tampilkan landing page
 $routes->post('login', 'AuthController::login');
-$routes->post('auth/login', 'AuthController::login');
+$routes->post('auth/login', 'AuthController::login'); // aksi form modal di landing page
 $routes->post('logout', 'AuthController::logout');
 $routes->post('auth/logout', 'AuthController::logout');
 
-// Dashboard
+// ── Dashboard ────────────────────────────────────────────────────────
 $routes->get('dashboard', 'DasborController::index', ['filter' => 'auth']);
 $routes->get('api/dashboard/stats', 'Api\DasborController::getStats', ['filter' => 'auth']);
 
-// Categories
-$routes->group('categories', ['filter' => 'auth'], static function ($routes) {
+//category
+$routes->group('categories', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'KategoriController::index');
     $routes->get('create', 'KategoriController::create');
     $routes->post('store', 'KategoriController::store');
@@ -30,8 +30,8 @@ $routes->group('categories', ['filter' => 'auth'], static function ($routes) {
     $routes->delete('delete/(:num)', 'KategoriController::delete/$1');
 });
 
-// Products
-$routes->group('products', ['filter' => 'auth'], static function ($routes) {
+//product
+$routes->group('products', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'ProdukController::index');
     $routes->get('create', 'ProdukController::create');
     $routes->get('show/(:num)', 'ProdukController::show/$1');
@@ -41,15 +41,16 @@ $routes->group('products', ['filter' => 'auth'], static function ($routes) {
     $routes->delete('delete/(:num)', 'ProdukController::delete/$1');
     $routes->post('generate-sku', 'ProdukController::generateSKU');
 
+    // Procucts export routes
     $routes->get('export/excel', 'ProdukController::exportExcel');
-    $routes->get('export/pdf', 'ProdukController::exportPdf');
+    $routes->get('export/pdf', 'ProdukController::exportPDF');
     $routes->get('export/(:num)', 'ProdukController::exportSingle/$1');
 });
 
-// Stock management
+//Stock Management
 $routes->get('stock', 'StokController::movements', ['filter' => 'auth']);
 
-$routes->group('stock', ['filter' => 'auth'], static function ($routes) {
+$routes->group('stock', ['filter' => 'auth'], function ($routes) {
     $routes->get('movements', 'StokController::movements');
     $routes->get('in', 'StokController::stockIn');
     $routes->post('in/store', 'StokController::storeStockIn');
@@ -63,8 +64,8 @@ $routes->group('stock', ['filter' => 'auth'], static function ($routes) {
     $routes->get('product/(:num)', 'StokController::getProductStock/$1');
 });
 
-// Reports
-$routes->group('reports', ['filter' => 'auth'], static function ($routes) {
+//Reports
+$routes->group('reports', ['filter' => 'auth'], function ($routes) {
     $routes->get('stock', 'LaporanController::stock');
     $routes->get('movements', 'LaporanController::movements');
     $routes->get('export/stock', 'LaporanController::exportStock');
@@ -75,8 +76,8 @@ $routes->group('reports', ['filter' => 'auth'], static function ($routes) {
     $routes->get('analytics', 'LaporanController::analytics');
 });
 
-// Generic API routes
-$routes->group('api', ['filter' => 'auth'], static function ($routes) {
+//Api routes untuk ajax
+$routes->group('api', ['filter' => 'auth'], function ($routes) {
     $routes->get('products/search', 'Api\ProdukController::search');
     $routes->get('categories/active', 'Api\KategoriController::getActive');
     $routes->get('product/(:num)/info', 'Api\StokController::getProductInfo/$1');
@@ -85,15 +86,15 @@ $routes->group('api', ['filter' => 'auth'], static function ($routes) {
     $routes->post('bulk/out', 'Api\StokController::bulkStockOut');
 });
 
-// Product API routes
-$routes->group('api/products', ['filter' => 'auth'], static function ($routes) {
+// Products API routes
+$routes->group('api/products', ['filter' => 'auth'], function ($routes) {
     $routes->get('search', 'Api\ProdukController::search');
     $routes->get('stock-status/(:num)', 'Api\ProdukController::getStockStatus/$1');
     $routes->get('by-category/(:num)', 'Api\ProdukController::getByCategory/$1');
 });
 
-// Requests
-$routes->group('requests', ['filter' => 'auth'], static function ($routes) {
+// Permintaan ATK
+$routes->group('requests', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'PermintaanController::index');
     $routes->get('create', 'PermintaanController::create');
     $routes->post('store', 'PermintaanController::store');
@@ -103,8 +104,8 @@ $routes->group('requests', ['filter' => 'auth'], static function ($routes) {
     $routes->post('cancel/(:num)', 'PermintaanController::cancel/$1');
 });
 
-// Users (superadmin only)
-$routes->group('users', ['filter' => 'role:superadmin'], static function ($routes) {
+// Users Management (Superadmin Only)
+$routes->group('users', ['filter' => 'role:superadmin'], function ($routes) {
     $routes->get('/', 'PenggunaController::index');
     $routes->get('create', 'PenggunaController::create');
     $routes->post('store', 'PenggunaController::store');
@@ -113,12 +114,12 @@ $routes->group('users', ['filter' => 'role:superadmin'], static function ($route
     $routes->delete('delete/(:num)', 'PenggunaController::delete/$1');
 });
 
-// Settings (superadmin only)
+// Settings (Superadmin Only)
 $routes->get('settings', 'PengaturanController::index', ['filter' => 'role:superadmin']);
 $routes->post('settings/update', 'PengaturanController::update', ['filter' => 'role:superadmin']);
 
 // Notifications
-$routes->group('notifications', ['filter' => 'auth'], static function ($routes) {
+$routes->group('notifications', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'NotifikasiController::index');
     $routes->post('read/(:num)', 'NotifikasiController::read/$1');
     $routes->post('mark-all-read', 'NotifikasiController::markAllRead');
@@ -126,63 +127,68 @@ $routes->group('notifications', ['filter' => 'auth'], static function ($routes) 
     $routes->post('clean-old', 'NotifikasiController::cleanOld');
 });
 
-$routes->group('api/notifications', ['filter' => 'auth'], static function ($routes) {
+// Notifications API
+$routes->group('api/notifications', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'Api\NotifikasiController::latest');
     $routes->get('count', 'Api\NotifikasiController::count');
 });
 
-// Public request pages
+// Halaman Publik - Form Permintaan Barang
 $routes->get('ask', 'PermintaanController::askForm');
 $routes->post('ask/store', 'PermintaanController::askStore');
 $routes->get('ask/success', 'PermintaanController::askSuccess');
+
+// Halaman Publik - Lacak Status Permintaan
 $routes->get('track', 'PermintaanController::trackForm');
 $routes->post('track-status', 'PermintaanController::trackStatus');
 
-// Maintenance (superadmin only)
-$routes->post('admin/fix-request-status', static function () {
+// ── Maintenance Routes (Admin only) ──────────────────────────────
+$routes->match(['post'], 'admin/fix-request-status', function () {
     $db = \Config\Database::connect();
     $sql = "UPDATE requests SET status = 'requested' WHERE status IS NULL OR status = '' OR status = 'pending'";
     $db->query($sql);
     $affected = $db->affectedRows();
 
-    $stats = $db->query('SELECT status, COUNT(*) as total FROM requests GROUP BY status')->getResultArray();
+    $stats = $db->query("SELECT status, COUNT(*) as total FROM requests GROUP BY status")->getResultArray();
 
-    $output = '<h2>Status Diperbaiki</h2>';
+    $output = "<h2>✅ Status Diperbaiki</h2>";
     $output .= "<p><strong>{$affected}</strong> data telah diperbaiki.</p>";
-    $output .= '<h3>Statistik:</h3><ul>';
+    $output .= "<h3>Statistik:</h3><ul>";
     foreach ($stats as $row) {
         $status = $row['status'] ?: '(kosong)';
         $output .= "<li><strong>{$status}</strong>: {$row['total']}</li>";
     }
-    $output .= '</ul>';
-    $output .= '<p><a href="' . base_url('requests') . '">Kembali ke Daftar Permintaan</a></p>';
+    $output .= "</ul>";
+    $output .= '<p><a href="' . base_url('requests') . '">← Kembali ke Daftar Permintaan</a></p>';
 
     return $output;
 }, ['filter' => 'role:superadmin']);
 
-$routes->post('admin/fix-session', static function () {
+// Fix Session - Regenerate userId in session
+$routes->match(['post'], 'admin/fix-session', function () {
     $username = session()->get('username');
 
     if (!$username) {
         return redirect()->to('/login')->with('error', 'Session tidak valid. Silakan login.');
     }
 
+    // Get user from database
     $db = \Config\Database::connect();
     $user = $db->table('users')->where('username', $username)->get()->getRowArray();
 
     if (!$user) {
         session()->destroy();
-
         return redirect()->to('/login')->with('error', 'User tidak ditemukan. Silakan login ulang.');
     }
 
+    // Update session with userId
     session()->set('userId', $user['id']);
 
-    $output = '<h2>Session Diperbaiki</h2>';
+    $output = "<h2>✅ Session Diperbaiki</h2>";
     $output .= "<p>Session telah diperbarui dengan userId: <strong>{$user['id']}</strong></p>";
     $output .= "<p>User: <strong>{$user['name']}</strong> ({$user['username']})</p>";
     $output .= '<hr>';
-    $output .= '<p><a href="' . base_url('dashboard') . '">Kembali ke Dashboard</a></p>';
+    $output .= '<p><a href="' . base_url('dashboard') . '">← Kembali ke Dashboard</a></p>';
 
     return $output;
 }, ['filter' => 'role:superadmin']);

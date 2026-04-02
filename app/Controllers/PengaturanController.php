@@ -13,7 +13,7 @@ class PengaturanController extends BaseController
     {
         return [
             // 1. Umum
-            'app_name'          => 'SIMATIK',
+            'app_name'          => 'SIMATK',
             'institution'       => 'Fakultas Ilmu Komputer',
             'email'             => 'admin@fasilkom.ac.id',
             'address'           => 'Jl. Raya Kampus, Gedung Fasilkom Lt. 2',
@@ -38,7 +38,7 @@ class PengaturanController extends BaseController
 
             // 4. Pengguna & Akses
             'enable_multi_role'      => 0,
-            'default_role'           => 'user',
+            'default_role'           => 'admin',
             'session_timeout'        => 30,
             'max_login_attempts'     => 5,
             'enable_audit_log'       => 1,
@@ -163,7 +163,7 @@ class PengaturanController extends BaseController
                 'request_late_fee'  => 'permit_empty|integer|greater_than_equal_to[0]',
             ],
             'access' => [
-                'default_role'       => 'required|in_list[user,admin,superadmin]',
+                'default_role'       => 'required|in_list[admin,superadmin]',
                 'session_timeout'    => 'required|integer|greater_than[0]',
                 'max_login_attempts' => 'required|integer|greater_than[0]',
             ],

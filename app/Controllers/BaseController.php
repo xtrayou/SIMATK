@@ -42,7 +42,7 @@ abstract class BaseController extends Controller
 
         // Global data yang bisa diakses di semua view
         $this->data = [
-            'title' => 'SIMATIK',
+            'title' => 'SIMATK',
             'page_title' => '',
             'page_subtitle' => '',
         ];
@@ -52,7 +52,7 @@ abstract class BaseController extends Controller
     //set page data
     protected function setPageData($title, $subtitle = '')
     {
-        $this->data['title'] = $title . ' | SIMATIK';
+        $this->data['title'] = $title . ' | SIMATK';
         $this->data['page_title'] = $title;
         $this->data['page_subtitle'] = $subtitle;
     }

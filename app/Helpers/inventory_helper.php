@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Helper Tampilan SIMATIK
+ * Helper Tampilan SIMATK
  * - Format Rupiah
  * - Badge stok (Habis / Rendah / Normal)
  * - Badge mutasi (Masuk / Keluar / Penyesuaian)
@@ -140,8 +140,18 @@ if (!function_exists('formatDate')) {
             if ($timestamp === false) return '-';
 
             $bulan = [
-                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                'Januari',
+                'Februari',
+                'Maret',
+                'April',
+                'Mei',
+                'Juni',
+                'Juli',
+                'Agustus',
+                'September',
+                'Oktober',
+                'November',
+                'Desember'
             ];
 
             $hari = date('d', $timestamp);

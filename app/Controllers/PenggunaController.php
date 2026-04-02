@@ -34,7 +34,7 @@ class PenggunaController extends BaseController
                 ->groupEnd();
         }
 
-        if ($filterRole && in_array($filterRole, ['superadmin', 'admin', 'user'])) {
+        if ($filterRole && in_array($filterRole, ['superadmin', 'admin'], true)) {
             $builder->where('role', $filterRole);
         }
 
@@ -55,7 +55,7 @@ class PenggunaController extends BaseController
         $this->setPageData('Tambah User', 'Buat pengguna baru');
 
         return $this->render('users/create', [
-            'user'       => ['username' => '', 'name' => '', 'role' => 'user', 'is_active' => 1],
+            'user'       => ['username' => '', 'name' => '', 'role' => 'admin', 'is_active' => 1],
             'validation' => service('validation'),
         ]);
     }
@@ -69,7 +69,7 @@ class PenggunaController extends BaseController
             'username' => 'required|min_length[3]|max_length[50]|is_unique[users.username]|alpha_numeric',
             'name'     => 'required|min_length[3]|max_length[100]',
             'password' => 'required|min_length[6]|max_length[255]',
-            'role'     => 'required|in_list[superadmin,admin,user]',
+            'role'     => 'required|in_list[superadmin,admin]',
         ])) {
             return redirect()->back()
                 ->withInput()
@@ -122,7 +122,7 @@ class PenggunaController extends BaseController
         $rules = [
             'username' => "required|min_length[3]|max_length[50]|is_unique[users.username,id,{$id}]|alpha_numeric",
             'name'     => 'required|min_length[3]|max_length[100]',
-            'role'     => 'required|in_list[superadmin,admin,user]',
+            'role'     => 'required|in_list[superadmin,admin]',
         ];
 
         // Password optional on update

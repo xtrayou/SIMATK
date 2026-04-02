@@ -5,7 +5,7 @@
         <div class="sidebar-header">
             <a href="<?= base_url('dashboard') ?>" class="text-decoration-none">
                 <h5 class="mb-0">
-                    <i class="bi bi-box-seam-fill"></i> SIMATIK
+                    <i class="bi bi-box-seam-fill"></i> SIMATK
                 </h5>
                 <small class="text-muted">Sistem Inventaris ATK</small>
             </a>
@@ -113,27 +113,6 @@
                         <a href="<?= base_url('/reports/movements') ?>" class="sidebar-link">
                             <i class="bi bi-arrow-repeat"></i>
                             <span>Pergerakan Barang</span>
-                        </a>
-                    </li>
-
-                <?php endif; ?>
-
-                <!-- USER -->
-                <?php if ($role === 'user'): ?>
-
-                    <li class="sidebar-title">Permintaan</li>
-
-                    <li class="sidebar-item <?= uri_string() == 'requests/create' ? 'active' : '' ?>">
-                        <a href="<?= base_url('/requests/create') ?>" class="sidebar-link">
-                            <i class="bi bi-upload"></i>
-                            <span>Ajukan Permintaan</span>
-                        </a>
-                    </li>
-
-                    <li class="sidebar-item <?= strpos(uri_string(), 'requests') !== false && uri_string() != 'requests/create' ? 'active' : '' ?>">
-                        <a href="<?= base_url('/requests') ?>" class="sidebar-link">
-                            <i class="bi bi-eye"></i>
-                            <span>Status Permintaan</span>
                         </a>
                     </li>
 

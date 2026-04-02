@@ -305,7 +305,7 @@ class PermintaanController extends BaseController
             ->findAll();
 
         $data = [
-            'title'       => 'Ajukan Permintaan ATK | SIMATIK',
+            'title'       => 'Ajukan Permintaan ATK | SIMATK',
             'daftarProduk' => $produk,
         ];
 
@@ -385,7 +385,7 @@ class PermintaanController extends BaseController
     public function askSuccess()
     {
         $data = [
-            'title'         => 'Permintaan Terkirim | SIMATIK',
+            'title'         => 'Permintaan Terkirim | SIMATK',
             'request_id'    => session()->getFlashdata('request_id'),
             'borrower_name' => session()->getFlashdata('borrower_name'),
         ];
@@ -399,7 +399,7 @@ class PermintaanController extends BaseController
     public function trackForm()
     {
         $data = [
-            'title' => 'Lacak Permintaan ATK | SIMATIK',
+            'title' => 'Lacak Permintaan ATK | SIMATK',
         ];
 
         return view('requests/track', $data);
@@ -459,7 +459,7 @@ class PermintaanController extends BaseController
         ];
 
         $data = [
-            'title'              => 'Lacak Permintaan ATK | SIMATIK',
+            'title'              => 'Lacak Permintaan ATK | SIMATK',
             'referenceNo'        => $referenceNo,
             'permintaan'         => $dataPermintaan,
             'itemPermintaan'     => $itemEnriched,

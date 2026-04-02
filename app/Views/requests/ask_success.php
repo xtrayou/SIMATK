@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'Permintaan Terkirim | SIMATIK' ?></title>
+    <title><?= $title ?? 'Permintaan Terkirim | SIMATK' ?></title>
 
     <link rel="shortcut icon" href="<?= base_url('assets/static/images/logo/favicon.svg') ?>" type="image/x-icon">
     <link rel="stylesheet" href="<?= base_url('assets/compiled/css/app.css') ?>">
@@ -50,6 +50,7 @@
                 transform: scale(0);
                 opacity: 0;
             }
+
             to {
                 transform: scale(1);
                 opacity: 1;
@@ -192,6 +193,7 @@
             from {
                 opacity: 0;
             }
+
             to {
                 opacity: 1;
             }
@@ -206,7 +208,7 @@
 
                 <!-- Brand -->
                 <div class="brand mb-4">
-                    <i class="bi bi-box-seam-fill me-1"></i> SIMATIK
+                    <i class="bi bi-box-seam-fill me-1"></i> SIMATK
                 </div>
 
                 <!-- Icon -->
@@ -268,7 +270,7 @@
                 </div>
 
                 <p class="mt-4 mb-0" style="font-size:0.78rem; color:#adb5bd;">
-                    &copy; <?= date('Y') ?> SIMATIK &mdash; Sistem Informasi Manajemen ATK
+                    &copy; <?= date('Y') ?> SIMATK &mdash; Sistem Informasi Manajemen ATK
                 </p>
             </div>
         </div>
@@ -285,7 +287,7 @@
                 const originalText = btn.innerHTML;
                 btn.innerHTML = '<i class="bi bi-check-circle me-1"></i> Tersalin!';
                 btn.style.background = 'rgba(76, 175, 80, 0.3)';
-                
+
                 setTimeout(() => {
                     btn.innerHTML = originalText;
                     btn.style.background = 'rgba(255, 255, 255, 0.2)';
