@@ -22,13 +22,13 @@ class AuthFilter implements FilterInterface
         // --- Cek Inaktivitas (15 Menit = 900 detik) ---
         $lastActivity = session()->get('last_activity');
         $currentTime  = time();
-        $timeout      = 900; 
+        $timeout      = 900;
 
         if ($lastActivity && ($currentTime - $lastActivity > $timeout)) {
             session()->destroy();
             return redirect()->to('/')->with('loginError', 'Sesi Anda telah berakhir karena tidak ada aktivitas selama 15 menit.');
         }
-        
+
         // Update waktu aktivitas terakhir
         session()->set('last_activity', $currentTime);
         // ----------------------------------------------

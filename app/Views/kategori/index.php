@@ -35,10 +35,10 @@
                     <form action="<?= base_url('/categories') ?>" method="GET">
                         <div class="input-group">
                             <input type="text"
-                                   name="q"
-                                   value="<?= esc($kataKunci ?? '') ?>"
-                                   class="form-control"
-                                   placeholder="Cari kategori...">
+                                name="q"
+                                value="<?= esc($kataKunci ?? '') ?>"
+                                class="form-control"
+                                placeholder="Cari kategori...">
                             <button class="btn btn-outline-secondary">
                                 <i class="bi bi-search"></i>
                             </button>
@@ -130,14 +130,14 @@
                                     <td>
                                         <div class="d-flex gap-1">
                                             <a href="<?= base_url('/categories/edit/' . $item['id']) ?>"
-                                               class="btn btn-sm btn-outline-primary">
+                                                class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
 
                                             <button class="btn btn-sm btn-outline-danger btn-hapus"
-                                                    data-id="<?= $item['id'] ?>"
-                                                    data-nama="<?= esc($item['name']) ?>"
-                                                    data-jumlah="<?= $item['jumlah_produk'] ?? 0 ?>">
+                                                data-id="<?= $item['id'] ?>"
+                                                data-nama="<?= esc($item['name']) ?>"
+                                                data-jumlah="<?= $item['jumlah_produk'] ?? 0 ?>">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
