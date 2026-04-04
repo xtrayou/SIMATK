@@ -82,27 +82,31 @@ class ProdukController extends BaseController
     }
 
     /**
-     * Store new product
+     * Store or update product
      */
-    public function store()
+    public function save()
     {
+        $productId = $this->request->getPost('id');
+        $isUpdate = !empty($productId);
+
         $rules = [
             'name'          => 'required|min_length[3]|max_length[255]',
-            'sku'           => 'required|min_length[3]|max_length[50]|is_unique[products.sku]',
+            'sku'           => "required|min_length[3]|max_length[50]|is_unique[products.sku,id,{$productId}]",
             'category_id'   => 'required|integer',
             'price'         => 'required|decimal',
+            'cost_price'    => 'permit_empty|decimal',
             'min_stock'     => 'required|integer',
-            'current_stock' => 'integer',
             'unit'          => 'required|max_length[20]'
         ];
 
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        if (!$isUpdate) {
+            $rules['initial_stock'] = 'permit_empty|integer';
         }
 
-        $stockBaik = (int) $this->request->getPost('stock_baik') ?: 0;
-        $stockRusak = (int) $this->request->getPost('stock_rusak') ?: 0;
-        $currentStock = $stockBaik + $stockRusak;
+        if (!$this->validate($rules)) {
+            // This matches the "Tampilkan Pesan Error" flow
+            return redirect()->back()->withInput()->with('error', 'Validasi gagal. Mohon periksa kembali data yang Anda masukkan.');
+        }
 
         $payload = [
             'name'          => $this->request->getPost('name'),
@@ -112,27 +116,35 @@ class ProdukController extends BaseController
             'price'         => (float) $this->request->getPost('price'),
             'cost_price'    => (float) $this->request->getPost('cost_price') ?: 0,
             'min_stock'     => (int) $this->request->getPost('min_stock'),
-            'current_stock' => $currentStock,
-            'stock_baik'    => $stockBaik,
-            'stock_rusak'   => $stockRusak,
             'unit'          => $this->request->getPost('unit'),
-            'is_active'     => 1
+            'is_active'     => $this->request->getPost('is_active') ?? 1,
         ];
 
         $db = \Config\Database::connect();
         $db->transStart();
 
         try {
-            $productId = $this->modelProduk->insert($payload);
+            if ($isUpdate) {
+                $this->modelProduk->update($productId, $payload);
+            } else {
+                $initialStock = (int) $this->request->getPost('initial_stock') ?: 0;
+                $payload['current_stock'] = $initialStock;
+                $payload['stock_baik'] = $initialStock;
+                $payload['stock_rusak'] = 0;
 
-            $this->modelMutasiStok->insert([
-                'product_id'   => $productId,
-                'type'         => 'IN',
-                'quantity'     => $currentStock,
-                'notes'        => 'Stok awal produk baru',
-                'reference_no' => 'INIT-' . time(),
-                'created_by'   => session()->get('userId') ?: null
-            ]);
+                $newProductId = $this->modelProduk->insert($payload);
+
+                if ($initialStock > 0) {
+                    $this->modelMutasiStok->insert([
+                        'product_id'   => $newProductId,
+                        'type'         => 'IN',
+                        'quantity'     => $initialStock,
+                        'notes'        => 'Stok awal produk baru',
+                        'reference_no' => 'INIT-' . time(),
+                        'created_by'   => session()->get('userId') ?: null
+                    ]);
+                }
+            }
 
             $db->transComplete();
 
@@ -140,7 +152,8 @@ class ProdukController extends BaseController
                 throw new Exception('Gagal menyimpan ke database');
             }
 
-            return redirect()->to('/products')->with('success', 'Produk berhasil ditambahkan.');
+            $message = $isUpdate ? 'Produk berhasil diperbarui.' : 'Produk berhasil ditambahkan.';
+            return redirect()->to('/products')->with('success', $message);
         } catch (Exception $e) {
             $db->transRollback();
             return redirect()->back()->withInput()->with('error', $e->getMessage());
@@ -201,64 +214,26 @@ class ProdukController extends BaseController
     }
 
     /**
-     * Update product
-     */
-    public function update($id)
-    {
-        $rules = [
-            'name'        => 'required|min_length[3]|max_length[255]',
-            'sku'         => "required|min_length[3]|max_length[50]|is_unique[products.sku,id,$id]",
-            'category_id' => 'required|integer',
-            'price'       => 'required|decimal',
-            'min_stock'   => 'required|integer',
-            'unit'        => 'required|max_length[20]'
-        ];
-
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-        }
-
-        $stockBaik = (int) $this->request->getPost('stock_baik') ?: 0;
-        $stockRusak = (int) $this->request->getPost('stock_rusak') ?: 0;
-        $currentStock = $stockBaik + $stockRusak;
-
-        $payload = [
-            'name'          => $this->request->getPost('name'),
-            'sku'           => strtoupper((string)$this->request->getPost('sku')),
-            'category_id'   => $this->request->getPost('category_id'),
-            'description'   => $this->request->getPost('description'),
-            'price'         => (float) $this->request->getPost('price'),
-            'cost_price'    => (float) $this->request->getPost('cost_price') ?: 0,
-            'min_stock'     => (int) $this->request->getPost('min_stock'),
-            'stock_baik'    => $stockBaik,
-            'stock_rusak'   => $stockRusak,
-            'current_stock' => $currentStock,
-            'unit'          => $this->request->getPost('unit'),
-        ];
-
-        if ($this->modelProduk->update($id, $payload)) {
-            return redirect()->to('/products')->with('success', 'Data produk berhasil diperbarui.');
-        }
-
-        return redirect()->back()->withInput()->with('error', 'Gagal memperbarui data.');
-    }
-
-    /**
      * Delete product
      */
     public function delete($id)
     {
+        $product = $this->modelProduk->find($id);
+        if (!$product) {
+            return redirect()->to('/products')->with('error', 'Produk tidak ditemukan.');
+        }
+
         $movementCount = $this->modelMutasiStok->where('product_id', $id)->countAllResults();
 
-        if ($movementCount > 0) {
-            return $this->jsonResponse(['status' => false, 'message' => 'Produk tidak bisa dihapus karena sudah memiliki riwayat transaksi.'], 400);
+        if ($movementCount > 1) { // Allow deletion if only initial stock movement exists
+            return redirect()->to('/products')->with('error', 'Produk tidak bisa dihapus karena sudah memiliki riwayat transaksi.');
         }
 
         if ($this->modelProduk->delete($id)) {
-            return $this->jsonResponse(['status' => true, 'message' => 'Produk berhasil dihapus.']);
+            return redirect()->to('/products')->with('success', 'Produk berhasil dihapus.');
         }
 
-        return $this->jsonResponse(['status' => false, 'message' => 'Gagal menghapus produk.'], 500);
+        return redirect()->to('/products')->with('error', 'Gagal menghapus produk.');
     }
 
     /**

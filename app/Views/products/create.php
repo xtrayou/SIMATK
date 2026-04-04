@@ -9,40 +9,40 @@
                 <p class="text-muted mb-0">Lengkapi informasi produk dengan detail yang benar</p>
             </div>
             <div class="card-body p-4">
-                <form action="<?= base_url('/products/store') ?>" method="POST" id="productForm">
+                <form action="<?= base_url('/products/save') ?>" method="POST" id="productForm">
                     <?= csrf_field() ?>
-                    
+
                     <!-- Informasi Dasar -->
                     <div class="mb-4">
                         <h5 class="fw-bold mb-3 border-bottom pb-2 text-primary">
                             <i class="bi bi-info-circle me-2"></i>Informasi Dasar
                         </h5>
-                        
+
                         <div class="row">
                             <div class="col-md-7 mb-3">
                                 <label for="name" class="form-label fw-bold">Nama Produk <span class="text-danger">*</span></label>
-                                <input type="text" 
-                                       class="form-control <?= (session('errors.name')) ? 'is-invalid' : '' ?>" 
-                                       id="name" 
-                                       name="name" 
-                                       value="<?= old('name', $produk['name']) ?>"
-                                       placeholder="Nama barang / produk"
-                                       required>
+                                <input type="text"
+                                    class="form-control <?= (session('errors.name')) ? 'is-invalid' : '' ?>"
+                                    id="name"
+                                    name="name"
+                                    value="<?= old('name', $produk['name']) ?>"
+                                    placeholder="Nama barang / produk"
+                                    required>
                                 <?php if (session('errors.name')): ?>
                                     <div class="invalid-feedback"><?= session('errors.name') ?></div>
                                 <?php endif ?>
                             </div>
-                            
+
                             <div class="col-md-5 mb-3">
                                 <label for="category_id" class="form-label fw-bold">Kategori <span class="text-danger">*</span></label>
-                                <select class="form-select <?= (session('errors.category_id')) ? 'is-invalid' : '' ?>" 
-                                        id="category_id" 
-                                        name="category_id" 
-                                        required>
+                                <select class="form-select <?= (session('errors.category_id')) ? 'is-invalid' : '' ?>"
+                                    id="category_id"
+                                    name="category_id"
+                                    required>
                                     <option value="">Pilih Kategori</option>
                                     <?php foreach ($daftarKategori as $kat): ?>
-                                        <option value="<?= $kat['id'] ?>" 
-                                                <?= old('category_id', $produk['category_id']) == $kat['id'] ? 'selected' : '' ?>>
+                                        <option value="<?= $kat['id'] ?>"
+                                            <?= old('category_id', $produk['category_id']) == $kat['id'] ? 'selected' : '' ?>>
                                             <?= esc($kat['name']) ?>
                                         </option>
                                     <?php endforeach ?>
@@ -57,20 +57,20 @@
                             <div class="col-md-6 mb-3">
                                 <label for="sku" class="form-label fw-bold">SKU / Kode Barang <span class="text-danger">*</span></label>
                                 <div class="input-group">
-                                    <input type="text" 
-                                           class="form-control <?= (session('errors.sku')) ? 'is-invalid' : '' ?>" 
-                                           id="sku" 
-                                           name="sku" 
-                                           value="<?= old('sku', $produk['sku']) ?>"
-                                           placeholder="Contoh: ATK-001"
-                                           required>
+                                    <input type="text"
+                                        class="form-control <?= (session('errors.sku')) ? 'is-invalid' : '' ?>"
+                                        id="sku"
+                                        name="sku"
+                                        value="<?= old('sku', $produk['sku']) ?>"
+                                        placeholder="Contoh: ATK-001"
+                                        required>
                                     <?php if (session('errors.sku')): ?>
                                         <div class="invalid-feedback"><?= session('errors.sku') ?></div>
                                     <?php endif ?>
                                 </div>
                                 <small class="text-muted">Gunakan kode unik untuk identifikasi</small>
                             </div>
-                            
+
                             <div class="col-md-6 mb-3">
                                 <label for="unit" class="form-label fw-bold">Satuan <span class="text-danger">*</span></label>
                                 <select class="form-select" id="unit" name="unit" required>
@@ -87,11 +87,11 @@
                         <div class="row">
                             <div class="col-12 mb-3">
                                 <label for="description" class="form-label fw-bold">Keterangan / Deskripsi</label>
-                                <textarea class="form-control <?= (session('errors.description')) ? 'is-invalid' : '' ?>" 
-                                          id="description" 
-                                          name="description" 
-                                          rows="3"
-                                          placeholder="Opsional: tambahkan keterangan lengkap"><?= old('description', $produk['description']) ?></textarea>
+                                <textarea class="form-control <?= (session('errors.description')) ? 'is-invalid' : '' ?>"
+                                    id="description"
+                                    name="description"
+                                    rows="3"
+                                    placeholder="Opsional: tambahkan keterangan lengkap"><?= old('description', $produk['description']) ?></textarea>
                             </div>
                         </div>
                     </div>
@@ -101,47 +101,45 @@
                         <h5 class="fw-bold mb-3 border-bottom pb-2 text-primary">
                             <i class="bi bi-wallet2 me-2"></i>Harga & Stok
                         </h5>
-                        
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="price" class="form-label fw-bold">Harga Estimasi <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text">Rp</span>
-                                    <input type="number" 
-                                           class="form-control <?= (session('errors.price')) ? 'is-invalid' : '' ?>" 
-                                           id="price" 
-                                           name="price" 
-                                           value="<?= old('price', $produk['price']) ?>"
-                                           placeholder="0" required>
+                                    <input type="number"
+                                        class="form-control <?= (session('errors.price')) ? 'is-invalid' : '' ?>"
+                                        id="price"
+                                        name="price"
+                                        value="<?= old('price', $produk['price']) ?>"
+                                        placeholder="0" required>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6 mb-3">
                                 <label for="cost_price" class="form-label fw-bold">Harga Beli (HPP)</label>
                                 <div class="input-group">
                                     <span class="input-group-text">Rp</span>
-                                    <input type="number" 
-                                           class="form-control" 
-                                           id="cost_price" 
-                                           name="cost_price" 
-                                           value="<?= old('cost_price', $produk['cost_price']) ?>"
-                                           placeholder="0">
+                                    <input type="number"
+                                        class="form-control"
+                                        id="cost_price"
+                                        name="cost_price"
+                                        value="<?= old('cost_price', $produk['cost_price']) ?>"
+                                        placeholder="0">
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="stock_baik" class="form-label fw-bold">Stok Baik</label>
-                                <input type="number" class="form-control" id="stock_baik" name="stock_baik" value="<?= old('stock_baik', $produk['stock_baik'] ?? 0) ?>" placeholder="0">
+                            <div class="col-md-6 mb-3">
+                                <label for="initial_stock" class="form-label fw-bold">Stok Awal (Opsional)</label>
+                                <input type="number" class="form-control" id="initial_stock" name="initial_stock" value="<?= old('initial_stock', 0) ?>" placeholder="0">
+                                <small class="text-muted">Masukkan jumlah stok barang saat ini jika sudah ada.</small>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="stock_rusak" class="form-label fw-bold">Stok Rusak</label>
-                                <input type="number" class="form-control" id="stock_rusak" name="stock_rusak" value="<?= old('stock_rusak', $produk['stock_rusak'] ?? 0) ?>" placeholder="0">
-                            </div>
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label for="min_stock" class="form-label fw-bold">Stok Minimum <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" id="min_stock" name="min_stock" value="<?= old('min_stock', $produk['min_stock']) ?>" required>
+                                <small class="text-muted">Batas minimum untuk notifikasi peringatan stok.</small>
                             </div>
                         </div>
                     </div>
@@ -158,7 +156,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Info Panel -->
     <div class="col-12 col-lg-4">
         <div class="card shadow-sm border-0 mb-4 bg-primary text-white">
@@ -171,7 +169,7 @@
                 </ul>
             </div>
         </div>
-        
+
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white">
                 <h5 class="mb-0">Preview Produk</h5>
@@ -201,24 +199,23 @@
 
 <?= $this->section('scripts') ?>
 <script>
-$(document).ready(function() {
-    $('#name, #stock_baik, #stock_rusak, #unit, #category_id').on('input change', function() {
-        const name = $('#name').val() || 'Nama Produk';
-        const baik = parseInt($('#stock_baik').val()) || 0;
-        const rusak = parseInt($('#stock_rusak').val()) || 0;
-        const totalStock = baik + rusak;
-        const unit = $('#unit').val();
-        const category = $('#category_id option:selected').text() || 'Kategori';
-        
-        $('#preview-name').text(name);
-        $('#preview-stock').text(totalStock);
-        $('#preview-unit').text(unit);
-        $('#preview-category').text(category);
-    });
+    $(document).ready(function() {
+        $('#name, #initial_stock, #unit, #category_id').on('input change', function() {
+            const name = $('#name').val() || 'Nama Produk';
+            const initial = parseInt($('#initial_stock').val()) || 0;
+            const totalStock = initial;
+            const unit = $('#unit').val();
+            const category = $('#category_id option:selected').text() || 'Kategori';
 
-    $('#productForm').on('submit', function() {
-        $('#btnSubmit').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...');
+            $('#preview-name').text(name);
+            $('#preview-stock').text(totalStock);
+            $('#preview-unit').text(unit);
+            $('#preview-category').text(category);
+        });
+
+        $('#productForm').on('submit', function() {
+            $('#btnSubmit').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...');
+        });
     });
-});
 </script>
 <?= $this->endSection() ?>

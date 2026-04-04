@@ -7,42 +7,9 @@
     <title><?= $title ?? 'SIMATK' ?></title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="<?= base_url('assets/compiled/css/app.css') ?>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?= base_url('css/simatk-theme.css') ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-
-    <!-- Simple Style -->
-    <style>
-        body {
-            background-color: #f5f6fa;
-        }
-
-        .section {
-            padding: 20px;
-        }
-
-        .sidebar-item.active>.sidebar-link {
-            background-color: #435ebe;
-            color: white;
-        }
-
-        .card {
-            border-radius: 10px;
-            border: 1px solid #eee;
-        }
-
-        .alert {
-            border-radius: 8px;
-        }
-
-        .btn-primary {
-            background-color: #435ebe;
-            border-color: #435ebe;
-        }
-
-        .btn-primary:hover {
-            background-color: #364296;
-        }
-    </style>
 
     <?= $this->renderSection('styles') ?>
 </head>
@@ -84,8 +51,8 @@
 
     </div>
 
-    <!-- JS (cukup ini saja) -->
-    <script src="<?= base_url('assets/compiled/js/app.js') ?>"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= base_url('js/simatk-theme.js') ?>"></script>
 
     <?= $this->renderSection('scripts') ?>
 

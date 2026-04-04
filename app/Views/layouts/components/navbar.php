@@ -3,7 +3,7 @@
         <div class="container-fluid">
 
             <!-- Toggle Sidebar -->
-            <a href="#" class="me-3">
+            <a href="#" class="me-3" id="sidebarToggle" aria-label="Toggle sidebar">
                 <i class="bi bi-list fs-4"></i>
             </a>
 

@@ -35,10 +35,9 @@ $routes->group('products', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'ProdukController::index');
     $routes->get('create', 'ProdukController::create');
     $routes->get('show/(:num)', 'ProdukController::show/$1');
-    $routes->post('store', 'ProdukController::store');
+    $routes->post('save', 'ProdukController::save');
     $routes->get('edit/(:num)', 'ProdukController::edit/$1');
-    $routes->post('update/(:num)', 'ProdukController::update/$1');
-    $routes->delete('delete/(:num)', 'ProdukController::delete/$1');
+    $routes->post('delete/(:num)', 'ProdukController::delete/$1');
     $routes->post('generate-sku', 'ProdukController::generateSKU');
 
     // Procucts export routes

@@ -7,7 +7,7 @@
     <title>SIMATK | Inventory System - Fakultas Ilmu Komputer</title>
 
     <link rel="shortcut icon" href="<?= base_url('assets/static/images/logo/favicon.svg') ?>" type="image/x-icon">
-    <link rel="stylesheet" href="<?= base_url('assets/compiled/css/app.css') ?>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,13 +16,13 @@
 
     <style>
         :root {
-            --primary-color: #3B5BDB;
-            --primary-light: #5C7CFA;
-            --primary-dark: #2B4ACB;
-            --secondary-color: #6B7A99;
-            --accent-color: #4263EB;
-            --dark-color: #1a1c23;
-            --light-color: #EDF2FF;
+            --primary-color: #52525b;
+            --primary-light: #facc15;
+            --primary-dark: #3f3f46;
+            --secondary-color: #71717a;
+            --accent-color: #eab308;
+            --dark-color: #18181b;
+            --light-color: #f5f5f4;
         }
 
         * {
@@ -51,7 +51,7 @@
             left: -4px;
             right: -4px;
             height: 35%;
-            background: rgba(92, 124, 250, 0.25);
+            background: rgba(250, 204, 21, 0.35);
             border-radius: 4px;
             z-index: -1;
             transform: skewX(-3deg);
@@ -113,12 +113,12 @@
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(59, 91, 219, 0.4);
+            box-shadow: 0 5px 20px rgba(82, 82, 91, 0.35);
         }
 
         /* ── Hero ── */
         .hero-section {
-            background: linear-gradient(135deg, rgba(27, 40, 101, 0.75) 0%, rgba(43, 74, 203, 0.65) 40%, rgba(59, 91, 219, 0.55) 100%),
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.34) 40%, rgba(0, 0, 0, 0.26) 100%),
                 url('<?= base_url("img/hero.jpg") ?>');
             background-size: cover;
             background-position: center;
@@ -135,7 +135,7 @@
             position: absolute;
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, rgba(92, 124, 250, 0.2) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.18) 0%, transparent 70%);
             border-radius: 50%;
             top: -200px;
             right: -150px;
@@ -217,14 +217,14 @@
         .features-section,
         .how-section {
             padding: 100px 0;
-            background: linear-gradient(135deg, #E7F0FF, #F0F5FF, #E7F5FF);
+            background: linear-gradient(135deg, #f5f5f4, #fef9c3, #f4f4f5);
             position: relative;
             overflow: hidden;
         }
 
         .about-section {
             padding: 100px 0;
-            background: linear-gradient(135deg, #ffffff, #f8faff, #eef5ff);
+            background: linear-gradient(135deg, #ffffff, #fafaf9, #fefce8);
         }
 
         .contact-section {
@@ -254,8 +254,8 @@
             padding: 45px 35px;
             text-align: center;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(59, 91, 219, 0.08);
-            box-shadow: 0 10px 40px rgba(59, 91, 219, 0.08);
+            border: 1px solid rgba(82, 82, 91, 0.1);
+            box-shadow: 0 10px 40px rgba(82, 82, 91, 0.1);
             height: 100%;
             position: relative;
             overflow: hidden;
@@ -275,7 +275,7 @@
 
         .feature-card:hover {
             transform: translateY(-15px);
-            box-shadow: 0 25px 50px rgba(59, 91, 219, 0.15);
+            box-shadow: 0 25px 50px rgba(82, 82, 91, 0.2);
         }
 
         .feature-card:hover::before {
@@ -299,27 +299,27 @@
         }
 
         .feature-icon.purple {
-            background: linear-gradient(135deg, #3B5BDB, #5C7CFA);
+            background: linear-gradient(135deg, #3f3f46, #71717a);
             color: white;
-            box-shadow: 0 10px 30px rgba(59, 91, 219, 0.3);
+            box-shadow: 0 10px 30px rgba(82, 82, 91, 0.3);
         }
 
         .feature-icon.blue {
-            background: linear-gradient(135deg, #4263EB, #748FFC);
-            color: white;
-            box-shadow: 0 10px 30px rgba(66, 99, 235, 0.3);
+            background: linear-gradient(135deg, #eab308, #fde047);
+            color: #18181b;
+            box-shadow: 0 10px 30px rgba(234, 179, 8, 0.3);
         }
 
         .feature-icon.green {
-            background: linear-gradient(135deg, #364FC7, #5C7CFA);
+            background: linear-gradient(135deg, #52525b, #a1a1aa);
             color: white;
-            box-shadow: 0 10px 30px rgba(54, 79, 199, 0.3);
+            box-shadow: 0 10px 30px rgba(82, 82, 91, 0.3);
         }
 
         .feature-icon.orange {
-            background: linear-gradient(135deg, #4C6EF5, #91A7FF);
-            color: white;
-            box-shadow: 0 10px 30px rgba(76, 110, 245, 0.3);
+            background: linear-gradient(135deg, #ca8a04, #facc15);
+            color: #18181b;
+            box-shadow: 0 10px 30px rgba(202, 138, 4, 0.3);
         }
 
         .feature-card h4 {
@@ -339,7 +339,7 @@
         /* Stats */
         .stats-section {
             padding: 80px 0;
-            background: linear-gradient(135deg, #1B2865, #2B4ACB, #3B5BDB, #5C7CFA, #748FFC);
+            background: linear-gradient(135deg, #27272a, #3f3f46, #52525b, #71717a, #ca8a04);
             position: relative;
             overflow: hidden;
         }
@@ -366,7 +366,7 @@
         /* Peminjaman */
         .peminjaman-section {
             padding: 100px 0;
-            background: linear-gradient(135deg, #E7F0FF, #D6E6FF, #C7DBFF);
+            background: linear-gradient(135deg, #fafaf9, #fef9c3, #f4f4f5);
             position: relative;
             overflow: hidden;
         }
@@ -375,13 +375,13 @@
             background: white;
             border-radius: 24px;
             padding: 50px 40px;
-            box-shadow: 0 15px 50px rgba(59, 91, 219, 0.12);
-            border: 1px solid rgba(59, 91, 219, 0.08);
+            box-shadow: 0 15px 50px rgba(82, 82, 91, 0.12);
+            border: 1px solid rgba(82, 82, 91, 0.1);
             transition: all 0.3s;
         }
 
         .peminjaman-card:hover {
-            box-shadow: 0 20px 60px rgba(59, 91, 219, 0.18);
+            box-shadow: 0 20px 60px rgba(82, 82, 91, 0.2);
             transform: translateY(-5px);
         }
 
@@ -403,7 +403,7 @@
         .peminjaman-form .form-control:focus,
         .peminjaman-form .form-select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(59, 91, 219, 0.15);
+            box-shadow: 0 0 0 0.2rem rgba(82, 82, 91, 0.15);
         }
 
         .peminjaman-form .btn-submit {
@@ -418,18 +418,18 @@
 
         .peminjaman-form .btn-submit:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(59, 91, 219, 0.4);
+            box-shadow: 0 10px 30px rgba(82, 82, 91, 0.35);
         }
 
         .peminjaman-info {
-            background: linear-gradient(135deg, #1B2865, #2B4ACB, #3B5BDB, #5C7CFA);
+            background: linear-gradient(135deg, #27272a, #3f3f46, #52525b, #ca8a04);
             border-radius: 24px;
             padding: 45px;
             color: white;
             height: 100%;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 15px 40px rgba(59, 91, 219, 0.3);
+            box-shadow: 0 15px 40px rgba(82, 82, 91, 0.3);
         }
 
         .peminjaman-info h4 {
@@ -503,15 +503,15 @@
             border-radius: 16px;
             padding: 28px 20px;
             text-align: center;
-            border: 1px solid rgba(59, 91, 219, 0.08);
+            border: 1px solid rgba(82, 82, 91, 0.1);
             transition: all 0.3s ease;
             height: 100%;
         }
 
         .contact-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(59, 91, 219, 0.12);
-            border-color: rgba(59, 91, 219, 0.15);
+            box-shadow: 0 12px 30px rgba(82, 82, 91, 0.16);
+            border-color: rgba(82, 82, 91, 0.2);
         }
 
         .contact-card .contact-icon {
@@ -594,7 +594,7 @@
 
         /* Footer */
         .footer {
-            background: linear-gradient(135deg, #1B2865, #2B4ACB, #3B5BDB);
+            background: linear-gradient(135deg, #18181b, #3f3f46, #ca8a04);
             padding: 40px 0 20px;
             color: white;
         }
@@ -684,7 +684,7 @@
 
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(59, 91, 219, 0.1);
+            box-shadow: 0 0 0 0.2rem rgba(82, 82, 91, 0.1);
         }
 
         .btn-login-submit {
@@ -698,7 +698,7 @@
 
         .btn-login-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(59, 91, 219, 0.4);
+            box-shadow: 0 5px 20px rgba(82, 82, 91, 0.35);
         }
 
         /* Floating Services Button */
@@ -803,7 +803,7 @@
 
         .scroll-top:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(59, 91, 219, 0.4);
+            box-shadow: 0 10px 30px rgba(82, 82, 91, 0.35);
         }
 
         .input-group-text {
@@ -897,10 +897,10 @@
                         </p>
                         <div class="d-flex flex-wrap gap-3 justify-content-center">
                             <a href="#permintaan" class="btn btn-hero btn-hero-primary">
-                                <i class="bi bi-rocket-takeoff me-2"></i>Mulai Sekarang
+                                <i class="bi bi-rocket-takeoff me-2"></i>Klik untuk membuat permintaan
                             </a>
                             <a href="#fitur" class="btn btn-hero btn-hero-outline">
-                                <i class="bi bi-info-circle me-2"></i>Pelajari Lebih
+                                <i class="bi bi-info-circle me-2"></i>Tentang SIMATK
                             </a>
                         </div>
                     </div>
@@ -913,7 +913,7 @@
     <section class="features-section" id="fitur">
         <div class="container">
             <div class="text-center" data-aos="fade-up">
-                <span class="badge bg-primary bg-opacity-10 text-primary px-4 py-2 rounded-pill" style="font-size:1.05rem;font-weight:600;">Fitur Sistem</span>
+                <span class="badge px-4 py-2 rounded-pill" style="font-size:1.05rem;font-weight:600;background:#fef3c7;color:#3f3f46;">Fitur Sistem</span>
                 <h2 class="section-title mt-2">Fitur <span class="font-accent">Unggulan</span></h2>
                 <p class="section-subtitle">Sistem inventaris <span class="font-accent">modern</span> untuk kemudahan pengelolaan</p>
             </div>
@@ -1149,13 +1149,13 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" style="max-width:100%;height:auto;">
                         <defs>
                             <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#3B5BDB" />
-                                <stop offset="100%" style="stop-color:#5C7CFA" />
+                                <stop offset="0%" style="stop-color:#52525b" />
+                                <stop offset="100%" style="stop-color:#facc15" />
                             </linearGradient>
                         </defs>
                         <rect x="50" y="50" width="400" height="300" rx="20" fill="url(#bgGrad)" opacity="0.1" />
                         <rect x="150" y="80" width="200" height="150" rx="10" fill="#1a1c23" />
-                        <rect x="160" y="90" width="180" height="120" rx="5" fill="#3B5BDB" />
+                        <rect x="160" y="90" width="180" height="120" rx="5" fill="#52525b" />
                         <rect x="170" y="100" width="160" height="20" rx="3" fill="rgba(255,255,255,0.3)" />
                         <rect x="170" y="130" width="70" height="70" rx="5" fill="rgba(255,255,255,0.4)" />
                         <rect x="250" y="130" width="80" height="30" rx="3" fill="rgba(255,255,255,0.3)" />
@@ -1361,7 +1361,7 @@
         <i class="bi bi-arrow-up"></i>
     </button>
 
-    <script src="<?= base_url('assets/compiled/js/app.js') ?>"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         // ── Init AOS ────────────────────────────────────────────────
