@@ -15,7 +15,7 @@
                         <div class="col-md-4 mb-3">
                             <label for="search" class="form-label fw-bold">Cari Produk</label>
                             <input type="text" class="form-control" id="search" name="search"
-                                   value="<?= $filterCari ?>" placeholder="Ketik nama, kode barang, atau deskripsi...">
+                                value="<?= $filterCari ?>" placeholder="Ketik nama, kode barang, atau deskripsi...">
                         </div>
                         <div class="col-md-3 mb-3">
                             <label for="category" class="form-label fw-bold">Kategori</label>

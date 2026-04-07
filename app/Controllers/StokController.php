@@ -497,11 +497,11 @@ class StokController extends BaseController
         }
 
         $filename = 'Riwayat_Stok_' . date('YmdHis') . '.xlsx';
-        
+
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
-        
+
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         $writer->save('php://output');
         exit;
@@ -514,12 +514,12 @@ class StokController extends BaseController
         $options = new \Dompdf\Options();
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isRemoteEnabled', true);
-        
+
         $dompdf = new \Dompdf\Dompdf($options);
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
-        
+
         $filename = 'Riwayat_Stok_' . date('YmdHis') . '.pdf';
         $dompdf->stream($filename, ['Attachment' => true]);
         exit;

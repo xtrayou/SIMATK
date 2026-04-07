@@ -59,9 +59,9 @@
 
         /* ── Navbar ── */
         .navbar-home {
-            background: transparent;
+            background: rgba(0, 0, 0, 0.18);
             padding: 20px 0;
-            transition: all 0.4s ease;
+            transition: background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
         }
 
         .navbar-home.scrolled {
@@ -75,7 +75,7 @@
             font-weight: 700;
             font-size: 1.5rem;
             color: white !important;
-            transition: all 0.3s;
+            transition: color 0.3s ease;
         }
 
         .navbar-home.scrolled .navbar-brand {
@@ -86,7 +86,58 @@
             color: white !important;
             font-weight: 500;
             margin: 0 10px;
-            transition: all 0.3s;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-toggler {
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            padding: 6px 10px;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+        }
+
+        .navbar-toggler-icon {
+            background-image: none;
+            width: 1.2rem;
+            height: 1.2rem;
+            position: relative;
+        }
+
+        .navbar-toggler-icon::before,
+        .navbar-toggler-icon::after,
+        .navbar-toggler-icon span {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: white;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar-toggler-icon::before {
+            top: 1px;
+        }
+
+        .navbar-toggler-icon span {
+            top: 8px;
+        }
+
+        .navbar-toggler-icon::after {
+            top: 15px;
+        }
+
+        .navbar-home.scrolled .navbar-toggler {
+            border-color: rgba(0, 131, 143, 0.45);
+        }
+
+        .navbar-home.scrolled .navbar-toggler-icon::before,
+        .navbar-home.scrolled .navbar-toggler-icon::after,
+        .navbar-home.scrolled .navbar-toggler-icon span {
+            background: var(--primary-dark);
         }
 
         .navbar-home.scrolled .nav-link {
@@ -108,12 +159,12 @@
             border-radius: 50px;
             color: white !important;
             font-weight: 500;
-            transition: all 0.3s;
+            transition: box-shadow 0.3s ease, filter 0.3s ease;
         }
 
         .btn-login:hover {
-            transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(0, 184, 212, 0.4);
+            filter: brightness(1.03);
         }
 
         /* ── Hero ── */
@@ -184,7 +235,7 @@
             border-radius: 50px;
             font-weight: 600;
             font-size: 1.1rem;
-            transition: all 0.3s;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .btn-hero-primary {
@@ -195,7 +246,6 @@
         }
 
         .btn-hero-primary:hover {
-            transform: translateY(-3px) scale(1.05);
             box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);
             color: var(--primary-color);
         }
@@ -204,13 +254,11 @@
             background: rgba(255, 255, 255, 0.1);
             color: white;
             border: 2px solid rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
         }
 
         .btn-hero-outline:hover {
             background: white;
             color: var(--primary-color);
-            transform: translateY(-3px) scale(1.05);
         }
 
         /* ── Sections ── */
@@ -220,11 +268,6 @@
             background: linear-gradient(135deg, #f5f5f4, #e0f7fa, #f4f4f5);
             position: relative;
             overflow: hidden;
-        }
-
-        .about-section {
-            padding: 100px 0;
-            background: linear-gradient(135deg, #ffffff, #fafaf9, #f0fcff);
         }
 
         .contact-section {
@@ -253,7 +296,7 @@
             border-radius: 24px;
             padding: 45px 35px;
             text-align: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
             border: 1px solid rgba(82, 82, 91, 0.1);
             box-shadow: 0 10px 40px rgba(82, 82, 91, 0.1);
             height: 100%;
@@ -274,8 +317,8 @@
         }
 
         .feature-card:hover {
-            transform: translateY(-15px);
             box-shadow: 0 25px 50px rgba(82, 82, 91, 0.2);
+            border-color: rgba(82, 82, 91, 0.2);
         }
 
         .feature-card:hover::before {
@@ -291,11 +334,7 @@
             justify-content: center;
             font-size: 2.2rem;
             margin: 0 auto 30px;
-            transition: all 0.4s;
-        }
-
-        .feature-card:hover .feature-icon {
-            transform: scale(1.1) rotate(5deg);
+            transition: box-shadow 0.3s ease;
         }
 
         .feature-icon.purple {
@@ -377,12 +416,12 @@
             padding: 50px 40px;
             box-shadow: 0 15px 50px rgba(82, 82, 91, 0.12);
             border: 1px solid rgba(82, 82, 91, 0.1);
-            transition: all 0.3s;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
         }
 
         .peminjaman-card:hover {
             box-shadow: 0 20px 60px rgba(82, 82, 91, 0.2);
-            transform: translateY(-5px);
+            border-color: rgba(82, 82, 91, 0.2);
         }
 
         .peminjaman-form .form-label {
@@ -397,7 +436,7 @@
             padding: 14px 18px;
             border: 2px solid #e9ecef;
             font-size: 0.95rem;
-            transition: all 0.3s;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .peminjaman-form .form-control:focus,
@@ -413,12 +452,12 @@
             border-radius: 12px;
             font-weight: 600;
             font-size: 1rem;
-            transition: all 0.3s;
+            transition: box-shadow 0.3s ease, filter 0.3s ease;
         }
 
         .peminjaman-form .btn-submit:hover {
-            transform: translateY(-3px);
             box-shadow: 0 10px 30px rgba(0, 184, 212, 0.4);
+            filter: brightness(1.03);
         }
 
         .peminjaman-info {
@@ -462,39 +501,53 @@
 
         .barang-badge {
             background: rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
+            padding: 7px 12px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             font-weight: 500;
+            display: inline-block;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* About */
-        .about-content h2 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            letter-spacing: -0.5px;
+        .kategori-preview,
+        .kategori-all {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .about-content p {
-            color: var(--secondary-color);
-            line-height: 1.8;
-            margin-bottom: 20px;
+        .kategori-all-wrap {
+            max-height: 180px;
+            overflow-y: auto;
+            padding-right: 4px;
+            margin-top: 10px;
         }
 
-        .about-list {
-            list-style: none;
-            padding: 0;
+        .kategori-all-wrap::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .about-list li {
-            padding: 10px 0;
-            color: var(--dark-color);
+        .kategori-all-wrap::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 999px;
         }
 
-        .about-list li i {
-            color: var(--accent-color);
-            margin-right: 10px;
+        .btn-kategori-toggle {
+            margin-top: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: white;
+            background: rgba(255, 255, 255, 0.08);
+            font-size: 0.8rem;
+            border-radius: 999px;
+            padding: 4px 12px;
+        }
+
+        .btn-kategori-toggle:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.16);
         }
 
         /* Contact */
@@ -504,12 +557,11 @@
             padding: 28px 20px;
             text-align: center;
             border: 1px solid rgba(82, 82, 91, 0.1);
-            transition: all 0.3s ease;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
             height: 100%;
         }
 
         .contact-card:hover {
-            transform: translateY(-4px);
             box-shadow: 0 12px 30px rgba(82, 82, 91, 0.16);
             border-color: rgba(82, 82, 91, 0.2);
         }
@@ -568,7 +620,7 @@
             justify-content: center;
             font-size: 1.15rem;
             color: white;
-            transition: all 0.3s ease;
+            transition: box-shadow 0.3s ease, filter 0.3s ease;
         }
 
         .social-bar a.sb-ig {
@@ -588,8 +640,8 @@
         }
 
         .social-bar a:hover {
-            transform: translateY(-4px) scale(1.1);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            filter: brightness(1.05);
         }
 
         /* Footer */
@@ -616,7 +668,7 @@
             color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
             font-size: 0.9rem;
-            transition: all 0.2s;
+            transition: color 0.2s ease;
         }
 
         .footer-nav-link:hover {
@@ -637,13 +689,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
             font-size: 1rem;
         }
 
         .social-links a:hover {
             background: var(--primary-color);
-            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0, 184, 212, 0.35);
         }
 
         .footer-bottom {
@@ -718,7 +770,7 @@
             border-radius: 10px;
             padding: 12px 15px;
             border: 2px solid #e9ecef;
-            transition: all 0.3s;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .form-control:focus {
@@ -733,85 +785,12 @@
             border-radius: 10px;
             font-weight: 600;
             width: 100%;
+            transition: box-shadow 0.3s ease, filter 0.3s ease;
         }
 
         .btn-login-submit:hover {
-            transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(0, 184, 212, 0.4);
-        }
-
-        /* Floating Services Button */
-        .floating-service {
-            position: fixed;
-            bottom: 95px;
-            right: 30px;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-        }
-
-        .floating-service .service-link {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #00b894;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            box-shadow: 0 10px 30px rgba(0, 184, 148, 0.4);
-            transition: all 0.3s;
-            text-decoration: none;
-            position: relative;
-        }
-
-        .floating-service .service-label {
-            background: white;
-            color: #2b3a4a;
-            padding: 8px 15px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            opacity: 0;
-            transform: translateX(10px);
-            transition: all 0.3s;
-            pointer-events: none;
-            white-space: nowrap;
-        }
-
-        .floating-service:hover .service-label {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .floating-service .service-link:hover {
-            transform: scale(1.1);
-            background: #00cec9;
-        }
-
-        .floating-service .pulse {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: rgba(0, 184, 148, 0.4);
-            animation: pulse-animation 2s infinite;
-        }
-
-        @keyframes pulse-animation {
-            0% {
-                transform: scale(1);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: scale(1.6);
-                opacity: 0;
-            }
+            filter: brightness(1.03);
         }
 
         .scroll-top {
@@ -831,7 +810,7 @@
             cursor: pointer;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s;
+            transition: opacity 0.3s ease, visibility 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
             z-index: 1000;
         }
 
@@ -841,8 +820,8 @@
         }
 
         .scroll-top:hover {
-            transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0, 184, 212, 0.4);
+            filter: brightness(1.03);
         }
 
         .input-group-text {
@@ -858,9 +837,37 @@
         }
 
         @media (max-width:992px) {
+            .navbar-home {
+                background: rgba(24, 24, 27, 0.88);
+                backdrop-filter: blur(8px);
+            }
+
+            .navbar-home .navbar-collapse {
+                margin-top: 12px;
+                background: rgba(255, 255, 255, 0.96);
+                border-radius: 16px;
+                padding: 14px 16px;
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            }
+
+            .navbar-home .nav-link {
+                color: var(--dark-color) !important;
+                margin: 8px 0;
+            }
+
+            .navbar-home .nav-link:hover {
+                color: var(--primary-color) !important;
+            }
+
+            .navbar-home .btn-login {
+                width: 100%;
+                margin-top: 8px;
+            }
+
             .hero-title {
                 font-size: 2.5rem;
             }
+
         }
 
         @media (max-width:768px) {
@@ -879,6 +886,10 @@
             .peminjaman-card {
                 padding: 30px 20px;
             }
+
+            .kategori-all-wrap {
+                max-height: 150px;
+            }
         }
     </style>
 </head>
@@ -893,15 +904,14 @@
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
-                <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon"><span></span></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarMenu">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item"><a class="nav-link" href="#beranda">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#fitur">Fitur</a></li>
                     <li class="nav-item"><a class="nav-link" href="#permintaan">Permintaan ATK</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#tentang">Tentang</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#fitur">Fitur Unggulan</a></li>
                     <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
                 </ul>
                 <div class="d-flex align-items-center">
@@ -939,50 +949,9 @@
                                 <i class="bi bi-rocket-takeoff me-2"></i>Klik untuk membuat permintaan
                             </a>
                             <a href="#fitur" class="btn btn-hero btn-hero-outline">
-                                <i class="bi bi-info-circle me-2"></i>Tentang SIMATK
+                                <i class="bi bi-stars me-2"></i>Fitur Unggulan
                             </a>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Fitur -->
-    <section class="features-section" id="fitur">
-        <div class="container">
-            <div class="text-center" data-aos="fade-up">
-                <span class="badge px-4 py-2 rounded-pill" style="font-size:1.05rem;font-weight:600;background:#e0f7fa;color:#006064;">Fitur Sistem</span>
-                <h2 class="section-title mt-2">Fitur <span class="font-accent">Unggulan</span></h2>
-                <p class="section-subtitle">Sistem inventaris <span class="font-accent">modern</span> untuk kemudahan pengelolaan</p>
-            </div>
-            <div class="row g-4 justify-content-center">
-                <div class="col-xl-3 col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="feature-card">
-                        <div class="feature-icon purple"><i class="bi bi-box-seam"></i></div>
-                        <h4>Manajemen <span class="font-accent">Stok</span></h4>
-                        <p>Kelola stok ATK dengan <span class="font-accent">mudah.</span> Catat barang masuk dan keluar secara real-time.</p>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="feature-card">
-                        <div class="feature-icon blue"><i class="bi bi-graph-up-arrow"></i></div>
-                        <h4>Laporan & <span class="font-accent">Analitik</span></h4>
-                        <p>Dapatkan laporan lengkap dan <span class="font-accent">analisis penggunaan</span> ATK dalam berbagai format.</p>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                    <div class="feature-card">
-                        <div class="feature-icon green"><i class="bi bi-bell"></i></div>
-                        <h4><span class="font-accent">Notifikasi</span> Stok</h4>
-                        <p>Terima <span class="font-accent">peringatan otomatis</span> ketika stok mencapai batas minimum.</p>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                    <div class="feature-card">
-                        <div class="feature-icon orange"><i class="bi bi-clipboard-check"></i></div>
-                        <h4 class="font-accent-normal">Permintaan ATK</h4>
-                        <p>Ajukan permintaan dengan sistem <span class="font-accent">tracking</span> yang terorganisir.</p>
                     </div>
                 </div>
             </div>
@@ -992,7 +961,7 @@
     <!-- Form Permintaan ATK -->
     <section class="peminjaman-section" id="permintaan">
         <div class="container">
-            <div class="text-center" data-aos="fade-up">
+            <div class="text-center">
                 <h2 class="section-title">Form <span class="font-accent">Permintaan</span> ATK</h2>
                 <p class="section-subtitle">Ajukan permintaan ATK dan Barang Habis Pakai dengan <span class="font-accent">mudah</span></p>
             </div>
@@ -1017,7 +986,7 @@
 
             <div class="row g-4">
                 <!-- Form -->
-                <div class="col-lg-7" data-aos="fade-right">
+                <div class="col-lg-7">
                     <div class="peminjaman-card">
                         <form class="peminjaman-form" action="<?= base_url('ask/store') ?>" method="post" id="formPermintaan">
                             <?= csrf_field() ?>
@@ -1152,7 +1121,7 @@
                 </div>
 
                 <!-- Panel info -->
-                <div class="col-lg-5" data-aos="fade-left">
+                <div class="col-lg-5">
                     <div class="peminjaman-info">
                         <h4><i class="bi bi-info-circle me-2"></i>Informasi Permintaan</h4>
                         <div class="peminjaman-info-item">
@@ -1186,56 +1155,71 @@
                         </div>
                         <hr style="opacity:0.2;">
                         <h6 class="mb-3"><i class="bi bi-tags me-2"></i>Kategori Tersedia:</h6>
-                        <div class="d-flex flex-wrap gap-2">
-                            <?php foreach ($daftarKategori as $kat): ?>
-                                <span class="barang-badge"><?= esc($kat['name']) ?></span>
+                        <?php
+                        $kategoriPreview = array_slice($daftarKategori, 0, 12);
+                        $kategoriLainnya = array_slice($daftarKategori, 12);
+                        ?>
+                        <div class="kategori-preview">
+                            <?php foreach ($kategoriPreview as $kat): ?>
+                                <span class="barang-badge" title="<?= esc($kat['name']) ?>"><?= esc($kat['name']) ?></span>
                             <?php endforeach ?>
                         </div>
+
+                        <?php if (!empty($kategoriLainnya)): ?>
+                            <button class="btn btn-kategori-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#kategoriLainnyaCollapse" aria-expanded="false" aria-controls="kategoriLainnyaCollapse">
+                                Lihat <?= count($kategoriLainnya) ?> kategori lainnya
+                            </button>
+                            <div class="collapse" id="kategoriLainnyaCollapse">
+                                <div class="kategori-all-wrap">
+                                    <div class="kategori-all">
+                                        <?php foreach ($kategoriLainnya as $kat): ?>
+                                            <span class="barang-badge" title="<?= esc($kat['name']) ?>"><?= esc($kat['name']) ?></span>
+                                        <?php endforeach ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif ?>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Tentang -->
-    <section class="about-section" id="tentang">
+    <!-- Fitur -->
+    <section class="features-section" id="fitur">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6" data-aos="fade-right">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" style="max-width:100%;height:auto;">
-                        <defs>
-                            <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#00b8d4" />
-                                <stop offset="100%" style="stop-color:#00e5ff" />
-                            </linearGradient>
-                        </defs>
-                        <rect x="50" y="50" width="400" height="300" rx="20" fill="url(#bgGrad)" opacity="0.1" />
-                        <rect x="150" y="80" width="200" height="150" rx="10" fill="#1a1c23" />
-                        <rect x="160" y="90" width="180" height="120" rx="5" fill="#52525b" />
-                        <rect x="170" y="100" width="160" height="20" rx="3" fill="rgba(255,255,255,0.3)" />
-                        <rect x="170" y="130" width="70" height="70" rx="5" fill="rgba(255,255,255,0.4)" />
-                        <rect x="250" y="130" width="80" height="30" rx="3" fill="rgba(255,255,255,0.3)" />
-                        <rect x="250" y="170" width="80" height="30" rx="3" fill="rgba(255,255,255,0.3)" />
-                        <rect x="225" y="230" width="50" height="20" rx="3" fill="#1a1c23" />
-                        <rect x="200" y="250" width="100" height="10" rx="5" fill="#1a1c23" />
-                        <rect x="160" y="280" width="180" height="40" rx="5" fill="#2d2d2d" />
-                        <rect x="170" y="290" width="160" height="20" rx="3" fill="#3d3d3d" />
-                        <rect x="180" y="170" width="10" height="25" rx="2" fill="rgba(255,255,255,0.8)" />
-                        <rect x="195" y="160" width="10" height="35" rx="2" fill="rgba(255,255,255,0.8)" />
-                        <rect x="210" y="150" width="10" height="45" rx="2" fill="rgba(255,255,255,0.8)" />
-                    </svg>
+            <div class="text-center" data-aos="fade-up">
+                <span class="badge px-4 py-2 rounded-pill" style="font-size:1.05rem;font-weight:600;background:#e0f7fa;color:#006064;">Fitur Sistem</span>
+                <h2 class="section-title mt-2">Fitur <span class="font-accent">Unggulan</span></h2>
+                <p class="section-subtitle">Sistem inventaris <span class="font-accent">modern</span> untuk kemudahan pengelolaan</p>
+            </div>
+            <div class="row g-4 justify-content-center">
+                <div class="col-xl-3 col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card">
+                        <div class="feature-icon purple"><i class="bi bi-box-seam"></i></div>
+                        <h4>Manajemen <span class="font-accent">Stok</span></h4>
+                        <p>Kelola stok ATK dengan <span class="font-accent">mudah.</span> Catat barang masuk dan keluar secara real-time.</p>
+                    </div>
                 </div>
-                <div class="col-lg-6" data-aos="fade-left">
-                    <div class="about-content">
-                        <h2>Tentang <span class="font-accent">SIMATK</span></h2>
-                        <p><strong>SIMATK</strong> (<span class="font-accent">Sistem Inventaris ATK</span>) adalah solusi digital untuk pengelolaan inventaris ATK di <span class="font-accent">Fakultas Ilmu Komputer.</span></p>
-                        <ul class="about-list">
-                            <li><i class="bi bi-check-circle-fill"></i> Pencatatan barang masuk dan keluar otomatis</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Manajemen kategori dan produk yang fleksibel</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Sistem peringatan stok minimum</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Laporan ekspor ke Excel dan PDF</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Antarmuka yang mudah digunakan</li>
-                        </ul>
+                <div class="col-xl-3 col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card">
+                        <div class="feature-icon blue"><i class="bi bi-graph-up-arrow"></i></div>
+                        <h4>Laporan & <span class="font-accent">Analitik</span></h4>
+                        <p>Dapatkan laporan lengkap dan <span class="font-accent">analisis penggunaan</span> ATK dalam berbagai format.</p>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card">
+                        <div class="feature-icon green"><i class="bi bi-bell"></i></div>
+                        <h4><span class="font-accent">Notifikasi</span> Stok</h4>
+                        <p>Terima <span class="font-accent">peringatan otomatis</span> ketika stok mencapai batas minimum.</p>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-card">
+                        <div class="feature-icon orange"><i class="bi bi-clipboard-check"></i></div>
+                        <h4 class="font-accent-normal">Permintaan ATK</h4>
+                        <p>Ajukan permintaan dengan sistem <span class="font-accent">tracking</span> yang terorganisir.</p>
                     </div>
                 </div>
             </div>
@@ -1246,16 +1230,13 @@
     <section class="stats-section">
         <div class="container">
             <div class="row" data-aos="fade-up">
-                <div class="col-md-3 col-6">
+                <div class="col-md-4 col-6">
                     <div class="stat-item"><span class="stat-number" data-count="<?= $stats['total_produk'] ?? 0 ?>">0</span><span class="stat-label">Jenis Barang</span></div>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="stat-item"><span class="stat-number" data-count="<?= $stats['total_laporan'] ?? 0 ?>">0</span><span class="stat-label">Laporan Bulanan</span></div>
-                </div>
-                <div class="col-md-3 col-6">
+                <div class="col-md-4 col-6">
                     <div class="stat-item"><span class="stat-number" data-count="<?= $stats['total_kategori'] ?? 0 ?>">0</span><span class="stat-label">Kategori</span></div>
                 </div>
-                <div class="col-md-3 col-6">
+                <div class="col-md-4 col-6">
                     <div class="stat-item"><span class="stat-number" data-count="<?= $stats['jam_operasi'] ?? 8 ?>">0</span><span class="stat-label">Jam Operasional</span></div>
                 </div>
             </div>
@@ -1331,7 +1312,6 @@
                         <a href="#beranda" class="footer-nav-link">Beranda</a>
                         <a href="#fitur" class="footer-nav-link">Fitur</a>
                         <a href="#permintaan" class="footer-nav-link">Permintaan</a>
-                        <a href="#tentang" class="footer-nav-link">Tentang</a>
                         <a href="#kontak" class="footer-nav-link">Kontak</a>
                     </div>
                 </div>
@@ -1441,7 +1421,7 @@
 
     <!-- Scroll to Top -->
     <button class="scroll-top" id="tombolScrollAtas">
-        <i class="bi bi-arrow-up"></i>
+        <i class="bi bi-rocket-takeoff"></i>
     </button>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -1717,4 +1697,3 @@
 </body>
 
 </html>
-
