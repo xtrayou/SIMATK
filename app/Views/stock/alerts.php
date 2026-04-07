@@ -68,7 +68,7 @@
                             <thead class="bg-light small">
                                 <tr>
                                     <th class="ps-3">Nama Produk</th>
-                                    <th>SKU</th>
+                                    <th>Kode Barang</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>

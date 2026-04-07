@@ -7,6 +7,7 @@ use App\Models\KategoriModel;
 use App\Models\MutasiStokModel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -30,17 +31,28 @@ class LaporanController extends BaseController
     {
         $this->setPageData('Laporan Stok', 'Analisis kondisi stok inventory saat ini');
 
+        $reportMode = strtolower((string) ($this->request->getGet('report_mode') ?? 'stock'));
+        if (!in_array($reportMode, ['stock', 'opname'], true)) {
+            $reportMode = 'stock';
+        }
+
         $categoryFilter = $this->request->getGet('category');
         $stockStatus    = $this->request->getGet('stock_status');
         $sortBy         = $this->request->getGet('sort_by') ?: 'name';
         $sortOrder      = $this->request->getGet('sort_order') ?: 'ASC';
-        $month          = $this->request->getGet('month') ?: date('m');
-        $year           = $this->request->getGet('year') ?: date('Y');
+        $month = (int) ($this->request->getGet('month') ?: date('m'));
+        $year  = (int) ($this->request->getGet('year') ?: date('Y'));
+        if ($month < 1 || $month > 12) {
+            $month = (int) date('m');
+        }
+        if ($year < 2000 || $year > 2100) {
+            $year = (int) date('Y');
+        }
 
         // Tentukan apakah pakai data arsip atau stok real-time
-        $isArchived = $this->isArchivedPeriod((int) $month, (int) $year);
+        $isArchived = $this->isArchivedPeriod($month, $year);
         $products = $isArchived
-            ? $this->getArchivedStockReport((int) $month, (int) $year, $categoryFilter, $sortBy, $sortOrder)
+            ? $this->getArchivedStockReport($month, $year, $categoryFilter, $sortBy, $sortOrder)
             : $this->getCurrentStockReport($categoryFilter, $stockStatus, $sortBy, $sortOrder);
 
         $summary = [
@@ -70,6 +82,7 @@ class LaporanController extends BaseController
         $categories = $this->modelKategori->getActiveCategories();
 
         $data = [
+            'report_mode'        => $reportMode,
             'products'           => $products,
             'categories'         => $categories,
             'summary'            => $summary,
@@ -79,9 +92,10 @@ class LaporanController extends BaseController
                 'stock_status' => $stockStatus,
                 'sort_by'      => $sortBy,
                 'sort_order'   => $sortOrder,
-                'month'        => $month,
-                'year'         => $year,
-                'is_archived'  => $isArchived
+                'month'        => sprintf('%02d', $month),
+                'year'         => (string) $year,
+                'is_archived'  => $isArchived,
+                'archive_found' => !$isArchived || !empty($products),
             ]
         ];
 
@@ -103,6 +117,12 @@ class LaporanController extends BaseController
      */
     private function getArchivedStockReport(int $month, int $year, ?string $categoryFilter, string $sortBy, string $sortOrder): array
     {
+        $sortOrder = strtoupper($sortOrder) === 'DESC' ? 'DESC' : 'ASC';
+        $validSorts = ['name', 'current_stock', 'stock_value', 'category_name'];
+        if (!in_array($sortBy, $validSorts, true)) {
+            $sortBy = 'name';
+        }
+
         $db = \Config\Database::connect();
         $builder = $db->table('stock_opname_archives')
             ->select('
@@ -127,13 +147,39 @@ class LaporanController extends BaseController
             $builder->where('categories.id', $categoryFilter);
         }
 
-        // Sort by field yang valid
-        $validSorts = ['name', 'current_stock', 'stock_value', 'category_name'];
-        if (in_array($sortBy, $validSorts)) {
+        if (in_array($sortBy, $validSorts, true)) {
             $builder->orderBy($sortBy, $sortOrder);
         }
 
-        return $builder->get()->getResultArray();
+        $rows = $builder->get()->getResultArray();
+        if (!empty($rows)) {
+            return $rows;
+        }
+
+        // Fallback: baca langsung dari file Excel stock opname bulanan.
+        $excelRows = $this->getArchivedStockFromExcel($month, $year);
+        if (empty($excelRows)) {
+            return [];
+        }
+
+        if ($categoryFilter) {
+            $excelRows = array_values(array_filter($excelRows, static function (array $item) use ($categoryFilter): bool {
+                return isset($item['category_id']) && (string) $item['category_id'] === (string) $categoryFilter;
+            }));
+        }
+
+        usort($excelRows, static function (array $a, array $b) use ($sortBy, $sortOrder): int {
+            $left = $a[$sortBy] ?? '';
+            $right = $b[$sortBy] ?? '';
+            if (is_numeric($left) && is_numeric($right)) {
+                $cmp = ((float) $left) <=> ((float) $right);
+            } else {
+                $cmp = strcasecmp((string) $left, (string) $right);
+            }
+            return $sortOrder === 'DESC' ? -$cmp : $cmp;
+        });
+
+        return $excelRows;
     }
 
     /**
@@ -601,6 +647,8 @@ class LaporanController extends BaseController
     {
         $month = $month ?: ($this->request->getGet('month') ?: date('m'));
         $year  = $year ?: ($this->request->getGet('year') ?: date('Y'));
+        $month = (int) $month;
+        $year = (int) $year;
 
         // Jika ada file stock opname arsip untuk bulan/tahun tersebut,
         // langsung kirim file itu (tidak generate dari data stok saat ini)
@@ -616,7 +664,12 @@ class LaporanController extends BaseController
             exit;
         }
 
-        // Jika tidak ada arsip, baru generate berdasarkan stok saat ini
+        // Jika memilih bulan arsip tapi file/data arsip tidak ada, jangan fallback ke semua stok saat ini.
+        if ($this->isArchivedPeriod($month, $year)) {
+            return redirect()->back()->with('error', 'Data arsip stock opname untuk periode yang dipilih tidak ditemukan.');
+        }
+
+        // Untuk bulan berjalan, generate berdasarkan stok saat ini
         $products = $this->getStockReportData();
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -777,10 +830,16 @@ class LaporanController extends BaseController
      */
     private function exportStockPDF($month = null, $year = null)
     {
-        $products = $this->getStockReportData();
-
         $month = $month ?: ($this->request->getGet('month') ?: date('m'));
         $year  = $year ?: ($this->request->getGet('year') ?: date('Y'));
+        $month = (int) $month;
+        $year = (int) $year;
+
+        // Hormati periode arsip: jika tidak ada data arsip, jangan fallback ke data live lintas bulan.
+        $products = $this->getStockReportData();
+        if ($this->isArchivedPeriod($month, $year) && empty($products)) {
+            return redirect()->back()->with('error', 'Data arsip stock opname untuk periode yang dipilih tidak ditemukan.');
+        }
 
         $tanggal = $this->formatTanggalIndonesia($year . '-' . $month . '-01');
         $periodeUpper = strtoupper($tanggal);
@@ -909,13 +968,104 @@ class LaporanController extends BaseController
         $year  = (int) ($this->request->getGet('year') ?: date('Y'));
         $categoryFilter = $this->request->getGet('category');
         $stockStatus    = $this->request->getGet('stock_status');
+        $sortBy         = $this->request->getGet('sort_by') ?: 'name';
+        $sortOrder      = $this->request->getGet('sort_order') ?: 'ASC';
 
         $isArchived = $this->isArchivedPeriod($month, $year);
 
         if ($isArchived) {
-            return $this->getArchivedStockReport($month, $year, $categoryFilter, 'name', 'ASC');
+            return $this->getArchivedStockReport($month, $year, $categoryFilter, $sortBy, $sortOrder);
         } else {
-            return $this->getCurrentStockReport($categoryFilter, $stockStatus, 'name', 'ASC');
+            return $this->getCurrentStockReport($categoryFilter, $stockStatus, $sortBy, $sortOrder);
+        }
+    }
+
+    /**
+     * Parse file excel stock opname bulanan menjadi dataset laporan.
+     */
+    private function getArchivedStockFromExcel(int $month, int $year): array
+    {
+        $file = $this->findArchivedStockOpnameExcel($month, $year);
+        if (!$file || !is_file($file)) {
+            return [];
+        }
+
+        try {
+            $spreadsheet = IOFactory::load($file);
+            $sheet = $spreadsheet->getActiveSheet();
+            $highestRow = $sheet->getHighestDataRow();
+            $rows = [];
+
+            // Template dokumen stock opname dimulai dari row 12.
+            for ($r = 12; $r <= $highestRow; $r++) {
+                $name = trim((string) $sheet->getCell('B' . $r)->getCalculatedValue());
+                $qtyRaw = $sheet->getCell('C' . $r)->getCalculatedValue();
+                $priceRaw = $sheet->getCell('D' . $r)->getCalculatedValue();
+                $totalRaw = $sheet->getCell('E' . $r)->getCalculatedValue();
+                $goodRaw = trim((string) $sheet->getCell('F' . $r)->getCalculatedValue());
+                $damagedRaw = $sheet->getCell('G' . $r)->getCalculatedValue();
+
+                $normalizedName = strtoupper(preg_replace('/\s+/', ' ', $name));
+                $nonStockPatterns = [
+                    'MENGETAHUI',
+                    'A.N DEKAN',
+                    'WAKIL DEKAN BIDANG UMUM DAN KEUANGAN',
+                    'BETHA NURINA SARI',
+                    'NIP.',
+                ];
+
+                if ($name === '' || strcasecmp($name, 'TOTAL') === 0) {
+                    continue;
+                }
+
+                // Skip baris non-stok (ttd, pejabat, NIP, dll)
+                $isNonStockRow = false;
+                foreach ($nonStockPatterns as $pattern) {
+                    if (str_contains($normalizedName, $pattern)) {
+                        $isNonStockRow = true;
+                        break;
+                    }
+                }
+                if ($isNonStockRow) {
+                    continue;
+                }
+
+                // Baris stok valid harus punya kolom jumlah numerik.
+                if (!is_numeric($qtyRaw)) {
+                    continue;
+                }
+
+                $qty = (int) round((float) $qtyRaw);
+                $price = (float) $priceRaw;
+                $total = (float) $totalRaw;
+                if ($total <= 0 && $qty > 0 && $price > 0) {
+                    $total = $qty * $price;
+                }
+
+                $goodQty = strtoupper($goodRaw) === 'V' ? $qty : 0;
+                $damagedQty = is_numeric($damagedRaw) ? (int) round((float) $damagedRaw) : 0;
+
+                $rows[] = [
+                    'product_id' => null,
+                    'name' => $name,
+                    'current_stock' => $qty,
+                    'price' => $price,
+                    'stock_value' => $total,
+                    'stock_status' => $qty <= 0 ? 'out_of_stock' : 'normal',
+                    'min_stock' => 0,
+                    'category_name' => 'Arsip Stock Opname',
+                    'category_id' => null,
+                    'unit' => 'Pcs',
+                    'sku' => '-',
+                    'stock_baik' => $goodQty,
+                    'stock_rusak' => $damagedQty,
+                ];
+            }
+
+            return $rows;
+        } catch (\Throwable $e) {
+            log_message('error', 'Gagal membaca arsip stock opname excel: ' . $e->getMessage());
+            return [];
         }
     }
 
@@ -1109,7 +1259,7 @@ class LaporanController extends BaseController
         $sheet->getStyle('A7')->getAlignment()->setHorizontal($alignment::HORIZONTAL_CENTER);
 
         // Table Headers
-        $headers = ['No', 'Tanggal', 'Nama Barang', 'SKU', 'Kategori', 'Tipe', 'Jumlah', 'Keterangan'];
+        $headers = ['No', 'Tanggal', 'Nama Barang', 'Kode Barang', 'Kategori', 'Tipe', 'Jumlah', 'Keterangan'];
         $col = 'A';
         foreach ($headers as $header) {
             $sheet->setCellValue($col . '10', $header);
@@ -1254,7 +1404,7 @@ class LaporanController extends BaseController
                         <th width="5%">No</th>
                         <th width="15%">Tanggal</th>
                         <th width="25%">Nama Barang</th>
-                        <th width="10%">SKU</th>
+                        <th width="10%">Kode Barang</th>
                         <th width="15%">Kategori</th>
                         <th width="8%">Tipe</th>
                         <th width="8%">Jumlah</th>

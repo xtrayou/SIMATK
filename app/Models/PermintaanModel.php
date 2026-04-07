@@ -14,6 +14,7 @@ class PermintaanModel extends Model
         'borrower_identifier',
         'borrower_unit',
         'email',
+        'receipt_code',
         'request_date',
         'due_date',
         'status',

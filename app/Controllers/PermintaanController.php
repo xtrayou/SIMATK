@@ -26,25 +26,112 @@ class PermintaanController extends BaseController
         $this->modelNotifikasi  = new NotifikasiModel();
     }
 
+    private function appendResiToUrl(string $url, string $kodeResi): string
+    {
+        $fragment = '';
+        if (str_contains($url, '#')) {
+            [$url, $frag] = explode('#', $url, 2);
+            $fragment = '#' . $frag;
+        }
+
+        $separator = str_contains($url, '?') ? '&' : '?';
+        return $url . $separator . 'resi=' . rawurlencode($kodeResi) . $fragment;
+    }
+
+    private function generateUniqueReceiptCode(): string
+    {
+        do {
+            $kode = date('Ymd-His'); // format: YYYYMMDD-HHMMSS
+            $exists = $this->modelPermintaan->where('receipt_code', $kode)->countAllResults() > 0;
+            if ($exists) {
+                sleep(1);
+            }
+        } while ($exists);
+
+        return $kode;
+    }
+
+    private function generateReceiptCodeFromTimestamp(int $timestamp): string
+    {
+        return date('Ymd-His', $timestamp);
+    }
+
+    private function ensureUniqueReceiptCodeForRow(string $candidate, int $excludeId, int $baseTimestamp): string
+    {
+        $code = $candidate;
+        $ts = $baseTimestamp;
+
+        while (
+            $this->modelPermintaan
+                ->where('receipt_code', $code)
+                ->where('id !=', $excludeId)
+                ->countAllResults() > 0
+        ) {
+            $ts++;
+            $code = $this->generateReceiptCodeFromTimestamp($ts);
+        }
+
+        return $code;
+    }
+
+    private function backfillMissingReceiptCodes(): void
+    {
+        $rows = $this->modelPermintaan
+            ->select('id, created_at')
+            ->groupStart()
+            ->where('receipt_code IS NULL', null, false)
+            ->orWhere('receipt_code', '')
+            ->groupEnd()
+            ->findAll();
+
+        if (empty($rows)) {
+            return;
+        }
+
+        foreach ($rows as $row) {
+            $timestamp = !empty($row['created_at']) ? strtotime((string) $row['created_at']) : time();
+            if ($timestamp === false) {
+                $timestamp = time();
+            }
+
+            $candidate = $this->generateReceiptCodeFromTimestamp($timestamp);
+            $uniqueCode = $this->ensureUniqueReceiptCodeForRow($candidate, (int) $row['id'], $timestamp);
+
+            $this->modelPermintaan->update((int) $row['id'], [
+                'receipt_code' => $uniqueCode,
+            ]);
+        }
+    }
+
     /**
      * Show request list
      */
     public function index()
     {
         $this->setPageData('Daftar Permintaan', 'Manajemen permintaan dan distribusi ATK');
+        $this->backfillMissingReceiptCodes();
 
         $status = $this->request->getGet('status');
+        $filterResi = trim((string) $this->request->getGet('resi'));
         $builder = $this->modelPermintaan->orderBy('created_at', 'DESC');
 
         if ($status) {
             $builder->where('status', $status);
         }
 
+        if ($filterResi !== '') {
+            $builder->groupStart()
+                ->like('receipt_code', $filterResi)
+                ->orLike('id', preg_replace('/\D+/', '', $filterResi))
+                ->groupEnd();
+        }
+
         $requests = $builder->findAll();
 
         $data = [
             'daftarPinjaman' => $requests,
-            'filterStatus'   => $status
+            'filterStatus'   => $status,
+            'filterResi'     => $filterResi,
         ];
 
         return $this->render('requests/index', $data);
@@ -88,11 +175,13 @@ class PermintaanController extends BaseController
         $db->transStart();
 
         try {
+            $kodeResi = $this->generateUniqueReceiptCode();
             $requestId = $this->modelPermintaan->insert([
                 'borrower_name'       => $this->request->getPost('borrower_name'),
                 'borrower_identifier' => $this->request->getPost('borrower_identifier'),
                 'borrower_unit'       => $this->request->getPost('borrower_unit'),
                 'email'               => $this->request->getPost('email'),
+                'receipt_code'        => $kodeResi,
                 'request_date'        => $this->request->getPost('request_date') ?: date('Y-m-d'),
                 'status'              => 'requested',
                 'notes'               => $this->request->getPost('notes'),
@@ -118,6 +207,7 @@ class PermintaanController extends BaseController
             }
 
             $redirectUrl = $this->request->getPost('_redirect') ?: '/requests';
+            $redirectUrlDenganResi = $this->appendResiToUrl($redirectUrl, $kodeResi);
 
             // Kirim notifikasi permintaan baru
             try {
@@ -129,7 +219,9 @@ class PermintaanController extends BaseController
                 log_message('error', 'Gagal kirim notifikasi permintaan baru: ' . $e->getMessage());
             }
 
-            return redirect()->to($redirectUrl)->with('success', 'Permintaan berhasil diajukan.');
+            return redirect()->to($redirectUrlDenganResi)
+                ->with('success', 'Permintaan berhasil diajukan.')
+                ->with('kode_resi', $kodeResi);
         } catch (Exception $e) {
             $db->transRollback();
             return redirect()->back()->withInput()->with('error', $e->getMessage());
@@ -181,6 +273,21 @@ class PermintaanController extends BaseController
         $dataPermintaan = $this->modelPermintaan->find($id);
         if (!$dataPermintaan) {
             return $this->jsonResponse(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
+        }
+
+        // Hindari distribusi ganda: jika mutasi REQ-{id} sudah ada, cukup sinkronkan status.
+        $existingDistribution = $this->modelMutasiStok
+            ->where('type', 'OUT')
+            ->where('reference_no', 'REQ-' . $id)
+            ->countAllResults();
+        if ($existingDistribution > 0) {
+            if (($dataPermintaan['status'] ?? '') !== 'distributed') {
+                $this->modelPermintaan->update($id, ['status' => 'distributed']);
+            }
+            return $this->jsonResponse([
+                'status' => true,
+                'message' => 'Permintaan sudah pernah didistribusikan. Status disinkronkan ke didistribusikan.',
+            ]);
         }
 
         if ($dataPermintaan['status'] !== 'approved') {
@@ -334,11 +441,13 @@ class PermintaanController extends BaseController
         $db->transStart();
 
         try {
+            $kodeResi = $this->generateUniqueReceiptCode();
             $requestId = $this->modelPermintaan->insert([
                 'borrower_name'       => $this->request->getPost('borrower_name'),
                 'borrower_identifier' => $this->request->getPost('borrower_identifier'),
                 'borrower_unit'       => $this->request->getPost('borrower_unit'),
                 'email'               => $this->request->getPost('email'),
+                'receipt_code'        => $kodeResi,
                 'request_date'        => $this->request->getPost('request_date') ?: date('Y-m-d'),
                 'status'              => 'requested',
                 'notes'               => $this->request->getPost('notes'),
@@ -362,6 +471,8 @@ class PermintaanController extends BaseController
                 throw new Exception('Gagal menyimpan data ke database.');
             }
 
+            $redirectUrl = $this->request->getPost('_redirect');
+
             // Kirim notifikasi ke admin
             try {
                 $dataPermintaan = $this->modelPermintaan->find($requestId);
@@ -372,7 +483,17 @@ class PermintaanController extends BaseController
                 log_message('error', 'Gagal kirim notifikasi permintaan publik: ' . $e->getMessage());
             }
 
-            return redirect()->to('/ask/success')->with('request_id', $requestId)->with('borrower_name', $this->request->getPost('borrower_name'));
+            if (!empty($redirectUrl)) {
+                $redirectUrlDenganResi = $this->appendResiToUrl($redirectUrl, $kodeResi);
+                return redirect()->to($redirectUrlDenganResi)
+                    ->with('success', 'Permintaan berhasil diajukan.')
+                    ->with('kode_resi', $kodeResi);
+            }
+
+            return redirect()->to('/ask/success')
+                ->with('request_id', $requestId)
+                ->with('borrower_name', $this->request->getPost('borrower_name'))
+                ->with('kode_resi', $kodeResi);
         } catch (Exception $e) {
             $db->transRollback();
             return redirect()->back()->withInput()->with('error', $e->getMessage());

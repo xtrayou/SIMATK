@@ -19,9 +19,9 @@
                 <li class="nav-item me-3">
                     <form class="d-flex" method="get" action="<?= base_url('/products') ?>">
                         <input class="form-control form-control-sm"
-                               type="search"
-                               name="search"
-                               placeholder="Cari...">
+                            type="search"
+                            name="search"
+                            placeholder="Cari...">
                     </form>
                 </li>
 
@@ -42,7 +42,9 @@
                                 Pengaturan
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <form method="post" action="<?= base_url('/auth/logout') ?>">
                                 <?= csrf_field() ?>

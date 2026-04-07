@@ -27,6 +27,7 @@
                                     id="name"
                                     name="name"
                                     value="<?= old('name', $produk['name']) ?>"
+                                    list="nama_barang_list" autocomplete="off"
                                     required>
                                 <?php if (session('errors.name')): ?>
                                     <div class="invalid-feedback"><?= session('errors.name') ?></div>
@@ -52,12 +53,14 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="sku" class="form-label fw-bold">SKU / Kode Barang <span class="text-danger">*</span></label>
+                                <label for="sku" class="form-label fw-bold">Kode Barang <span class="text-danger">*</span></label>
                                 <input type="text"
                                     class="form-control <?= (session('errors.sku')) ? 'is-invalid' : '' ?>"
                                     id="sku"
                                     name="sku"
                                     value="<?= old('sku', $produk['sku']) ?>"
+                                    placeholder="Ketik/Pilih Kode Barang..."
+                                    list="kode_barang_list" autocomplete="off"
                                     required>
                                 <?php if (session('errors.sku')): ?>
                                     <div class="invalid-feedback"><?= session('errors.sku') ?></div>
@@ -194,6 +197,55 @@
 <?= $this->section('scripts') ?>
 <script>
     $(document).ready(function() {
+        $.getJSON('<?= base_url("api/kode-barang") ?>', function(data) {
+            const skuList = $('<datalist id="kode_barang_list"></datalist>');
+            const nameList = $('<datalist id="nama_barang_list"></datalist>');
+            data.forEach(item => {
+                skuList.append(`<option value="${item.kode}"> ${item.nama}</option>`);
+                nameList.append(`<option value="${item.nama}"> ${item.kode}</option>`);
+            });
+            $('body').append(skuList).append(nameList);
+
+            function autoSelectCategory(kode) {
+                if (kode.length >= 3) {
+                    const parentKode = kode.substring(0, kode.length - 3) + '000';
+                    const parentMatch = data.find(item => item.kode === parentKode);
+                    if (parentMatch) {
+                        const parentName = parentMatch.nama.trim().toUpperCase();
+                        $('#category_id option').each(function() {
+                            if ($(this).text().trim().toUpperCase() === parentName) {
+                                $(this).prop('selected', true).trigger('change');
+                            }
+                        });
+                    }
+                }
+            }
+
+            $('#sku').on('change', function() {
+                const val = $(this).val();
+                const matched = data.find(item => item.kode === val);
+                if (matched) {
+                    if ($('#name').val() === '') {
+                        $('#name').val(matched.nama).trigger('input');
+                    }
+                    autoSelectCategory(matched.kode);
+                }
+            });
+
+            $('#name').on('change', function() {
+                const val = $(this).val();
+                const matched = data.find(item => item.nama === val);
+                if (matched) {
+                    if ($('#sku').val() === '') {
+                        $('#sku').val(matched.kode).trigger('change');
+                    }
+                    autoSelectCategory(matched.kode);
+                }
+            });
+        }).fail(function() {
+            console.warn("Gagal memuat data kode barang dari API");
+        });
+
         $('#productForm').on('submit', function() {
             $('#btnSubmit').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Memperbarui...');
         });

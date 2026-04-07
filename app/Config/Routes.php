@@ -30,6 +30,11 @@ $routes->group('categories', ['filter' => 'auth'], function ($routes) {
     $routes->delete('delete/(:num)', 'KategoriController::delete/$1');
 });
 
+//kode barang
+$routes->group('kode-barang', ['filter' => 'auth'], function ($routes) {
+    $routes->get('/', 'KodeBarangController::index');
+});
+
 //product
 $routes->group('products', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'ProdukController::index');
@@ -37,7 +42,7 @@ $routes->group('products', ['filter' => 'auth'], function ($routes) {
     $routes->get('show/(:num)', 'ProdukController::show/$1');
     $routes->post('save', 'ProdukController::save');
     $routes->get('edit/(:num)', 'ProdukController::edit/$1');
-    $routes->post('delete/(:num)', 'ProdukController::delete/$1');
+    $routes->match(['post', 'delete'], 'delete/(:num)', 'ProdukController::delete/$1');
     $routes->post('generate-sku', 'ProdukController::generateSKU');
 
     // Procucts export routes
@@ -81,6 +86,7 @@ $routes->group('api', ['filter' => 'auth'], function ($routes) {
     $routes->get('categories/active', 'Api\KategoriController::getActive');
     $routes->get('product/(:num)/info', 'Api\StokController::getProductInfo/$1');
     $routes->get('alerts/count', 'Api\StokController::getAlertsCount');
+    $routes->get('kode-barang', 'Api\KodeBarangController::index');
     $routes->post('bulk/in', 'Api\StokController::bulkStockIn');
     $routes->post('bulk/out', 'Api\StokController::bulkStockOut');
 });
@@ -88,6 +94,7 @@ $routes->group('api', ['filter' => 'auth'], function ($routes) {
 // Products API routes
 $routes->group('api/products', ['filter' => 'auth'], function ($routes) {
     $routes->get('search', 'Api\ProdukController::search');
+    $routes->get('autofill', 'Api\ProdukController::autofill');
     $routes->get('stock-status/(:num)', 'Api\ProdukController::getStockStatus/$1');
     $routes->get('by-category/(:num)', 'Api\ProdukController::getByCategory/$1');
 });

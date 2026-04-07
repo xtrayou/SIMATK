@@ -13,17 +13,18 @@
                         <p class="text-muted small mb-0">Halaman pengelolaan distribusi barang ke unit kerja</p>
                     </div>
                     <div class="d-flex gap-2">
-                        <form method="GET" class="d-flex gap-2 align-items-center">
-                            <select name="status" class="form-select form-select-sm" style="min-width: 150px;">
+                        <form method="GET" class="d-flex gap-2 align-items-center" id="requestFilterForm">
+                            <input type="text" name="resi" class="form-control form-control-sm"
+                                style="min-width: 210px;"
+                                placeholder="Cari kode resi (contoh: 20260407-134530)"
+                                value="<?= esc($filterResi ?? '') ?>">
+                            <select name="status" class="form-select form-select-sm" style="min-width: 150px;" id="statusFilterSelect" onchange="this.form.submit()">
                                 <option value="">Semua Status</option>
                                 <option value="requested" <?= $filterStatus == 'requested' ? 'selected' : '' ?>>Diajukan</option>
                                 <option value="approved" <?= $filterStatus == 'approved' ? 'selected' : '' ?>>Disetujui</option>
                                 <option value="distributed" <?= $filterStatus == 'distributed' ? 'selected' : '' ?>>Didistribusikan</option>
                                 <option value="cancelled" <?= $filterStatus == 'cancelled' ? 'selected' : '' ?>>Dibatalkan</option>
                             </select>
-                            <button type="submit" class="btn btn-sm btn-light border">
-                                <i class="bi bi-filter"></i>
-                            </button>
                         </form>
                         <a href="<?= base_url('/requests/create') ?>" class="btn btn-primary btn-sm px-3">
                             <i class="bi bi-plus-lg me-1"></i> Buat Baru
@@ -53,6 +54,7 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th class="ps-4" width="60">ID</th>
+                                    <th width="180">Kode Resi</th>
                                     <th>Informasi Pemohon</th>
                                     <th>Tgl Pengajuan</th>
                                     <th>Status</th>
@@ -63,6 +65,11 @@
                                 <?php foreach ($daftarPinjaman as $p): ?>
                                     <tr>
                                         <td class="ps-4 fw-bold text-muted">#<?= $p['id'] ?></td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">
+                                                <?= esc($p['receipt_code'] ?? '-') ?>
+                                            </span>
+                                        </td>
                                         <td>
                                             <div class="fw-bold"><?= esc($p['borrower_name']) ?></div>
                                             <div class="text-muted small"><?= esc($p['borrower_unit']) ?></div>
@@ -128,6 +135,15 @@
                 [0, 'desc']
             ]
         });
+
+        // Auto submit filter saat status dipilih agar langsung dieksekusi.
+        const statusSelect = document.getElementById('statusFilterSelect');
+        const filterForm = document.getElementById('requestFilterForm');
+        if (statusSelect && filterForm) {
+            statusSelect.addEventListener('change', function() {
+                filterForm.submit();
+            });
+        }
     });
 </script>
 <?= $this->endSection() ?>

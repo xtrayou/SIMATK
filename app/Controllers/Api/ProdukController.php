@@ -43,6 +43,80 @@ class ProdukController extends BaseController
     }
 
     /**
+     * GET /api/products/autofill?kode=... atau ?nama=...
+     */
+    public function autofill()
+    {
+        $kode = trim((string) ($this->request->getGet('kode') ?? ''));
+        $nama = trim((string) ($this->request->getGet('nama') ?? ''));
+
+        if ($kode === '' && $nama === '') {
+            return $this->jsonResponse([
+                'status'  => false,
+                'message' => 'Parameter kode atau nama wajib diisi.',
+            ], 400);
+        }
+
+        $query = $this->modelProduk
+            ->select('id, sku, name, unit, price, current_stock, min_stock')
+            ->where('is_active', true);
+
+        if ($kode !== '') {
+            if (strlen($kode) < 3) {
+                return $this->jsonResponse([
+                    'status'  => false,
+                    'message' => 'Minimal 3 karakter untuk pencarian kode.',
+                ], 400);
+            }
+
+            $query->groupStart()
+                ->where('sku', $kode)
+                ->orLike('sku', $kode, 'after')
+                ->groupEnd()
+                ->orderBy('CASE WHEN sku = ' . $this->modelProduk->escape($kode) . ' THEN 0 ELSE 1 END', '', false)
+                ->orderBy('sku', 'ASC');
+        }
+
+        if ($nama !== '') {
+            if (strlen($nama) < 3) {
+                return $this->jsonResponse([
+                    'status'  => false,
+                    'message' => 'Minimal 3 karakter untuk pencarian nama.',
+                ], 400);
+            }
+
+            $query->groupStart()
+                ->where('name', $nama)
+                ->orLike('name', $nama)
+                ->groupEnd()
+                ->orderBy('CASE WHEN name = ' . $this->modelProduk->escape($nama) . ' THEN 0 ELSE 1 END', '', false)
+                ->orderBy('name', 'ASC');
+        }
+
+        $product = $query->first();
+
+        if (!$product) {
+            return $this->jsonResponse([
+                'status'  => false,
+                'message' => 'Data barang tidak ditemukan.',
+            ], 404);
+        }
+
+        return $this->jsonResponse([
+            'status' => true,
+            'data'   => [
+                'id'            => (int) ($product['id'] ?? 0),
+                'kode_barang'   => (string) ($product['sku'] ?? ''),
+                'nama_barang'   => (string) ($product['name'] ?? ''),
+                'satuan'        => (string) ($product['unit'] ?? ''),
+                'harga'         => (float) ($product['price'] ?? 0),
+                'stok'          => (int) ($product['current_stock'] ?? 0),
+                'stok_minimum'  => (int) ($product['min_stock'] ?? 0),
+            ],
+        ]);
+    }
+
+    /**
      * GET /api/products/stock-status/{id}
      */
     public function getStockStatus($id)
@@ -94,4 +168,3 @@ class ProdukController extends BaseController
         ]);
     }
 }
-

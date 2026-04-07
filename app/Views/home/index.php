@@ -16,11 +16,11 @@
 
     <style>
         :root {
-            --primary-color: #52525b;
-            --primary-light: #facc15;
-            --primary-dark: #3f3f46;
+            --primary-color: #00b8d4;
+            --primary-light: #00e5ff;
+            --primary-dark: #00838f;
             --secondary-color: #71717a;
-            --accent-color: #eab308;
+            --accent-color: #00d4e6;
             --dark-color: #18181b;
             --light-color: #f5f5f4;
         }
@@ -51,7 +51,7 @@
             left: -4px;
             right: -4px;
             height: 35%;
-            background: rgba(250, 204, 21, 0.35);
+            background: rgba(0, 229, 255, 0.25);
             border-radius: 4px;
             z-index: -1;
             transform: skewX(-3deg);
@@ -113,7 +113,7 @@
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(82, 82, 91, 0.35);
+            box-shadow: 0 5px 20px rgba(0, 184, 212, 0.4);
         }
 
         /* ── Hero ── */
@@ -217,14 +217,14 @@
         .features-section,
         .how-section {
             padding: 100px 0;
-            background: linear-gradient(135deg, #f5f5f4, #fef9c3, #f4f4f5);
+            background: linear-gradient(135deg, #f5f5f4, #e0f7fa, #f4f4f5);
             position: relative;
             overflow: hidden;
         }
 
         .about-section {
             padding: 100px 0;
-            background: linear-gradient(135deg, #ffffff, #fafaf9, #fefce8);
+            background: linear-gradient(135deg, #ffffff, #fafaf9, #f0fcff);
         }
 
         .contact-section {
@@ -299,27 +299,27 @@
         }
 
         .feature-icon.purple {
-            background: linear-gradient(135deg, #3f3f46, #71717a);
+            background: linear-gradient(135deg, #18181b, #424242);
             color: white;
             box-shadow: 0 10px 30px rgba(82, 82, 91, 0.3);
         }
 
         .feature-icon.blue {
-            background: linear-gradient(135deg, #eab308, #fde047);
-            color: #18181b;
-            box-shadow: 0 10px 30px rgba(234, 179, 8, 0.3);
+            background: linear-gradient(135deg, #00838f, #00e5ff);
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.3);
         }
 
         .feature-icon.green {
-            background: linear-gradient(135deg, #52525b, #a1a1aa);
+            background: linear-gradient(135deg, #37474f, #78909c);
             color: white;
             box-shadow: 0 10px 30px rgba(82, 82, 91, 0.3);
         }
 
         .feature-icon.orange {
-            background: linear-gradient(135deg, #ca8a04, #facc15);
-            color: #18181b;
-            box-shadow: 0 10px 30px rgba(202, 138, 4, 0.3);
+            background: linear-gradient(135deg, #006064, #00bcd4);
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 188, 212, 0.3);
         }
 
         .feature-card h4 {
@@ -339,7 +339,7 @@
         /* Stats */
         .stats-section {
             padding: 80px 0;
-            background: linear-gradient(135deg, #27272a, #3f3f46, #52525b, #71717a, #ca8a04);
+            background: linear-gradient(135deg, #18181b, #1a1a2e, #16213e, #00838f, #00e5ff);
             position: relative;
             overflow: hidden;
         }
@@ -366,7 +366,7 @@
         /* Peminjaman */
         .peminjaman-section {
             padding: 100px 0;
-            background: linear-gradient(135deg, #fafaf9, #fef9c3, #f4f4f5);
+            background: linear-gradient(135deg, #fafaf9, #e0f7fa, #f4f4f5);
             position: relative;
             overflow: hidden;
         }
@@ -403,7 +403,7 @@
         .peminjaman-form .form-control:focus,
         .peminjaman-form .form-select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(82, 82, 91, 0.15);
+            box-shadow: 0 0 0 0.2rem rgba(0, 184, 212, 0.2);
         }
 
         .peminjaman-form .btn-submit {
@@ -418,18 +418,18 @@
 
         .peminjaman-form .btn-submit:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(82, 82, 91, 0.35);
+            box-shadow: 0 10px 30px rgba(0, 184, 212, 0.4);
         }
 
         .peminjaman-info {
-            background: linear-gradient(135deg, #27272a, #3f3f46, #52525b, #ca8a04);
+            background: linear-gradient(135deg, #18181b, #1a1a2e, #16213e, #00b8d4);
             border-radius: 24px;
             padding: 45px;
             color: white;
             height: 100%;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 15px 40px rgba(82, 82, 91, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 184, 212, 0.3);
         }
 
         .peminjaman-info h4 {
@@ -594,7 +594,7 @@
 
         /* Footer */
         .footer {
-            background: linear-gradient(135deg, #18181b, #3f3f46, #ca8a04);
+            background: linear-gradient(135deg, #18181b, #1e1e2e, #00838f);
             padding: 40px 0 20px;
             color: white;
         }
@@ -661,6 +661,45 @@
             border: none;
         }
 
+        .resi-modal-content {
+            border: none;
+            border-radius: 22px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fdff, #ffffff);
+            box-shadow: 0 20px 50px rgba(0, 131, 143, 0.2);
+        }
+
+        .resi-modal-header {
+            border-bottom: 1px solid rgba(0, 184, 212, 0.15);
+            background: linear-gradient(135deg, rgba(0, 184, 212, 0.08), rgba(0, 229, 255, 0.08));
+        }
+
+        .resi-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 184, 212, 0.12);
+            color: var(--primary-dark);
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .resi-code-box {
+            border: 2px dashed rgba(0, 184, 212, 0.35);
+            background: #f1fdff;
+            border-radius: 14px;
+            padding: 16px 14px;
+            text-align: center;
+            font-size: 1.45rem;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: #006064;
+            word-break: break-all;
+        }
+
         .modal-header {
             border-bottom: none;
             padding: 30px 30px 0;
@@ -684,7 +723,7 @@
 
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(82, 82, 91, 0.1);
+            box-shadow: 0 0 0 0.2rem rgba(0, 184, 212, 0.15);
         }
 
         .btn-login-submit {
@@ -698,7 +737,7 @@
 
         .btn-login-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(82, 82, 91, 0.35);
+            box-shadow: 0 5px 20px rgba(0, 184, 212, 0.4);
         }
 
         /* Floating Services Button */
@@ -803,7 +842,7 @@
 
         .scroll-top:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(82, 82, 91, 0.35);
+            box-shadow: 0 10px 30px rgba(0, 184, 212, 0.4);
         }
 
         .input-group-text {
@@ -913,7 +952,7 @@
     <section class="features-section" id="fitur">
         <div class="container">
             <div class="text-center" data-aos="fade-up">
-                <span class="badge px-4 py-2 rounded-pill" style="font-size:1.05rem;font-weight:600;background:#fef3c7;color:#3f3f46;">Fitur Sistem</span>
+                <span class="badge px-4 py-2 rounded-pill" style="font-size:1.05rem;font-weight:600;background:#e0f7fa;color:#006064;">Fitur Sistem</span>
                 <h2 class="section-title mt-2">Fitur <span class="font-accent">Unggulan</span></h2>
                 <p class="section-subtitle">Sistem inventaris <span class="font-accent">modern</span> untuk kemudahan pengelolaan</p>
             </div>
@@ -980,8 +1019,9 @@
                 <!-- Form -->
                 <div class="col-lg-7" data-aos="fade-right">
                     <div class="peminjaman-card">
-                        <form class="peminjaman-form" action="<?= base_url('requests/store') ?>" method="post" id="formPermintaan">
+                        <form class="peminjaman-form" action="<?= base_url('ask/store') ?>" method="post" id="formPermintaan">
                             <?= csrf_field() ?>
+                            <input type="hidden" name="_redirect" value="<?= current_url() . '#permintaan' ?>">
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -1042,21 +1082,37 @@
                                 <label for="barangDiminta" class="form-label">
                                     <i class="bi bi-box-seam me-1"></i>Barang yang Diminta <span class="text-danger">*</span>
                                 </label>
-                                <select class="form-select" id="barangDiminta" name="product_id" required>
-                                    <option value="">Pilih Barang</option>
+                                <?php
+                                $oldProductId = (string) old('product_id');
+                                $oldProductName = '';
+                                foreach ($daftarProduk as $produk) {
+                                    if ((string) $produk['id'] === $oldProductId) {
+                                        $oldProductName = $produk['name'];
+                                        break;
+                                    }
+                                }
+                                ?>
+                                <input type="text"
+                                    class="form-control"
+                                    id="barangDiminta"
+                                    list="daftarBarangAutocomplete"
+                                    value="<?= esc($oldProductName) ?>"
+                                    placeholder="Ketik nama barang untuk cari otomatis..."
+                                    autocomplete="off"
+                                    required>
+                                <input type="hidden" id="barangDimintaId" name="product_id" value="<?= esc($oldProductId) ?>">
+                                <datalist id="daftarBarangAutocomplete">
                                     <?php foreach ($daftarProduk as $produk): ?>
-                                        <option value="<?= $produk['id'] ?>"
+                                        <option value="<?= esc($produk['name']) ?>"
+                                            data-id="<?= $produk['id'] ?>"
                                             data-kategori="<?= $produk['category_id'] ?>"
                                             data-stok="<?= $produk['current_stock'] ?>"
                                             data-satuan="<?= esc($produk['unit']) ?>"
-                                            <?= old('product_id') == $produk['id'] ? 'selected' : '' ?>
-                                            <?= $produk['current_stock'] <= 0 ? 'disabled' : '' ?>>
-                                            <?= esc($produk['name']) ?>
-                                            (Stok: <?= $produk['current_stock'] ?> <?= esc($produk['unit']) ?>)
-                                            <?= $produk['current_stock'] <= 0 ? '— Stok Habis' : '' ?>
+                                            data-tersedia="<?= $produk['current_stock'] > 0 ? '1' : '0' ?>"
+                                            label="Stok: <?= $produk['current_stock'] ?> <?= esc($produk['unit']) ?><?= $produk['current_stock'] <= 0 ? ' (Stok Habis)' : '' ?>">
                                         </option>
                                     <?php endforeach ?>
-                                </select>
+                                </datalist>
                                 <div id="infoStok" class="form-text text-muted mt-1"></div>
                             </div>
 
@@ -1149,8 +1205,8 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" style="max-width:100%;height:auto;">
                         <defs>
                             <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#52525b" />
-                                <stop offset="100%" style="stop-color:#facc15" />
+                                <stop offset="0%" style="stop-color:#00b8d4" />
+                                <stop offset="100%" style="stop-color:#00e5ff" />
                             </linearGradient>
                         </defs>
                         <rect x="50" y="50" width="400" height="300" rx="20" fill="url(#bgGrad)" opacity="0.1" />
@@ -1294,6 +1350,33 @@
         </div>
     </footer>
 
+    <!-- Modal Kode Resi -->
+    <div class="modal fade" id="modalKodeResi" tabindex="-1" aria-labelledby="judulModalKodeResi" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content resi-modal-content">
+                <div class="modal-header resi-modal-header">
+                    <h5 class="modal-title" id="judulModalKodeResi">
+                        <i class="bi bi-receipt-cutoff me-2" style="color:var(--primary-dark);"></i>Kode Resi Permintaan
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <span class="resi-badge"><i class="bi bi-info-circle"></i> Harap dicatat</span>
+                    <p class="mb-3">Permintaan berhasil dikirim. Simpan kode resi berikut untuk pelacakan status.</p>
+                    <div class="resi-code-box" id="resiCodeText">-</div>
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="button" class="btn btn-outline-info w-50" id="btnSalinResi">
+                            <i class="bi bi-clipboard me-1"></i>Salin Kode
+                        </button>
+                        <button type="button" class="btn btn-primary w-50" data-bs-dismiss="modal">
+                            <i class="bi bi-check2-circle me-1"></i>Baik
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Login -->
     <div class="modal fade" id="modalMasuk" tabindex="-1" aria-labelledby="judulModalMasuk" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -1371,6 +1454,45 @@
         });
 
         // ── Navbar scroll ────────────────────────────────────────────
+        <?php $kodeResiPopup = session()->getFlashdata('kode_resi') ?: service('request')->getGet('resi'); ?>
+        const kodeResiBaru = <?= json_encode($kodeResiPopup) ?>;
+        if (kodeResiBaru) {
+            setTimeout(() => {
+                const modalResiEl = document.getElementById('modalKodeResi');
+                const resiCodeText = document.getElementById('resiCodeText');
+                const btnSalinResi = document.getElementById('btnSalinResi');
+
+                if (resiCodeText) {
+                    resiCodeText.textContent = kodeResiBaru;
+                }
+
+                if (btnSalinResi) {
+                    btnSalinResi.addEventListener('click', async () => {
+                        try {
+                            await navigator.clipboard.writeText(kodeResiBaru);
+                            btnSalinResi.innerHTML = '<i class="bi bi-check2 me-1"></i>Tersalin';
+                        } catch (e) {
+                            btnSalinResi.innerHTML = '<i class="bi bi-x-circle me-1"></i>Gagal Salin';
+                        }
+                    }, {
+                        once: true
+                    });
+                }
+
+                if (modalResiEl) {
+                    const modalResi = new bootstrap.Modal(modalResiEl);
+                    modalResi.show();
+                }
+
+                // Bersihkan parameter ?resi=... agar modal tidak muncul lagi saat refresh.
+                const url = new URL(window.location.href);
+                if (url.searchParams.has('resi')) {
+                    url.searchParams.delete('resi');
+                    history.replaceState({}, document.title, url.toString());
+                }
+            }, 250);
+        }
+
         const navbar = document.getElementById('navbarUtama');
         window.addEventListener('scroll', () => {
             navbar.classList.toggle('scrolled', window.scrollY > 50);
@@ -1443,46 +1565,137 @@
 
         // ── Filter barang berdasarkan kategori ───────────────────────
         const selectKategori = document.getElementById('filterKategori');
-        const selectBarang = document.getElementById('barangDiminta');
+        const inputBarang = document.getElementById('barangDiminta');
+        const inputBarangId = document.getElementById('barangDimintaId');
+        const datalistBarang = document.getElementById('daftarBarangAutocomplete');
+        const inputJumlah = document.getElementById('jumlahDiminta');
         const infoStok = document.getElementById('infoStok');
 
-        if (selectKategori && selectBarang) {
-            selectKategori.addEventListener('change', function() {
-                const idKategori = this.value;
-                selectBarang.value = '';
-                infoStok.textContent = '';
+        const semuaBarang = datalistBarang ?
+            Array.from(datalistBarang.options).map((opt) => ({
+                id: String(opt.dataset.id || ''),
+                nama: String(opt.value || '').trim(),
+                kategori: String(opt.dataset.kategori || ''),
+                stok: Number(opt.dataset.stok || 0),
+                satuan: String(opt.dataset.satuan || ''),
+                tersedia: String(opt.dataset.tersedia || '0') === '1',
+            })) : [];
 
-                Array.from(selectBarang.options).forEach(opt => {
-                    if (!opt.value) return; // skip placeholder
-                    if (!idKategori || opt.dataset.kategori === idKategori) {
-                        opt.style.display = '';
-                    } else {
-                        opt.style.display = 'none';
-                    }
-                });
-            });
+        function renderDatalist(kategoriId = '') {
+            if (!datalistBarang) return;
+            const filtered = semuaBarang.filter((item) => !kategoriId || item.kategori === kategoriId);
+            datalistBarang.innerHTML = filtered.map((item) => {
+                const status = item.tersedia ? '' : ' (Stok Habis)';
+                const safeNama = item.nama
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+                const safeSatuan = item.satuan
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+
+                return `<option value="${safeNama}" label="Stok: ${item.stok} ${safeSatuan}${status}"></option>`;
+            }).join('');
         }
 
-        // ── Info stok saat barang dipilih ────────────────────────────
-        if (selectBarang) {
-            selectBarang.addEventListener('change', function() {
-                const opsi = this.options[this.selectedIndex];
-                if (opsi && opsi.value) {
-                    const stok = opsi.dataset.stok;
-                    const satuan = opsi.dataset.satuan;
-                    infoStok.textContent = `Stok tersedia: ${stok} ${satuan}`;
-                    infoStok.className = stok <= 0 ? 'form-text text-danger' : 'form-text text-success';
-                } else {
-                    infoStok.textContent = '';
+        function setInfoStok(message = '', className = 'form-text text-muted mt-1') {
+            if (!infoStok) return;
+            infoStok.textContent = message;
+            infoStok.className = className;
+        }
+
+        function sinkronBarangTerpilih() {
+            if (!inputBarang || !inputBarangId) return;
+
+            const keyword = inputBarang.value.trim();
+
+            if (!keyword) {
+                inputBarangId.value = '';
+                setInfoStok('');
+                if (inputJumlah) inputJumlah.removeAttribute('max');
+                return;
+            }
+
+            const keywordLower = keyword.toLowerCase();
+            const cocokParsial = semuaBarang.filter((item) => item.nama.toLowerCase().includes(keywordLower));
+            const ditemukan = semuaBarang.find((item) => item.nama.toLowerCase() === keywordLower);
+
+            // Autofill kategori: exact match diprioritaskan, fallback ke 1 hasil parsial.
+            const kandidatKategori = ditemukan ?? (cocokParsial.length === 1 ? cocokParsial[0] : null);
+            if (kandidatKategori && selectKategori && selectKategori.value !== kandidatKategori.kategori) {
+                selectKategori.value = kandidatKategori.kategori;
+                renderDatalist(kandidatKategori.kategori);
+            }
+
+            if (!ditemukan) {
+                inputBarangId.value = '';
+                setInfoStok('Pilih barang dari saran autocomplete agar data valid.', 'form-text text-danger mt-1');
+                if (inputJumlah) inputJumlah.removeAttribute('max');
+                return;
+            }
+
+            if (!ditemukan.tersedia || ditemukan.stok <= 0) {
+                inputBarangId.value = '';
+                setInfoStok('Barang ini stoknya habis. Pilih barang lain.', 'form-text text-danger mt-1');
+                if (inputJumlah) inputJumlah.removeAttribute('max');
+                return;
+            }
+
+            inputBarangId.value = ditemukan.id;
+            setInfoStok(`Stok tersedia: ${ditemukan.stok} ${ditemukan.satuan}`, 'form-text text-success mt-1');
+            if (inputJumlah) {
+                inputJumlah.setAttribute('max', String(ditemukan.stok));
+                if (Number(inputJumlah.value || 0) > ditemukan.stok) {
+                    inputJumlah.value = String(ditemukan.stok);
                 }
+            }
+        }
+
+        if (selectKategori) {
+            selectKategori.addEventListener('change', function() {
+                renderDatalist(this.value);
+                if (inputBarang) {
+                    inputBarang.value = '';
+                    inputBarang.setCustomValidity('');
+                }
+                if (inputBarangId) inputBarangId.value = '';
+                setInfoStok('');
+                if (inputJumlah) inputJumlah.removeAttribute('max');
             });
         }
+
+        if (inputBarang) {
+            inputBarang.addEventListener('input', sinkronBarangTerpilih);
+            inputBarang.addEventListener('change', sinkronBarangTerpilih);
+            inputBarang.addEventListener('blur', sinkronBarangTerpilih);
+        }
+
+        renderDatalist(selectKategori ? selectKategori.value : '');
+        sinkronBarangTerpilih();
 
         // ── Submit: disable tombol agar tidak double-submit ──────────
         const formPermintaan = document.getElementById('formPermintaan');
         const btnAjukan = document.getElementById('btnAjukan');
         if (formPermintaan) {
-            formPermintaan.addEventListener('submit', function() {
+            formPermintaan.addEventListener('submit', function(event) {
+                sinkronBarangTerpilih();
+
+                if (!inputBarangId || !inputBarangId.value) {
+                    event.preventDefault();
+                    if (inputBarang) {
+                        inputBarang.setCustomValidity('Silakan pilih barang dari daftar autocomplete.');
+                        inputBarang.reportValidity();
+                    }
+                    return;
+                }
+
+                if (inputBarang) {
+                    inputBarang.setCustomValidity('');
+                }
+
                 btnAjukan.disabled = true;
                 btnAjukan.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
             });
@@ -1504,3 +1717,4 @@
 </body>
 
 </html>
+

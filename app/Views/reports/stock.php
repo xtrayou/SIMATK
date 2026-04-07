@@ -2,6 +2,29 @@
 
 <?= $this->section('content'); ?>
 
+<?php
+$reportMode = $report_mode ?? 'stock';
+
+$baseQuery = [
+    'month'       => $filters['month'] ?? date('m'),
+    'year'        => $filters['year'] ?? date('Y'),
+    'category'    => $filters['category'] ?? '',
+    'stock_status' => $filters['stock_status'] ?? '',
+    'sort_by'     => $filters['sort_by'] ?? 'name',
+    'sort_order'  => $filters['sort_order'] ?? 'ASC',
+];
+
+$stockQuery = $baseQuery;
+$stockQuery['report_mode'] = 'stock';
+
+$opnameQuery = $baseQuery;
+unset($opnameQuery['stock_status']);
+$opnameQuery['report_mode'] = 'opname';
+
+$stockTabUrl = current_url() . '?' . http_build_query(array_filter($stockQuery, static fn($value) => $value !== '' && $value !== null));
+$opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery, static fn($value) => $value !== '' && $value !== null));
+?>
+
 <!-- Report Header -->
 <div class="row mb-4">
     <div class="col-12">
@@ -32,6 +55,31 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Mode Tabs -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <ul class="nav nav-pills" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link <?= $reportMode === 'stock' ? 'active' : '' ?>" href="<?= esc($stockTabUrl) ?>">
+                            <i class="bi bi-graph-up me-2"></i>Laporan Stok
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= $reportMode === 'opname' ? 'active' : '' ?>" href="<?= esc($opnameTabUrl) ?>">
+                            <i class="bi bi-clipboard2-check me-2"></i>Stock Opname
+                        </a>
+                    </li>
+                </ul>
+                <small class="text-muted">
+                    Mode aktif: <strong><?= $reportMode === 'opname' ? 'Stock Opname' : 'Laporan Stok' ?></strong>
+                </small>
             </div>
         </div>
     </div>
@@ -116,6 +164,7 @@
             </div>
             <div class="card-body">
                 <form method="GET" id="filterForm">
+                    <input type="hidden" name="report_mode" value="<?= esc($reportMode) ?>">
                     <div class="row">
                         <div class="col-md-2 mb-3">
                             <label for="month" class="form-label">Bulan</label>
@@ -143,24 +192,26 @@
                                 <?php endforeach ?>
                             </select>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="stock_status" class="form-label">Status Stok</label>
-                            <select class="form-select" id="stock_status" name="stock_status">
-                                <option value="">Semua Status</option>
-                                <option value="normal" <?= $filters['stock_status'] == 'normal' ? 'selected' : '' ?>>
-                                    Normal
-                                </option>
-                                <option value="low_stock" <?= $filters['stock_status'] == 'low_stock' ? 'selected' : '' ?>>
-                                    Stok Rendah
-                                </option>
-                                <option value="out_of_stock" <?= $filters['stock_status'] == 'out_of_stock' ? 'selected' : '' ?>>
-                                    Stok Habis
-                                </option>
-                                <option value="overstocked" <?= $filters['stock_status'] == 'overstocked' ? 'selected' : '' ?>>
-                                    Overstocked
-                                </option>
-                            </select>
-                        </div>
+                        <?php if ($reportMode === 'stock'): ?>
+                            <div class="col-md-3 mb-3">
+                                <label for="stock_status" class="form-label">Status Stok</label>
+                                <select class="form-select" id="stock_status" name="stock_status">
+                                    <option value="">Semua Status</option>
+                                    <option value="normal" <?= $filters['stock_status'] == 'normal' ? 'selected' : '' ?>>
+                                        Normal
+                                    </option>
+                                    <option value="low_stock" <?= $filters['stock_status'] == 'low_stock' ? 'selected' : '' ?>>
+                                        Stok Rendah
+                                    </option>
+                                    <option value="out_of_stock" <?= $filters['stock_status'] == 'out_of_stock' ? 'selected' : '' ?>>
+                                        Stok Habis
+                                    </option>
+                                    <option value="overstocked" <?= $filters['stock_status'] == 'overstocked' ? 'selected' : '' ?>>
+                                        Overstocked
+                                    </option>
+                                </select>
+                            </div>
+                        <?php endif; ?>
                         <div class="col-md-2 mb-3">
                             <label for="sort_by" class="form-label">Urutkan</label>
                             <select class="form-select" id="sort_by" name="sort_by">
@@ -194,8 +245,19 @@
         </div>
     </div>
 </div>
-<!-- Category Breakdown Chart -->
-<?php if (!empty($category_breakdown)): ?>
+<?php if (($filters['is_archived'] ?? false) && empty($products)): ?>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="alert alert-warning mb-0">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Data arsip stock opname untuk periode <strong><?= esc(($filters['month'] ?? date('m')) . '/' . ($filters['year'] ?? date('Y'))) ?></strong> tidak ditemukan.
+                Laporan periode ini tidak bisa dianggap valid sampai arsip bulan tersebut tersedia.
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+<?php if ($reportMode === 'stock' && !empty($category_breakdown)): ?>
+    <!-- Category Breakdown Chart -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
@@ -235,99 +297,170 @@
         </div>
     </div>
 <?php endif ?>
-<!-- Detailed Stock Report -->
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5>Detail Laporan Stok</h5>
-                <small class="text-muted">Total: <?= number_format(count($products)) ?> produk</small>
-            </div>
-            <div class="card-body">
-                <?php if (!empty($products)): ?>
-                    <div class="table-responsive">
-                        <table class="table table-hover datatable" id="stockReportTable">
-                            <thead>
-                                <tr>
-                                    <th width="5%">#</th>
-                                    <th width="25%">Produk</th>
-                                    <th width="15%">Kategori</th>
-                                    <th width="10%">SKU</th>
-                                    <th width="10%">Stok Saat Ini</th>
-                                    <th width="10%">Min. Stok</th>
-                                    <th width="10%">Status</th>
-                                    <th width="15%">Nilai Stok</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($products as $index => $product): ?>
-                                    <tr class="<?= $product['stock_status'] == 'out_of_stock' ? 'table-danger' : ($product['stock_status'] == 'low_stock' ? 'table-warning' : '') ?>">
-                                        <td><?= $index + 1 ?></td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar avatar-sm me-2">
-                                                    <div class="avatar-content bg-<?= $product['stock_status'] == 'out_of_stock' ? 'danger' : ($product['stock_status'] == 'low_stock' ? 'warning' : 'success') ?> text-white">
-                                                        <i class="bi bi-box"></i>
+<?php if ($reportMode === 'stock'): ?>
+    <!-- Detailed Stock Report -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Detail Laporan Stok</h5>
+                    <small class="text-muted">Total: <?= number_format(count($products)) ?> produk</small>
+                </div>
+                <div class="card-body">
+                    <?php if (!empty($products)): ?>
+                        <div class="table-responsive">
+                            <table class="table table-hover datatable" id="stockReportTable">
+                                <thead>
+                                    <tr>
+                                        <th width="5%">#</th>
+                                        <th width="25%">Produk</th>
+                                        <th width="15%">Kategori</th>
+                                        <th width="10%">Kode Barang</th>
+                                        <th width="10%">Stok Saat Ini</th>
+                                        <th width="10%">Min. Stok</th>
+                                        <th width="10%">Status</th>
+                                        <th width="15%">Nilai Stok</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($products as $index => $product): ?>
+                                        <tr class="<?= $product['stock_status'] == 'out_of_stock' ? 'table-danger' : ($product['stock_status'] == 'low_stock' ? 'table-warning' : '') ?>">
+                                            <td><?= $index + 1 ?></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar avatar-sm me-2">
+                                                        <div class="avatar-content bg-<?= $product['stock_status'] == 'out_of_stock' ? 'danger' : ($product['stock_status'] == 'low_stock' ? 'warning' : 'success') ?> text-white">
+                                                            <i class="bi bi-box"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0"><?= esc($product['name']) ?></h6>
+                                                        <small class="text-muted"><?= $product['unit'] ?></small>
                                                     </div>
                                                 </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info"><?= esc($product['category_name']) ?></span>
+                                            </td>
+                                            <td>
+                                                <code><?= $product['sku'] ?></code>
+                                            </td>
+                                            <td>
+                                                <strong class="<?= $product['stock_status'] == 'out_of_stock' ? 'text-danger' : ($product['stock_status'] == 'low_stock' ? 'text-warning' : 'text-success') ?>">
+                                                    <?= number_format($product['current_stock']) ?>
+                                                </strong>
+                                            </td>
+                                            <td>
+                                                <span class="text-muted"><?= number_format($product['min_stock']) ?></span>
+                                            </td>
+                                            <td>
+                                                <?= format_stock_badge($product['current_stock'], $product['min_stock']) ?>
+                                            </td>
+                                            <td>
                                                 <div>
-                                                    <h6 class="mb-0"><?= esc($product['name']) ?></h6>
-                                                    <small class="text-muted"><?= $product['unit'] ?></small>
+                                                    <strong><?= format_currency($product['stock_value']) ?></strong>
+                                                    <?php if ($product['price'] > 0): ?>
+                                                        <small class="d-block text-muted">
+                                                            @ <?= format_currency($product['price']) ?>
+                                                        </small>
+                                                    <?php endif ?>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-info"><?= esc($product['category_name']) ?></span>
-                                        </td>
-                                        <td>
-                                            <code><?= $product['sku'] ?></code>
-                                        </td>
-                                        <td>
-                                            <strong class="<?= $product['stock_status'] == 'out_of_stock' ? 'text-danger' : ($product['stock_status'] == 'low_stock' ? 'text-warning' : 'text-success') ?>">
-                                                <?= number_format($product['current_stock']) ?>
-                                            </strong>
-                                        </td>
-                                        <td>
-                                            <span class="text-muted"><?= number_format($product['min_stock']) ?></span>
-                                        </td>
-                                        <td>
-                                            <?= format_stock_badge($product['current_stock'], $product['min_stock']) ?>
-                                        </td>
-                                        <td>
-                                            <div>
-                                                <strong><?= format_currency($product['stock_value']) ?></strong>
-                                                <?php if ($product['price'] > 0): ?>
-                                                    <small class="d-block text-muted">
-                                                        @ <?= format_currency($product['price']) ?>
-                                                    </small>
-                                                <?php endif ?>
-                                            </div>
-                                        </td>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach ?>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-active">
+                                        <th colspan="4">TOTAL</th>
+                                        <th><?= number_format($summary['total_quantity']) ?></th>
+                                        <th>-</th>
+                                        <th>-</th>
+                                        <th><?= format_currency($summary['total_value']) ?></th>
                                     </tr>
-                                <?php endforeach ?>
-                            </tbody>
-                            <tfoot>
-                                <tr class="table-active">
-                                    <th colspan="4">TOTAL</th>
-                                    <th><?= number_format($summary['total_quantity']) ?></th>
-                                    <th>-</th>
-                                    <th>-</th>
-                                    <th><?= format_currency($summary['total_value']) ?></th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                <?php else: ?>
-                    <div class="text-center py-5">
-                        <i class="bi bi-inbox fs-1 text-muted"></i>
-                        <h5 class="mt-3 text-muted">Tidak ada data</h5>
-                        <p class="text-muted">Ubah filter untuk melihat data yang berbeda</p>
-                    </div>
-                <?php endif ?>
+                                </tfoot>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox fs-1 text-muted"></i>
+                            <h5 class="mt-3 text-muted">Tidak ada data</h5>
+                            <p class="text-muted">Ubah filter untuk melihat data yang berbeda</p>
+                        </div>
+                    <?php endif ?>
+                </div>
             </div>
         </div>
     </div>
-</div>
+<?php endif; ?>
+
+<?php if ($reportMode === 'opname'): ?>
+    <!-- Section Stock Opname -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0"><i class="bi bi-clipboard2-check text-primary me-2"></i>Section Stock Opname</h5>
+                        <small class="text-muted">Ringkasan hasil opname per produk</small>
+                    </div>
+                    <small class="text-muted">Total: <?= number_format(count($products)) ?> produk</small>
+                </div>
+                <div class="card-body">
+                    <?php if (!empty($products)): ?>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle" id="stockOpnameSectionTable">
+                                <thead class="table-light text-uppercase small">
+                                    <tr>
+                                        <th width="50" class="text-center">#</th>
+                                        <th>Informasi Produk</th>
+                                        <th class="text-center">Kategori</th>
+                                        <th class="text-center">Baik</th>
+                                        <th class="text-center">Rusak</th>
+                                        <th class="text-center">Total</th>
+                                        <th class="text-end">Harga</th>
+                                        <th class="text-end">Total Nilai</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($products as $index => $product): ?>
+                                        <?php
+                                        $stokBaik = (int) ($product['stock_baik'] ?? $product['current_stock'] ?? 0);
+                                        $stokRusak = (int) ($product['stock_rusak'] ?? 0);
+                                        $stokTotal = (int) ($product['current_stock'] ?? 0);
+                                        $hargaSatuan = (float) ($product['price'] ?? 0);
+                                        $totalNilai = (float) ($product['stock_value'] ?? ($stokTotal * $hargaSatuan));
+                                        ?>
+                                        <tr>
+                                            <td class="text-center"><?= $index + 1 ?></td>
+                                            <td>
+                                                <div class="fw-semibold"><?= esc($product['name']) ?></div>
+                                                <small class="text-muted"><?= esc($product['sku'] ?? '-') ?> | <?= esc($product['unit'] ?? 'Pcs') ?></small>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-light text-dark border"><?= esc($product['category_name'] ?? 'Uncategorized') ?></span>
+                                            </td>
+                                            <td class="text-center"><?= number_format($stokBaik) ?></td>
+                                            <td class="text-center"><?= number_format($stokRusak) ?></td>
+                                            <td class="text-center fw-bold <?= $stokTotal <= 0 ? 'text-danger' : 'text-primary' ?>">
+                                                <?= number_format($stokTotal) ?>
+                                            </td>
+                                            <td class="text-end">Rp <?= number_format($hargaSatuan, 0, ',', '.') ?></td>
+                                            <td class="text-end fw-bold text-success">Rp <?= number_format($totalNilai, 0, ',', '.') ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center py-4 text-muted">
+                            Tidak ada data stock opname untuk periode yang dipilih.
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
 
 <?= $this->endSection(); ?>
 <?= $this->section('breadcrumb'); ?>
@@ -341,42 +474,55 @@
 <?= $this->section('scripts'); ?>
 <script>
     $(document).ready(function() {
-        // Initialize DataTable
-        $('#stockReportTable').DataTable({
-            responsive: true,
-            pageLength: 50,
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
-            },
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
-            footerCallback: function(row, data, start, end, display) {
-                var api = this.api();
+        // Initialize DataTable for Laporan Stok mode
+        if ($('#stockReportTable').length) {
+            $('#stockReportTable').DataTable({
+                responsive: true,
+                pageLength: 50,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+                },
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                footerCallback: function(row, data, start, end, display) {
+                    var api = this.api();
 
-                // Remove the formatting to get integer data for summation
-                var intVal = function(i) {
-                    return typeof i === 'string' ?
-                        i.replace(/[\$,]/g, '') * 1 :
-                        typeof i === 'number' ?
-                        i : 0;
-                };
+                    // Remove the formatting to get integer data for summation
+                    var intVal = function(i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 :
+                            typeof i === 'number' ?
+                            i : 0;
+                    };
 
-                // Total over current page
-                var pageTotal = api
-                    .column(4, {
-                        page: 'current'
-                    })
-                    .data()
-                    .reduce(function(a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
-            }
-        });
+                    // Total over current page
+                    api
+                        .column(4, {
+                            page: 'current'
+                        })
+                        .data()
+                        .reduce(function(a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+                }
+            });
+        }
+
+        // Initialize DataTable for Stock Opname mode
+        if ($('#stockOpnameSectionTable').length) {
+            $('#stockOpnameSectionTable').DataTable({
+                responsive: true,
+                pageLength: 50,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+                }
+            });
+        }
 
         // Category breakdown chart
-        <?php if (!empty($category_breakdown)): ?>
+        <?php if ($reportMode === 'stock' && !empty($category_breakdown)): ?>
             const categoryData = {
                 labels: <?= json_encode(array_keys($category_breakdown)) ?>,
                 datasets: [{

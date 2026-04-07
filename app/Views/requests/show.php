@@ -81,7 +81,7 @@
                         <thead class="bg-light">
                             <tr>
                                 <th class="ps-3">Nama Produk</th>
-                                <th width="120" class="text-center">SKU</th>
+                                <th width="120" class="text-center">Kode Barang</th>
                                 <th width="100" class="text-center">Diminta</th>
                                 <th width="100" class="text-center">Stok</th>
                                 <th width="80" class="text-center">Satuan</th>
@@ -136,6 +136,7 @@
                         $requestedQty = (int)$item['quantity'];
                         if ($currentStock < $requestedQty) {
                             $stockIssues[] = [
+                                'product_id' => (int) $item['product_id'],
                                 'name' => $product['name'],
                                 'requested' => $requestedQty,
                                 'available' => $currentStock
@@ -186,12 +187,17 @@
                     </div>
                 <?php elseif ($currentStatus == 'approved'): ?>
                     <?php if (!empty($stockIssues)): ?>
+                        <?php
+                        $firstIssueProductId = (int) ($stockIssues[0]['product_id'] ?? 0);
+                        $redirectBack = '/requests/show/' . (int) $pinjaman['id'];
+                        $stockInUrl = '/stock/in?product=' . $firstIssueProductId . '&redirect=' . rawurlencode($redirectBack);
+                        ?>
                         <div class="alert alert-warning border-0 mb-4">
                             <i class="bi bi-exclamation-triangle me-2"></i>
                             <strong>Perhatian:</strong> Stok tidak mencukupi. Tambah stok terlebih dahulu sebelum distribusi.
                         </div>
                         <div class="d-grid gap-3">
-                            <a href="<?= base_url('stock/in') ?>" class="btn btn-success py-2 fw-bold">
+                            <a href="<?= base_url($stockInUrl) ?>" class="btn btn-success py-2 fw-bold">
                                 <i class="bi bi-plus-circle me-2"></i> TAMBAH STOK
                             </a>
                             <button class="btn btn-outline-danger py-2" id="btn-cancel">
@@ -218,10 +224,6 @@
                         </div>
                         <h5 class="fw-bold">Selesai Didistribusi</h5>
                         <p class="text-muted small">Barang telah diserahkan ke pemohon dan stok gudang sudah diperbarui.</p>
-                        <hr>
-                        <button class="btn btn-light border w-100" onclick="window.print()">
-                            <i class="bi bi-printer me-2"></i> Cetak Bukti
-                        </button>
                     </div>
                 <?php elseif ($currentStatus == 'cancelled'): ?>
                     <div class="text-center py-4 text-muted">
@@ -251,70 +253,79 @@
         `;
 
         // Insert alert at top of first card
-        $('.card').first().prepend(alertHtml);
+        const firstCard = document.querySelector('.card');
+        if (firstCard) {
+            firstCard.insertAdjacentHTML('afterbegin', alertHtml);
+        }
 
         // Auto dismiss after 5 seconds
         setTimeout(() => {
-            $('.alert').fadeOut(500, function() {
-                $(this).remove();
+            document.querySelectorAll('.alert').forEach((el) => {
+                el.classList.remove('show');
+                setTimeout(() => el.remove(), 500);
             });
         }, 5000);
     }
 
-    function jalankanAksi(url, pesanCek) {
+    async function jalankanAksi(url, pesanCek, tombol) {
         if (confirm(pesanCek)) {
-            const btn = event.target;
+            const btn = tombol;
+            if (!btn) return;
             const originalHtml = btn.innerHTML;
 
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
 
-            const reason = $('#admin_reason').val();
+            const reasonEl = document.getElementById('admin_reason');
+            const reason = reasonEl ? reasonEl.value : '';
 
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: {
-                    <?= csrf_token() ?>: '<?= csrf_hash() ?>',
-                    reason: reason
-                },
-                dataType: 'json',
-                success: function(res) {
-                    if (res.status) {
-                        showAlert(res.message, 'success');
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        showAlert(res.message, 'danger');
-                        btn.disabled = false;
-                        btn.innerHTML = originalHtml;
-                    }
-                },
-                error: function(xhr) {
-                    let errorMsg = 'Terjadi kesalahan server.';
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        if (response.message) {
-                            errorMsg = response.message;
-                        }
-                    } catch (e) {
-                        console.error('Parse error:', e);
-                    }
-                    showAlert(errorMsg, 'danger');
+            const payload = new URLSearchParams();
+            payload.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+            payload.append('reason', reason);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: payload.toString(),
+                    credentials: 'same-origin',
+                });
+
+                const contentType = response.headers.get('content-type') || '';
+                const isJson = contentType.includes('application/json');
+                const data = isJson ? await response.json() : {};
+
+                if (response.ok && data.status) {
+                    showAlert(data.message || 'Aksi berhasil diproses.', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                    return;
                 }
-            });
+
+                showAlert((data && data.message) ? data.message : 'Terjadi kesalahan server.', 'danger');
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            } catch (error) {
+                console.error(error);
+                showAlert('Terjadi kesalahan jaringan atau server.', 'danger');
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
         }
     }
 
-    $('#btn-approve').on('click', function() {
-        jalankanAksi('<?= base_url('requests/approve/' . $pinjaman['id']) ?>', 'Setujui permintaan ini?');
+    document.getElementById('btn-approve')?.addEventListener('click', function() {
+        jalankanAksi('<?= base_url('requests/approve/' . $pinjaman['id']) ?>', 'Setujui permintaan ini?', this);
     });
 
-    $('#btn-distribute').on('click', function() {
-        jalankanAksi('<?= base_url('requests/distribute/' . $pinjaman['id']) ?>', 'Lanjutkan distribusi? Tindakan ini akan memotong stok barang.');
+    document.getElementById('btn-distribute')?.addEventListener('click', function() {
+        jalankanAksi('<?= base_url('requests/distribute/' . $pinjaman['id']) ?>', 'Lanjutkan distribusi? Tindakan ini akan memotong stok barang.', this);
     });
 
-    $('#btn-cancel').on('click', function() {
-        jalankanAksi('<?= base_url('requests/cancel/' . $pinjaman['id']) ?>', 'Apakah Anda yakin ingin membatalkan permintaan ini?');
+    document.getElementById('btn-cancel')?.addEventListener('click', function() {
+        jalankanAksi('<?= base_url('requests/cancel/' . $pinjaman['id']) ?>', 'Apakah Anda yakin ingin membatalkan permintaan ini?', this);
     });
 </script>
 <?= $this->endSection() ?>

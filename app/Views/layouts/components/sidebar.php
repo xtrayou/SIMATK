@@ -37,6 +37,13 @@
                             <span>Kategori</span>
                         </a>
                     </li>
+                    
+                    <li class="sidebar-item <?= strpos(uri_string(), 'kode-barang') !== false ? 'active' : '' ?>">
+                        <a href="<?= base_url('/kode-barang') ?>" class="sidebar-link">
+                            <i class="bi bi-upc-scan"></i>
+                            <span>Kode Barang</span>
+                        </a>
+                    </li>
 
                     <li class="sidebar-item <?= strpos(uri_string(), 'products') !== false ? 'active' : '' ?>">
                         <a href="<?= base_url('/products') ?>" class="sidebar-link">

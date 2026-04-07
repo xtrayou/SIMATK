@@ -14,16 +14,16 @@
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="search" class="form-label fw-bold">Cari Produk</label>
-                            <input type="text" class="form-control" id="search" name="search" 
-                                   value="<?= $filterCari ?>" placeholder="Ketik nama, SKU, atau deskripsi...">
+                            <input type="text" class="form-control" id="search" name="search"
+                                   value="<?= $filterCari ?>" placeholder="Ketik nama, kode barang, atau deskripsi...">
                         </div>
                         <div class="col-md-3 mb-3">
                             <label for="category" class="form-label fw-bold">Kategori</label>
                             <select class="form-select" id="category" name="category">
                                 <option value="">Semua Kategori</option>
                                 <?php foreach ($daftarKategori as $kat): ?>
-                                    <option value="<?= $kat['id'] ?>" 
-                                            <?= $filterKategori == $kat['id'] ? 'selected' : '' ?>>
+                                    <option value="<?= $kat['id'] ?>"
+                                        <?= $filterKategori == $kat['id'] ? 'selected' : '' ?>>
                                         <?= esc($kat['name']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -80,9 +80,9 @@
                 </div>
             </div>
             <div class="card-body">
-                <?php if (session()->getFlashdata('sukses')): ?>
+                <?php if (session()->getFlashdata('success')): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <?= session()->getFlashdata('sukses') ?>
+                        <?= session()->getFlashdata('success') ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php endif; ?>
@@ -92,66 +92,51 @@
                         <table class="table table-hover align-middle" id="productsTable">
                             <thead class="bg-light text-uppercase small fw-bold">
                                 <tr>
-                                    <th rowspan="2" width="50" class="align-middle border text-center">#</th>
-                                    <th rowspan="2" class="align-middle border">Informasi Produk</th>
-                                    <th rowspan="2" class="align-middle border text-center">Kategori</th>
-                                    <th colspan="3" class="text-center border py-2">Hasil Stock Opname (Jumlah)</th>
-                                    <th colspan="2" class="text-center border py-2">Nilai Persediaan</th>
-                                    <th rowspan="2" width="130" class="text-center align-middle border">Aksi</th>
-                                </tr>
-                                <tr class="text-center small">
-                                    <th class="border bg-white text-dark" width="70">Baik</th>
-                                    <th class="border bg-white text-dark" width="70">Rusak</th>
-                                    <th class="border bg-light text-primary" width="80">Total</th>
-                                    <th class="border bg-white text-dark" width="120">Harga</th>
-                                    <th class="border bg-light text-success" width="130">Total Nilai</th>
+                                    <th width="50" class="align-middle border text-center">#</th>
+                                    <th class="align-middle border">Informasi Produk</th>
+                                    <th class="align-middle border text-center">Kategori</th>
+                                    <th class="align-middle border text-end">Harga Estimasi</th>
+                                    <th class="align-middle border text-center">Stok Minimum</th>
+                                    <th width="130" class="text-center align-middle border">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php foreach ($daftarProduk as $idx => $p): ?>
-                                <?php 
-                                    $totalValue = (float)$p['price'] * (int)$p['current_stock'];
-                                    $hasLowStock = $p['current_stock'] <= $p['min_stock'];
-                                ?>
-                                <tr>
-                                    <td class="text-center border-start border-end"><?= $idx + 1 ?></td>
-                                    <td class="border-end">
-                                        <div class="fw-bold text-dark mb-0"><?= esc($p['name']) ?></div>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <code class="small text-muted"><?= $p['sku'] ?></code>
-                                            <span class="text-muted small">| <?= esc($p['unit'] ?: 'Pcs') ?></span>
-                                        </div>
-                                    </td>
-                                    <td class="text-center border-end">
-                                        <span class="badge bg-light text-dark border-0 small"><?= esc($p['category_name']) ?></span>
-                                    </td>
-                                    <td class="text-center border-end"><?= number_format($p['stock_baik'] ?? 0) ?></td>
-                                    <td class="text-center border-end"><?= number_format($p['stock_rusak'] ?? 0) ?></td>
-                                    <td class="text-center border-end fw-bold <?= $hasLowStock ? 'text-danger' : 'text-primary' ?>">
-                                        <?= number_format($p['current_stock']) ?>
-                                        <?php if($hasLowStock && $p['current_stock'] > 0): ?>
-                                            <i class="bi bi-exclamation-triangle-fill text-warning ms-1" title="Stok Rendah"></i>
-                                        <?php elseif($p['current_stock'] <= 0): ?>
-                                            <span class="badge bg-danger ms-1" style="font-size: 0.6rem;">HABIS</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="text-end pe-3 border-end">Rp <?= number_format($p['price'], 0, ',', '.') ?></td>
-                                    <td class="text-end pe-3 border-end fw-bold text-success">Rp <?= number_format($totalValue, 0, ',', '.') ?></td>
-                                    <td class="text-center border-end">
-                                        <div class="btn-group">
-                                            <a href="<?= base_url('/products/show/' . $p['id']) ?>" class="btn btn-sm btn-outline-info" title="Detail">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a href="<?= base_url('/products/edit/' . $p['id']) ?>" class="btn btn-sm btn-outline-warning" title="Edit">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-sm btn-outline-danger btn-delete" 
-                                                    data-id="<?= $p['id'] ?>" data-name="<?= esc($p['name']) ?>">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td class="text-center border-start border-end"><?= $idx + 1 ?></td>
+                                        <td class="border-end">
+                                            <div class="fw-bold text-dark mb-0"><?= esc($p['name']) ?></div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <code class="small text-muted"><?= $p['sku'] ?></code>
+                                                <span class="text-muted small">| <?= esc($p['unit'] ?: 'Pcs') ?></span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center border-end">
+                                            <span class="badge bg-light text-dark border-0 small"><?= esc($p['category_name']) ?></span>
+                                        </td>
+                                        <td class="text-end pe-3 border-end">Rp <?= number_format($p['price'], 0, ',', '.') ?></td>
+                                        <td class="text-center border-end\"><?= number_format((int) ($p['min_stock'] ?? 0)) ?></td>
+                                        <td class="text-center border-end">
+                                            <div class="btn-group">
+                                                <a href="<?= base_url('/products/show/' . $p['id']) ?>" class="btn btn-sm btn-outline-info" title="Detail">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="<?= base_url('/products/edit/' . $p['id']) ?>" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <form action="<?= base_url('/products/delete/' . $p['id']) ?>" method="post" class="d-inline">
+                                                    <?= csrf_field() ?>
+                                                    <button
+                                                        type="submit"
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        title="Hapus"
+                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus produk ini?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 <?php endforeach ?>
                             </tbody>
                         </table>
@@ -168,40 +153,4 @@
     </div>
 </div>
 
-<?= $this->endSection() ?>
-
-<?= $this->section('scripts') ?>
-<script>
-$(document).ready(function() {
-    $('#productsTable').DataTable({
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
-        }
-    });
-
-    $('.btn-delete').on('click', function() {
-        const id = $(this).data('id');
-        const name = $(this).data('name');
-        
-        if (confirm(`Apakah Anda yakin ingin menghapus produk "${name}"?`)) {
-            $.ajax({
-                url: `<?= base_url('/products/delete/') ?>/${id}`,
-                type: 'DELETE',
-                dataType: 'json',
-                success: function(res) {
-                    if (res.status) {
-                        alert(res.message);
-                        location.reload();
-                    } else {
-                        alert(res.message);
-                    }
-                },
-                error: function(err) {
-                    alert('Gagal menghapus produk. Terjadi kesalahan server.');
-                }
-            });
-        }
-    });
-});
-</script>
 <?= $this->endSection() ?>

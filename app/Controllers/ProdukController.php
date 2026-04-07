@@ -6,6 +6,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use App\Models\ProdukModel;
 use App\Models\KategoriModel;
+use App\Models\KodeBarangModel;
 use App\Models\MutasiStokModel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -15,12 +16,14 @@ class ProdukController extends BaseController
 {
     protected ProdukModel $modelProduk;
     protected KategoriModel $modelKategori;
+    protected KodeBarangModel $modelKodeBarang;
     protected MutasiStokModel $modelMutasiStok;
 
     public function __construct()
     {
         $this->modelProduk = new ProdukModel();
         $this->modelKategori = new KategoriModel();
+        $this->modelKodeBarang = new KodeBarangModel();
         $this->modelMutasiStok = new MutasiStokModel();
     }
 
@@ -108,9 +111,18 @@ class ProdukController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Validasi gagal. Mohon periksa kembali data yang Anda masukkan.');
         }
 
+        $requestedSku = strtoupper(trim((string) $this->request->getPost('sku')));
+        $categoryId = (int) $this->request->getPost('category_id');
+        $resolvedSku = $this->resolveSkuWithFallback($requestedSku, $categoryId);
+
+        $duplicateSku = $this->modelProduk->where('sku', $resolvedSku)->first();
+        if ($duplicateSku && (!$isUpdate || (int) $duplicateSku['id'] !== (int) $productId)) {
+            return redirect()->back()->withInput()->with('error', 'Kode barang ' . $resolvedSku . ' sudah digunakan. Silakan gunakan kode lain.');
+        }
+
         $payload = [
             'name'          => $this->request->getPost('name'),
-            'sku'           => strtoupper((string)$this->request->getPost('sku')),
+            'sku'           => $resolvedSku,
             'category_id'   => $this->request->getPost('category_id'),
             'description'   => $this->request->getPost('description'),
             'price'         => (float) $this->request->getPost('price'),
@@ -158,6 +170,57 @@ class ProdukController extends BaseController
             $db->transRollback();
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
+    }
+
+    /**
+     * Jika kode barang tidak ditemukan di referensi, gunakan kode "lainnya" (akhiran 999)
+     * berdasarkan kategori yang dipilih. Contoh: 8010101000 -> 8010101999.
+     */
+    private function resolveSkuWithFallback(string $requestedSku, int $categoryId): string
+    {
+        $requestedSku = preg_replace('/\D+/', '', $requestedSku) ?? '';
+        if ($requestedSku === '') {
+            return '';
+        }
+
+        $exactKode = $this->modelKodeBarang->where('kode', $requestedSku)->first();
+        if ($exactKode) {
+            return $requestedSku;
+        }
+
+        if ($categoryId <= 0) {
+            return $requestedSku;
+        }
+
+        $category = $this->modelKategori->find($categoryId);
+        if (!$category || empty($category['name'])) {
+            return $requestedSku;
+        }
+
+        $categoryName = trim((string) $category['name']);
+        if ($categoryName === '') {
+            return $requestedSku;
+        }
+
+        $categoryKode = $this->modelKodeBarang
+            ->where('LOWER(nama)', strtolower($categoryName))
+            ->first();
+
+        if (!$categoryKode) {
+            $categoryKode = $this->modelKodeBarang
+                ->like('nama', $categoryName)
+                ->orderBy('kode', 'ASC')
+                ->first();
+        }
+
+        $baseCode = (string) ($categoryKode['kode'] ?? '');
+        $baseCode = preg_replace('/\D+/', '', $baseCode) ?? '';
+
+        if (strlen($baseCode) >= 10) {
+            return substr($baseCode, 0, 7) . '999';
+        }
+
+        return $requestedSku;
     }
 
     /**
@@ -218,19 +281,52 @@ class ProdukController extends BaseController
      */
     public function delete($id)
     {
+        $isAjax = $this->request->isAJAX();
         $product = $this->modelProduk->find($id);
         if (!$product) {
+            if ($isAjax) {
+                return $this->response->setJSON([
+                    'status' => false,
+                    'message' => 'Produk tidak ditemukan.'
+                ])->setStatusCode(404);
+            }
+
             return redirect()->to('/products')->with('error', 'Produk tidak ditemukan.');
         }
 
         $movementCount = $this->modelMutasiStok->where('product_id', $id)->countAllResults();
 
         if ($movementCount > 1) { // Allow deletion if only initial stock movement exists
-            return redirect()->to('/products')->with('error', 'Produk tidak bisa dihapus karena sudah memiliki riwayat transaksi.');
+            $message = 'Produk tidak bisa dihapus karena sudah memiliki riwayat transaksi.';
+
+            if ($isAjax) {
+                return $this->response->setJSON([
+                    'status' => false,
+                    'message' => $message
+                ])->setStatusCode(422);
+            }
+
+            return redirect()->to('/products')->with('error', $message);
         }
 
         if ($this->modelProduk->delete($id)) {
-            return redirect()->to('/products')->with('success', 'Produk berhasil dihapus.');
+            $message = 'Produk berhasil dihapus.';
+
+            if ($isAjax) {
+                return $this->response->setJSON([
+                    'status' => true,
+                    'message' => $message
+                ]);
+            }
+
+            return redirect()->to('/products')->with('success', $message);
+        }
+
+        if ($isAjax) {
+            return $this->response->setJSON([
+                'status' => false,
+                'message' => 'Gagal menghapus produk.'
+            ])->setStatusCode(500);
         }
 
         return redirect()->to('/products')->with('error', 'Gagal menghapus produk.');
@@ -247,7 +343,7 @@ class ProdukController extends BaseController
         $sheet = $spreadsheet->getActiveSheet();
 
         $sheet->setCellValue('A1', 'No')
-            ->setCellValue('B1', 'SKU')
+            ->setCellValue('B1', 'Kode Barang')
             ->setCellValue('C1', 'Nama Barang')
             ->setCellValue('D1', 'Kategori')
             ->setCellValue('E1', 'Stok')
@@ -289,7 +385,7 @@ class ProdukController extends BaseController
                     <thead>
                         <tr style='background:#f2f2f2;'>
                             <th>No</th>
-                            <th>SKU</th>
+                            <th>Kode Barang</th>
                             <th>Nama Barang</th>
                             <th>Kategori</th>
                             <th>Stok</th>
@@ -334,7 +430,7 @@ class ProdukController extends BaseController
         $html = "<h2>Detail Produk</h2>";
         $html .= "<table border='1' width='100%' cellpadding='8' style='border-collapse:collapse;'>";
         $html .= "<tr><th align='left' width='35%'>Nama Barang</th><td>{$product['name']}</td></tr>";
-        $html .= "<tr><th align='left'>SKU</th><td>{$product['sku']}</td></tr>";
+        $html .= "<tr><th align='left'>Kode Barang</th><td>{$product['sku']}</td></tr>";
         $html .= "<tr><th align='left'>Kategori</th><td>{$product['category_name']}</td></tr>";
         $html .= "<tr><th align='left'>Stok</th><td>{$product['current_stock']} {$product['unit']}</td></tr>";
         $html .= "<tr><th align='left'>Harga</th><td>Rp " . number_format((float) $product['price'], 0, ',', '.') . "</td></tr>";

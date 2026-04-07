@@ -1,0 +1,918 @@
+FILE: Perbu 44 Tahun 2012 Lampiran I.pdf
+Pages: 25
+================================================================================
+
+
+======================================== PAGE 1 ========================================
+
+[Table 1]
+GOL | BID | KEL | SUB
+KEL | SUB-SUB
+KEL | SAT | URAIAN
+ |  |  |  |  |  | 
+8 | 00 | 00 | 00 | 000 |  | PERSEDIAAN
+ |  |  |  |  |  | 
+8 | 01 | 00 | 00 | 000 |  | BARANG PAKAI HABIS
+ |  |  |  |  |  | 
+8 | 01 | 01 | 00 | 000 |  | BAHAN
+ |  |  |  |  |  | 
+8 | 01 | 01 | 01 | 000 |  | BAHAN BANGUNAN DAN KONSTRUKSI
+8 | 01 | 01 | 01 | 001 |  | Aspal
+8 | 01 | 01 | 01 | 002 |  | Semen
+8 | 01 | 01 | 01 | 003 |  | Kaca
+8 | 01 | 01 | 01 | 004 |  | Pasir
+8 | 01 | 01 | 01 | 005 |  | Batu
+8 | 01 | 01 | 01 | 006 |  | Cat
+8 | 01 | 01 | 01 | 007 |  | Seng
+8 | 01 | 01 | 01 | 008 |  | Baja
+8 | 01 | 01 | 01 | 009 |  | Electro Dalas
+8 | 01 | 01 | 01 | 010 |  | Patok Beton
+8 | 01 | 01 | 01 | 011 |  | Tiang Beton
+8 | 01 | 01 | 01 | 012 |  | Besi Beton
+8 | 01 | 01 | 01 | 013 |  | Tegel
+8 | 01 | 01 | 01 | 014 |  | Genteng
+8 | 01 | 01 | 01 | 015 |  | Bis Beton
+8 | 01 | 01 | 01 | 016 |  | Plat
+8 | 01 | 01 | 01 | 017 |  | Steel Sheet Pile
+8 | 01 | 01 | 01 | 018 |  | Concrete Sheet Pile
+8 | 01 | 01 | 01 | 019 |  | Kawat Bronjong
+8 | 01 | 01 | 01 | 020 |  | Karung
+8 | 01 | 01 | 01 | 021 |  | Minyak Cat/Thinner
+8 | 01 | 01 | 01 | 999 |  | Bahan Bangunan Dan Konstruksi Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 01 | 02 | 000 |  | BAHAN KIMIA
+8 | 01 | 01 | 02 | 001 |  | Bahan Kimia Padat
+8 | 01 | 01 | 02 | 002 |  | Bahan Kimia Cair
+8 | 01 | 01 | 02 | 003 |  | Bahan Kimia Gas
+8 | 01 | 01 | 02 | 005 |  | Bahan Kimia Nuklir
+8 | 01 | 01 | 02 | 999 |  | Bahan Kimia Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 01 | 03 | 000 |  | BAHAN PELEDAK
+8 | 01 | 01 | 03 | 001 |  | Anfo
+8 | 01 | 01 | 03 | 002 |  | Detonator
+
+======================================== PAGE 2 ========================================
+
+[Table 1]
+GOL | BID | KEL | SUB
+KEL | SUB-SUB
+KEL | SAT | URAIAN
+8 | 01 | 01 | 03 | 003 |  | Dinamit
+8 | 01 | 01 | 03 | 004 |  | Gelatine
+8 | 01 | 01 | 03 | 005 |  | Sumbu Ledak/Api
+8 | 01 | 01 | 03 | 006 |  | Amunisi
+8 | 01 | 01 | 03 | 999 |  | Bahan Peledak Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 01 | 04 | 000 |  | BAHAN BAKAR DAN PELUMAS
+8 | 01 | 01 | 04 | 001 |  | Bahan Bakar Minyak
+8 | 01 | 01 | 04 | 002 |  | Minyak Pelumas
+8 | 01 | 01 | 04 | 003 |  | Minyak Hydrolis
+8 | 01 | 01 | 04 | 004 |  | Bahan Bakar Gas
+8 | 01 | 01 | 04 | 005 |  | Batubara
+8 | 01 | 01 | 04 | 999 |  | Bahan Bakar Dan Pelumas Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 01 | 05 | 000 |  | BAHAN BAKU
+8 | 01 | 01 | 05 | 001 |  | Kawat
+8 | 01 | 01 | 05 | 002 |  | Kayu
+8 | 01 | 01 | 05 | 003 |  | Logam/Metalorgi
+8 | 01 | 01 | 05 | 004 |  | Latex
+8 | 01 | 01 | 05 | 005 |  | Biji Plastik
+8 | 01 | 01 | 05 | 006 |  | Karet (Bahan Baku)
+8 | 01 | 01 | 05 | 999 |  | Bahan Baku Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 01 | 06 | 000 |  | BAHAN KIMIA NUKLIR
+8 | 01 | 01 | 06 | 001 |  | Uranium - 233
+8 | 01 | 01 | 06 | 002 |  | Uranium - 235
+8 | 01 | 01 | 06 | 003 |  | Uranium - 238
+8 | 01 | 01 | 06 | 004 |  | Plutonium (PU)
+8 | 01 | 01 | 06 | 005 |  | Neptarim (NP)
+8 | 01 | 01 | 06 | 006 |  | Uranium Dioksida
+8 | 01 | 01 | 06 | 007 |  | Thorium
+8 | 01 | 01 | 06 | 999 |  | Bahan Kimia Nuklir Lainnya
+8 | 01 | 01 | 07 | 000 |  | BARANG DALAM PROSES
+8 | 01 | 01 | 07 | 001 |  | Barang Dalam Proses
+8 | 01 | 01 | 07 | 999 |  | Barang Dalam Proses Lainnya
+8 | 01 | 01 | 99 | 000 |  | BAHAN LAINNYA
+8 | 01 | 01 | 99 | 999 |  | Bahan Lainnya
+ |  |  |  |  |  | 
+ |  |  |  |  |  | 
+8 | 01 | 02 | 00 | 000 |  | SUKU CADANG
+8 | 01 | 02 | 01 | 000 |  | SUKU CADANG ALAT ANGKUTAN
+8 | 01 | 02 | 01 | 001 |  | Suku Cadang Alat Angkutan Darat Bermotor
+8 | 01 | 02 | 01 | 002 |  | Suku Cadang Alat Angkutan Darat Tak Bermotor
+8 | 01 | 02 | 01 | 003 |  | Suku Cadang Alat Angkutan Apung Bermotor
+8 | 01 | 02 | 01 | 004 |  | Suku Cadang Alat Angkutan Apung Tak Bermotor
+8 | 01 | 02 | 01 | 005 |  | Suku Cadang Alat Angkutan Udara Bermotor
+8 | 01 | 02 | 01 | 999 |  | Suku Cadang Alat Angkutan Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 02 | 02 | 000 |  | SUKU CADANG ALAT BESAR
+8 | 01 | 02 | 02 | 001 |  | Suku Cadang Alat Besar Darat
+
+======================================== PAGE 3 ========================================
+
+[Table 1]
+GOL | BID | KEL | SUB
+KEL | SUB-SUB
+KEL | SAT | URAIAN
+8 | 01 | 02 | 02 | 002 |  | Suku Cadang Alat Besar Apung
+8 | 01 | 02 | 02 | 003 |  | Suku Cadang Alat Besar Bantu
+8 | 01 | 02 | 02 | 999 |  | Suku Cadang Alat Besar Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 02 | 03 | 000 |  | SUKU CADANG ALAT KEDOKTERAN
+8 | 01 | 02 | 03 | 001 |  | Suku Cadang Alat Kedokteran Umum
+8 | 01 | 02 | 03 | 002 |  | Suku Cadang Alat Kedokteran Gigi
+8 | 01 | 02 | 03 | 003 |  | Suku Cadang Alat Kedokteran Keluarga Berencana
+8 | 01 | 02 | 03 | 004 |  | Suku Cadang Alat Kedokteran Bedah
+8 | 01 | 02 | 03 | 005 |  | Suku Cadang Alat Kedokteran Kebidanan Dan Penyakit Kandungan
+8 | 01 | 02 | 03 | 006 |  | Suku Cadang Alat Kedokteran THT
+8 | 01 | 02 | 03 | 007 |  | Suku Cadang Alat Kedokteran Mata
+8 | 01 | 02 | 03 | 008 |  | Suku Cadang Alat Kedokteran Penyakit Dalam
+8 | 01 | 02 | 03 | 009 |  | Suku Cadang Alat Kedokteran Alat Kesehatan Anak
+8 | 01 | 02 | 03 | 010 |  | Suku Cadang Alat Kedokteran Poliklinik Set
+8 | 01 | 02 | 03 | 011 |  | Suku Cadang Alat Kedokteran Untuk Penderita Cacat Tubuh
+8 | 01 | 02 | 03 | 012 |  | Suku Cadang Alat Kedokteran Syaraf
+8 | 01 | 02 | 03 | 013 |  | Suku Cadang Alat Kedokteran Jantung
+8 | 01 | 02 | 03 | 014 |  | Suku Cadang Alat Kedokteran Nuklir
+8 | 01 | 02 | 03 | 015 |  | Suku Cadang Alat Kedokteran Radiologi
+8 | 01 | 02 | 03 | 016 |  | Suku Cadang Alat Kedokteran Kulit Dan Kelamin
+8 | 01 | 02 | 03 | 017 |  | Suku Cadang Alat Kedokteran Ugd
+8 | 01 | 02 | 03 | 018 |  | Suku Cadang Alat Kedokteran Hematologi
+8 | 01 | 02 | 03 | 019 |  | Suku Cadang Alat Kedokteran Hewan
+8 | 01 | 02 | 03 | 999 |  | Suku Cadang Alat Kedokteran Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 02 | 04 | 000 |  | SUKU CADANG ALAT LABORATORIUM
+8 | 01 | 02 | 04 | 001 |  | Suku Cadang Alat Laboratorium Kimia Air Taknik Penyehatan
+8 | 01 | 02 | 04 | 002 |  | Suku Cadang Alat Laboratorium Micro Biologi Penyehatan
+8 | 01 | 02 | 04 | 003 |  | Suku Cadang Alat Laboratorium Hidro Kimia
+8 | 01 | 02 | 04 | 004 |  | Suku Cadang Alat Laboratorium Model Hidrolika
+8 | 01 | 02 | 04 | 005 |  | Suku Cadang Alat Laboratorium Batuan/Geologi
+8 | 01 | 02 | 04 | 006 |  | Suku Cadang Alat Laboratorium Bahan Bangunan Konstruksi
+8 | 01 | 02 | 04 | 007 |  | Suku Cadang Alat Laboratorium Aspal, Cat Dan Kimia
+8 | 01 | 02 | 04 | 008 |  | Suku Cadang Alat Laboratorium Mekanika Tanah Dan Batuan
+8 | 01 | 02 | 04 | 009 |  | Suku Cadang Alat Laboratorium Cocok Tanam
+8 | 01 | 02 | 04 | 010 |  | Suku Cadang Alat Laboratorium Logam, Mesin Dan Listrik
+8 | 01 | 02 | 04 | 011 |  | Suku Cadang Alat Laboratorium Umum
+8 | 01 | 02 | 04 | 012 |  | Suku Cadang Alat Laboratorium Microbiologi
+8 | 01 | 02 | 04 | 013 |  | Suku Cadang Alat Laboratorium Kimia
+8 | 01 | 02 | 04 | 014 |  | Suku Cadang Alat Laboratorium Patologi
+8 | 01 | 02 | 04 | 015 |  | Suku Cadang Alat Laboratorium Immunologi
+8 | 01 | 02 | 04 | 016 |  | Suku Cadang Alat Laboratorium Film
+8 | 01 | 02 | 04 | 017 |  | Suku Cadang Alat Laboratorium Radio Isotop
+8 | 01 | 02 | 04 | 018 |  | Suku Cadang Alat Laboratorium Makanan
+8 | 01 | 02 | 04 | 019 |  | Suku Cadang Alat Laboratorium Aero Dinamika
+8 | 01 | 02 | 04 | 020 |  | Suku Cadang Alat Laboratorium Standarisasi Kaliberasi Dan Instrumen Lainnya
+8 | 01 | 02 | 04 | 021 |  | Suku Cadang Alat Laboratorium Farmasi
+8 | 01 | 02 | 04 | 022 |  | Suku Cadang Alat Laboratorium Pemantauan Kualitas Udara
+8 | 01 | 02 | 04 | 023 |  | Suku Cadang Alat Laboratorium Fisika
+
+======================================== PAGE 4 ========================================
+
+[Table 1]
+GOL | BID | KEL | SUB
+KEL | SUB-SUB
+KEL | SAT | URAIAN
+8 | 01 | 02 | 04 | 024 |  | Suku Cadang Alat Laboratorium Hidrodinamika
+8 | 01 | 02 | 04 | 025 |  | Suku Cadang Alat Laboratorium Pengkajian Teknik Pantai
+8 | 01 | 02 | 04 | 026 |  | Suku Cadang Alat Laboratorium Kematologi
+8 | 01 | 02 | 04 | 027 |  | Suku Cadang Alat Laboratorium Proses Peleburan
+8 | 01 | 02 | 04 | 028 |  | Suku Cadang Alat Laboratorium Pasir
+8 | 01 | 02 | 04 | 029 |  | Suku Cadang Alat Laboratorium Proses Pembuatan Cetakan
+8 | 01 | 02 | 04 | 030 |  | Suku Cadang Alat Laboratorium Proses Pembuatan Pola
+8 | 01 | 02 | 04 | 031 |  | Suku Cadang Alat Laboratorium Metalography
+8 | 01 | 02 | 04 | 032 |  | Suku Cadang Alat Laboratorium Proses Pengelasan
+8 | 01 | 02 | 04 | 033 |  | Suku Cadang Alat Laboratorium Uji Proses Pengelasan
+8 | 01 | 02 | 04 | 034 |  | Suku Cadang Alat Laboratorium Proses Pembuatan Logam
+8 | 01 | 02 | 04 | 035 |  | Suku Cadang Alat Laboratorium Metrologie
+8 | 01 | 02 | 04 | 036 |  | Suku Cadang Alat Laboratorium Proses Pelapisan Logam
+8 | 01 | 02 | 04 | 037 |  | Suku Cadang Alat Laboratorium Proses Pengolahan Panas
+8 | 01 | 02 | 04 | 038 |  | Suku Cadang Alat Laboratorium Proses Teknologi Tekstil
+8 | 01 | 02 | 04 | 039 |  | Suku Cadang Alat Laboratorium Uji Tekstil
+8 | 01 | 02 | 04 | 040 |  | Suku Cadang Alat Laboratorium Proses Teknologi Keramik
+8 | 01 | 02 | 04 | 041 |  | Suku Cadang Alat Laboratorium Proses Teknologi Kulit Karet
+8 | 01 | 02 | 04 | 042 |  | Suku Cadang Alat Laboratorium Uji Kulit Karet Dan Plastik
+8 | 01 | 02 | 04 | 043 |  | Suku Cadang Alat Laboratorium Alat Uji Keramik
+8 | 01 | 02 | 04 | 044 |  | Suku Cadang Alat Laboratorium Proses Teknologi Selulosa
+8 | 01 | 02 | 04 | 045 |  | Suku Cadang Alat Laboratorium Paska Panen
+8 | 01 | 02 | 04 | 046 |  | Suku Cadang Alat Laboratorium Pertanian (Suku Cadang Alat Laboratorium)
+8 | 01 | 02 | 04 | 047 |  | Suku Cadang Alat Laboratorium Kualitas Air
+8 | 01 | 02 | 04 | 048 |  | Suku Cadang Alat Laboratorium Elektronika Dan Daya
+8 | 01 | 02 | 04 | 049 |  | Suku Cadang Alat Laboratorium Energi Surya
+8 | 01 | 02 | 04 | 050 |  | Suku Cadang Alat Laboratorium Konversi Batubara Dan Bioma
+8 | 01 | 02 | 04 | 051 |  | Suku Cadang Alat Laboratorium Oceanografi
+8 | 01 | 02 | 04 | 052 |  | Suku Cadang Alat Laboratorium Perairan
+8 | 01 | 02 | 04 | 053 |  | Suku Cadang Alat Laboratorium Biologi
+8 | 01 | 02 | 04 | 054 |  | Suku Cadang Alat Laboratorium Geofisika
+8 | 01 | 02 | 04 | 055 |  | Suku Cadang Alat Laboratorium Tambang
+8 | 01 | 02 | 04 | 056 |  | Suku Cadang Alat Laboratorium Tambang Proses/Teknik Kimia
+8 | 01 | 02 | 04 | 057 |  | Suku Cadang Alat Laboratorium Proses Industri
+8 | 01 | 02 | 04 | 058 |  | Suku Cadang Alat Laboratorium Kesehatan Kerja
+8 | 01 | 02 | 04 | 059 |  | Suku Cadang Alat Laboratorium Kearsipan
+8 | 01 | 02 | 04 | 060 |  | Suku Cadang Alat Laboratorium Perikanan dan Kelautan
+8 | 01 | 02 | 04 | 999 |  | Suku Cadang Alat Laboratorium Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 02 | 05 | 000 |  | SUKU CADANG ALAT PEMANCAR
+8 | 01 | 02 | 05 | 001 |  | Suku Cadang Alat Pemancar MF/MW
+8 | 01 | 02 | 05 | 002 |  | Suku Cadang Alat Pemancar HF/SW
+8 | 01 | 02 | 05 | 003 |  | Suku Cadang Alat Pemancar FHF/MF
+8 | 01 | 02 | 05 | 004 |  | Suku Cadang Alat Pemancar UHF
+8 | 01 | 02 | 05 | 005 |  | Suku Cadang Alat Pemancar SHF
+8 | 01 | 02 | 05 | 999 |  | Suku Cadang Alat Pemancar Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 02 | 06 | 000 |  | SUKU CADANG ALAT STUDIO DAN KOMUNIKASI
+8 | 01 | 02 | 06 | 001 |  | Suku Cadang Alat Studio
+8 | 01 | 02 | 06 | 002 |  | Suku Cadang Alat Komunikasi
+
+======================================== PAGE 5 ========================================
+
+[Table 1]
+GOL | BID | KEL | SUB
+KEL | SUB-SUB
+KEL | SAT | URAIAN
+8 | 01 | 02 | 06 | 999 |  | Suku Cadang Alat Studio Dan Komunikasi Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 02 | 07 | 000 |  | SUKU CADANG ALAT PERTANIAN
+8 | 01 | 02 | 07 | 001 |  | Suku Cadang Alat Pengolahan Ternak Dan Tanaman
+8 | 01 | 02 | 07 | 002 |  | Suku Cadang Alat Pemeliharaan Tanaman/Ikan/Ternak
+8 | 01 | 02 | 07 | 003 |  | Suku Cadang Alat Panen
+8 | 01 | 02 | 07 | 004 |  | Suku Cadang Alat Penyimpanan Hasil Percobaan Pertanian
+8 | 01 | 02 | 07 | 005 |  | Suku Cadang Alat Laboratorium Pertanian (Suku Cadang Alat Pertanian)
+8 | 01 | 02 | 07 | 006 |  | Suku Cadang Alat Prossesing
+8 | 01 | 02 | 07 | 007 |  | Suku Cadang Alat Paska Panen
+8 | 01 | 02 | 07 | 008 |  | Suku Cadang Alat Produksi
+8 | 01 | 02 | 07 | 999 |  | Suku Cadang Alat Pertanian Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 02 | 08 | 000 |  | SUKU CADANG ALAT BENGKEL
+8 | 01 | 02 | 08 | 001 |  | Suku Cadang Alat Bengkel Bermesin
+8 | 01 | 02 | 08 | 002 |  | Suku Cadang Alat Bengkel Tidak Bermesin
+8 | 01 | 02 | 08 | 999 |  | Suku Cadang Alat Bengkel Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 02 | 99 | 000 |  | SUKU CADANG LAINNYA
+8 | 01 | 02 | 99 | 999 |  | Suku Cadang Lainnya
+ |  |  |  |  |  | 
+ |  |  |  |  |  | 
+8 | 01 | 03 | 00 | 000 |  | ALAT/BAHAN UNTUK KEGIATAN KANTOR
+8 | 01 | 03 | 01 | 000 |  | ALAT TULIS KANTOR
+8 | 01 | 03 | 01 | 001 |  | Alat Tulis
+8 | 01 | 03 | 01 | 002 |  | Tinta Tulis, Tinta Stempel
+8 | 01 | 03 | 01 | 003 |  | Penjepit Kertas
+8 | 01 | 03 | 01 | 004 |  | Penghapus/Korektor
+8 | 01 | 03 | 01 | 005 |  | Buku Tulis
+8 | 01 | 03 | 01 | 006 |  | Ordner Dan Map
+8 | 01 | 03 | 01 | 007 |  | Penggaris
+8 | 01 | 03 | 01 | 008 |  | Cutter (Alat Tulis Kantor)
+8 | 01 | 03 | 01 | 009 |  | Pita Mesin Ketik
+8 | 01 | 03 | 01 | 010 |  | Alat Perekat
+8 | 01 | 03 | 01 | 011 |  | Stadler HD
+8 | 01 | 03 | 01 | 012 |  | Staples
+8 | 01 | 03 | 01 | 013 |  | Isi Staples
+8 | 01 | 03 | 01 | 014 |  | Barang Cetakan
+8 | 01 | 03 | 01 | 015 |  | Seminar Kit
+8 | 01 | 03 | 01 | 999 |  | Alat Tulis Kantor Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 03 | 02 | 000 |  | KERTAS DAN COVER
+8 | 01 | 03 | 02 | 001 |  | Kertas HVS
+8 | 01 | 03 | 02 | 002 |  | Berbagai Kertas
+8 | 01 | 03 | 02 | 003 |  | Kertas Cover
+8 | 01 | 03 | 02 | 004 |  | Amplop
+8 | 01 | 03 | 02 | 005 |  | Kop Surat
+8 | 01 | 03 | 02 | 999 |  | Kertas Dan Cover Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 03 | 03 | 000 |  | BAHAN CETAK
+
+======================================== PAGE 6 ========================================
+
+[Table 1]
+GOL | BID | KEL | SUB
+KEL | SUB-SUB
+KEL | SAT | URAIAN
+8 | 01 | 03 | 03 | 001 |  | Transparant Sheet
+8 | 01 | 03 | 03 | 002 |  | Tinta Cetak
+8 | 01 | 03 | 03 | 003 |  | Plat Cetak
+8 | 01 | 03 | 03 | 004 |  | Stensil Sheet
+8 | 01 | 03 | 03 | 005 |  | Chenical/Bahan Kimia Cetak
+8 | 01 | 03 | 03 | 006 |  | Film Cetak
+8 | 01 | 03 | 03 | 999 |  | Bahan Cetak Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 03 | 04 | 000 |  | BAHAN KOMPUTER
+8 | 01 | 03 | 04 | 001 |  | Continuous Form
+8 | 01 | 03 | 04 | 002 |  | Computer File/Tempat Disket
+8 | 01 | 03 | 04 | 003 |  | Pita Printer
+8 | 01 | 03 | 04 | 004 |  | Tinta/Toner Printer
+8 | 01 | 03 | 04 | 005 |  | Disket
+8 | 01 | 03 | 04 | 006 |  | USB/Flash Disk
+8 | 01 | 03 | 04 | 007 |  | kartu Memori
+8 | 01 | 03 | 04 | 008 |  | CD/DVD Drive
+8 | 01 | 03 | 04 | 009 |  | Harddisk Internal
+8 | 01 | 03 | 04 | 010 |  | Mouse
+8 | 01 | 03 | 04 | 011 |  | CD/DVD
+8 | 01 | 03 | 04 | 999 |  | Bahan Komputer Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 03 | 05 | 000 |  | PERABOT KANTOR
+8 | 01 | 03 | 05 | 001 |  | Sapu Dan Sikat
+8 | 01 | 03 | 05 | 002 |  | Alat-Alat Pel Dan Lap
+8 | 01 | 03 | 05 | 003 |  | Ember, Slang, Dan Tempat Air Lainnya
+8 | 01 | 03 | 05 | 004 |  | Keset
+8 | 01 | 03 | 05 | 005 |  | Tempat Sampah
+8 | 01 | 03 | 05 | 006 |  | Kunci, Kran Dan Semprotan
+8 | 01 | 03 | 05 | 007 |  | Alat Pengikat
+8 | 01 | 03 | 05 | 008 |  | Peralatan Ledeng
+8 | 01 | 03 | 05 | 009 |  | Bahan Kimia Untuk Pembersih
+8 | 01 | 03 | 05 | 010 |  | Alat Untuk Makan Dan Minum
+8 | 01 | 03 | 05 | 011 |  | Kaos Lampu Petromak
+8 | 01 | 03 | 05 | 012 |  | Kaca Lampu Petromak
+8 | 01 | 03 | 05 | 013 |  | Pengharum Ruangan
+8 | 01 | 03 | 05 | 014 |  | Kuas
+8 | 01 | 03 | 05 | 15 |  | Segel/Tanda Pengaman
+8 | 01 | 03 | 05 | 999 |  | Perabot Kantor Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 03 | 06 | 000 |  | ALAT LISTRIK
+8 | 01 | 03 | 06 | 001 |  | Kabel Listrik
+8 | 01 | 03 | 06 | 002 |  | Lampu Listrik
+8 | 01 | 03 | 06 | 003 |  | Stop Kontak
+8 | 01 | 03 | 06 | 004 |  | Saklar
+8 | 01 | 03 | 06 | 005 |  | Stacker
+8 | 01 | 03 | 06 | 006 |  | Balast
+8 | 01 | 03 | 06 | 007 |  | Starter
+8 | 01 | 03 | 06 | 008 |  | Vitting
+8 | 01 | 03 | 06 | 009 |  | Accu
+
+======================================== PAGE 7 ========================================
+
+[Table 1]
+GOL | BID | KEL | SUB
+KEL | SUB-SUB
+KEL | SAT | URAIAN
+8 | 01 | 03 | 06 | 010 |  | Batu Baterai
+8 | 01 | 03 | 06 | 011 |  | Stavol
+8 | 01 | 03 | 06 | 999 |  | Alat Listrik Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 03 | 07 | 000 |  | PERLENGKAPAN DINAS
+8 | 01 | 03 | 07 | 001 |  | Bahan Baku Pakaian
+8 | 01 | 03 | 07 | 002 |  | Penutup Kepala
+8 | 01 | 03 | 07 | 003 |  | Penutup Badan
+8 | 01 | 03 | 07 | 004 |  | Penutup Tangan
+8 | 01 | 03 | 07 | 005 |  | Penutup Kaki
+8 | 01 | 03 | 07 | 006 |  | Atribut
+8 | 01 | 03 | 07 | 007 |  | Perlengkapan Lapangan
+8 | 01 | 03 | 07 | 999 |  | Perlengkapan Dinas Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 03 | 08 | 000 |  | KAPORLAP DAN PERLENGKAPAN SATWA
+8 | 01 | 03 | 08 | 001 |  | Kaporlap dan Perlengkapan Satwa Anjing
+8 | 01 | 03 | 08 | 002 |  | Kaporlap dan Perlengkapan Satwa Kuda
+8 | 01 | 03 | 08 | 999 |  | Kaporlap Dan Perlengkapan Satwa Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 03 | 09 | 000 |  | ALAT/BAHAN UNTUK KEGIATAN KANTOR LAINNYA
+8 | 01 | 03 | 09 | 001 |  | Materai
+8 | 01 | 03 | 09 | 002 |  | Benda Pos Lainnya
+8 | 01 | 03 | 09 | 999 |  | Alat/bahan Untuk Kegiatan Kantor Lain-lain
+ |  |  |  |  |  | 
+ |  |  |  |  |  | 
+8 | 01 | 04 | 00 | 000 |  | OBAT-OBATAN
+8 | 01 | 04 | 01 | 000 |  | OBAT
+8 | 01 | 04 | 01 | 001 |  | Obat Cair
+8 | 01 | 04 | 01 | 002 |  | Obat Padat
+8 | 01 | 04 | 01 | 003 |  | Obat Gas
+8 | 01 | 04 | 01 | 004 |  | Obat Serbuk/Tepung
+8 | 01 | 04 | 01 | 005 |  | Obat Gel/Salep
+8 | 01 | 04 | 01 | 006 |  | Alat/Obat Kontrasepsi Keluarga Berencana
+8 | 01 | 04 | 01 | 007 |  | Non Alat/Obat Kontrasepsi Keluarga Berencana
+8 | 01 | 04 | 01 | 999 |  | Obat Lainnya
+8 | 01 | 04 | 99 | 999 |  | Obat-Obatan Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 05 | 00 | 000 |  | PERSEDIAAN UNTUK DIJUAL/DISERAHKAN
+8 | 01 | 05 | 01 | 000 |  | PERSEDIAAN UNTUK DIJUAL/DISERAHKAN KEPADA MASYARAKAT
+8 | 01 | 05 | 01 | 001 |  | Pita Cukai, Materai, Leges
+8 | 01 | 05 | 01 | 002 |  | Tanah dan Bangunan
+8 | 01 | 05 | 01 | 003 |  | Hewan dan Tanaman
+8 | 01 | 05 | 01 | 004 |  | Peralatan dan Mesin
+8 | 01 | 05 | 01 | 005 |  | Jalan, Irigasi, dan Jaringan
+8 | 01 | 05 | 01 | 006 |  | Aset Tetap Lainnya
+8 | 01 | 05 | 01 | 007 |  | Aset Lain-lain
+8 | 01 | 05 | 01 | 008 |  | Barang Persediaan
+8 | 01 | 05 | 01 | 999 |  | Persediaan Untuk Dijual/Diserahkan Kepada Masyarakat Lainnya
+8 | 01 | 05 | 99 | 999 |  | Persediaan Untuk Dijual/diserahkan Lainnya
+ |  |  |  |  |  | 
+
+======================================== PAGE 8 ========================================
+
+[Table 1]
+GOL | BID | KEL | SUB
+KEL | SUB-SUB
+KEL | SAT | URAIAN
+8 | 01 | 06 | 00 | 000 |  | PERSEDIAAN UNTUK TUJUAN STRATEGIS/BERJAGA-JAGA
+8 | 01 | 06 | 01 | 000 |  | PERSEDIAAN UNTUK TUJUAN STRATEGIS/BERJAGA-JAGA
+8 | 01 | 06 | 01 | 001 |  | Cadangan Energi
+8 | 01 | 06 | 01 | 002 |  | Cadangan Pangan
+8 | 01 | 06 | 01 | 999 |  | Persediaan Untuk Tujuan Strategis/Berjaga-jaga Lainnya
+8 | 01 | 06 | 99 | 999 |  | Persediaan Untuk Tujuan Strategis/Berjaga-jaga Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 07 | 00 | 000 |  | NATURA DAN PAKAN
+8 | 01 | 07 | 01 | 000 |  | NATURA
+8 | 01 | 07 | 01 | 001 |  | Makanan/Sembako
+8 | 01 | 07 | 01 | 002 |  | Minuman
+8 | 01 | 07 | 01 | 999 |  | Natura Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 07 | 02 | 000 |  | PAKAN
+8 | 01 | 07 | 02 | 001 |  | Pakan Hewan
+8 | 01 | 07 | 02 | 002 |  | Pakan Ikan
+8 | 01 | 07 | 02 | 999 |  | Pakan Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 07 | 99 | 000 |  | NATURA DAN PAKAN LAINNYA
+8 | 01 | 07 | 99 | 999 |  | Natura Dan Pakan Lainnya
+ |  |  |  |  |  | 
+8 | 01 | 08 | 00 | 000 |  | PERSEDIAAN PENELITIAN BIOLOGI
+8 | 01 | 08 | 01 | 000 |  | PERSEDIAAN PENELITIAN BIOLOGI
+8 | 01 | 08 | 01 | 001 |  | Hewan/Ternak
+8 | 01 | 08 | 01 | 002 |  | Biota Laut/Ikan
+8 | 01 | 08 | 01 | 003 |  | Tanaman
+8 | 01 | 08 | 01 | 999 |  | Persediaan Penelitian Biologi Lainnya
+8 | 01 | 08 | 99 | 999 |  | Persediaan Penelitian Biologi Lainnya
+ |  |  |  |  |  | 
+8 | 02 | 00 | 00 | 000 |  | BARANG TAK HABIS PAKAI
+8 | 02 | 01 | 00 | 000 |  | KOMPONEN
+8 | 02 | 01 | 01 | 000 |  | KOMPONEN JEMBATAN BAJA
+8 | 02 | 01 | 01 | 001 |  | Komponen Jembatan Bailley
+8 | 02 | 01 | 01 | 002 |  | Komponen Jembatan Baja Prefab
+8 | 02 | 01 | 01 | 999 |  | Komponen Jembatan Baja Lainnya
+8 | 02 | 01 | 02 | 000 |  | KOMPONEN JEMBATAN PRATEKAN
+8 | 02 | 01 | 02 | 001 |  | Komponen Jembatan Pratekan Prefab
+8 | 02 | 01 | 02 | 999 |  | Komponen Jembatan Pratekan Lainnya
+8 | 02 | 01 | 03 | 000 |  | KOMPONEN PERALATAN
+8 | 02 | 01 | 03 | 001 |  | Dinamo Amper
+8 | 02 | 01 | 03 | 002 |  | Dinamo Start
+8 | 02 | 01 | 03 | 003 |  | Transmisi
+8 | 02 | 01 | 03 | 004 |  | Injection Pump
+8 | 02 | 01 | 03 | 005 |  | Karburator Unit
+8 | 02 | 01 | 03 | 006 |  | Motor Hidrolik
+8 | 02 | 01 | 03 | 007 |  | Engine Bensin
+8 | 02 | 01 | 03 | 008 |  | Engine Diesel
+8 | 02 | 01 | 03 | 999 |  | Komponen Peralatan Lainnya
+8 | 02 | 01 | 04 | 000 |  | KOMPONEN RAMBU-RAMBU
+8 | 02 | 01 | 04 | 001 |  | Komponen Rambu-Rambu Darat
+
+======================================== PAGE 9 ========================================
+
+[Table 1]
+GOL | BID | KEL | SUB
+KEL | SUB-SUB
+KEL | SAT | URAIAN
+8 | 02 | 01 | 04 | 002 |  | Komponen Rambu-Rambu Udara
+8 | 02 | 01 | 04 | 999 |  | Komponen Rambu-Rambu Lainnya
+8 | 02 | 01 | 05 | 000 |  | ATTACHMENT
+8 | 02 | 01 | 05 | 001 |  | Blade
+8 | 02 | 01 | 05 | 002 |  | Boom
+8 | 02 | 01 | 05 | 003 |  | Bucket
+8 | 02 | 01 | 05 | 004 |  | Scarifier
+8 | 02 | 01 | 05 | 999 |  | Attachment Lainnya
+8 | 02 | 01 | 99 | 000 |  | KOMPONEN LAINNYA
+8 | 02 | 01 | 99 | 999 |  | Komponen Lainnya
+ |  |  |  |  |  | 
+8 | 02 | 02 | 00 | 000 |  | P I P A
+8 | 02 | 02 | 01 | 000 |  | PIPA AIR BESI TUANG (DCI)
+8 | 02 | 02 | 01 | 001 |  | DCI Filter
+8 | 02 | 02 | 01 | 002 |  | Pipa Air Besi Tuang
+8 | 02 | 02 | 01 | 999 |  | Pipa Air Besi Tuang (DCI) Lainnya
+8 | 02 | 02 | 02 | 000 |  | PIPA ASBES SEMEN (ACP)
+8 | 02 | 02 | 02 | 001 |  | A C P 1,0
+8 | 02 | 02 | 02 | 002 |  | A C P 1,5
+8 | 02 | 02 | 02 | 003 |  | A C P 2,0
+8 | 02 | 02 | 02 | 004 |  | A C P 2,5
+8 | 02 | 02 | 02 | 005 |  | A C P 3,0
+8 | 02 | 02 | 02 | 999 |  | Pipa Asbes Semen (ACP) Lainnya
+ |  |  |  |  |  | 
+8 | 02 | 02 | 03 | 000 |  | PIPA BAJA
+8 | 02 | 02 | 03 | 001 |  | Pipa Baja Gelombang
+8 | 02 | 02 | 03 | 002 |  | Pipa Baja Konstruksi (CSP)
+8 | 02 | 02 | 03 | 003 |  | Pipa Baja Lapis Polyethelene
+8 | 02 | 02 | 03 | 004 |  | Pipa Baja Lapis Seng (GIP)
+8 | 02 | 02 | 03 | 999 |  | Pipa Baja Lainnya
+8 | 02 | 02 | 04 | 000 |  | PIPA BETON PRATEKAN
+8 | 02 | 02 | 04 | 001 |  | Fitter Pipa Beton Pratekan
+8 | 02 | 02 | 04 | 002 |  | Pipa Beton Pratekan
+8 | 02 | 02 | 04 | 999 |  | Pipa Beton Pratekan Lainnya
+8 | 02 | 02 | 05 | 000 |  | PIPA FIBER GLASS
+8 | 02 | 02 | 05 | 001 |  | Filter Pipa Fiber Glass
+8 | 02 | 02 | 05 | 002 |  | Pipa Fiber Glass
+8 | 02 | 02 | 05 | 999 |  | Pipa Fiber Glass Lainnya
+8 | 02 | 02 | 06 | 000 |  | PIPA PLASTIK PVC (UPVC)
+8 | 02 | 02 | 06 | 001 |  | Pipa Plastik PVC
+8 | 02 | 02 | 06 | 002 |  | UPVC Fitter
+8 | 02 | 02 | 06 | 999 |  | Pipa Plastik PVC (UPVC) Lainnya
+ |  |  |  |  |  | 
+8 | 02 | 02 | 99 | 000 |  | P I P A LAINNYA
+8 | 02 | 02 | 99 | 999 |  | P I P A Lainnya
+ |  |  |  |  |  | 
+8 | 02 | 03 | 00 | 000 |  | RAMBU-RAMBU
+8 | 02 | 03 | 01 | 000 |  | RAMBU-RAMBU
+8 | 02 | 03 | 01 | 001 |  | Rambu - Rambu Lalu Lintas
+8 | 02 | 03 | 01 | 002 |  | Rambu-rambu Lingkungan hidup dan kebersihan
+
+======================================== PAGE 10 ========================================
+
+[Table 1]
+GOL | BID | KEL | SUB
+KEL | SUB-SUB
+KEL | SAT | URAIAN
+8 | 02 | 03 | 99 | 999 |  | Rambu-Rambu Lainnya
+ |  |  |  |  |  | 
+8 | 03 | 00 | 00 | 000 |  | BARANG BEKAS DIPAKAI
+8 | 03 | 01 | 00 | 000 |  | KOMPONEN BEKAS DAN PIPA BEKAS
+8 | 03 | 01 | 01 | 000 |  | KOMPONEN BEKAS
+8 | 03 | 01 | 01 | 001 |  | Komponen Jembatan Baja Bekas
+8 | 03 | 01 | 01 | 002 |  | Komponen Jembatan Pratekan Bekas
+8 | 03 | 01 | 01 | 003 |  | Komponen Peralatan Bekas
+8 | 03 | 01 | 01 | 004 |  | Attachment Bekas
+8 | 03 | 01 | 01 | 005 |  | Kotak dan Bilik Suara
+8 | 03 | 01 | 01 | 999 |  | Komponen Bekas Lainnya
+8 | 03 | 01 | 02 | 000 |  | PIPA BEKAS
+8 | 03 | 01 | 02 | 001 |  | Pipa Air Besi Tuang Bekas
+8 | 03 | 01 | 02 | 002 |  | Pipa Asbes Semen Bekas
+8 | 03 | 01 | 02 | 003 |  | Pipa Baja Bekas
+8 | 03 | 01 | 02 | 004 |  | Pipa Beton Pratekan Bekas
+8 | 03 | 01 | 02 | 005 |  | Pipa Fiber Gelas Bekas
+8 | 03 | 01 | 02 | 006 |  | Pipa Plastik PVC (UPVC) Bekas
+8 | 03 | 01 | 02 | 999 |  | Pipa Bekas Lainnya
+8 | 03 | 01 | 99 | 000 |  | KOMPONEN BEKAS DAN PIPA BEKAS LAINNYA
+8 | 03 | 01 | 99 | 999 |  | Komponen Bekas Dan Pipa Bekas Lainnya
+ |  |  |  |  |  | 
+
+======================================== PAGE 11 ========================================
+
+[Table 1]
+NO. | GOL | BID | KEL | SUB
+KEL | SUB-
+SUB
+KEL | Nama Kelompok dan Sub Kelompok Barang | Nama dan Jenis Barang | SPK/Perjanian/ Kontrak/NOTA |  | SP2D /KWITANSI |  | SPESIFIKASI
+BARANG |  | Satuan | J U M L A H |  |  | Dipergunakan pada
+unit/Kegiatan//PPTK | KET
+ |  |  |  |  |  |  |  | Tanggal | Nomor | Tanggal | Nomor | Merk/
+Type | Bahan |  | Barang | Harga
+Satuan | Jumlah Harga |  | 
+1 |  |  |  |  |  | 2 |  | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 (10x11) | 13 | 14
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  | Jumlah Keseluruhan |  |  |  |  |  |  |  |  | XXXX |  | XXXX |  | 
+
+======================================== PAGE 12 ========================================
+
+[Table 1]
+NO. | PENERIMAAN |  |  |  |  |  |  |  | PENGELUARAN |  |  |  | KET.
+ | TANGGAL
+DITERIMA | NAMA/JENIS
+BARANG | MERK/ UKURAN | TAHUN
+PEMBUATAN | JUMLAH/ SATUAN | TGL/NO
+KONTRAK/SP/SPK/
+HARGA SATUAN | BERITA ACARA PEMERIKSAAN |  | TANGGAL
+DIKELUARKA
+N | DISERAHKAN
+KEPADA | JUMLAH
+SATUAN/BAR
+ANG | TGL/NO.
+SURAT
+PENYERAHA
+N | 
+ |  |  |  |  |  |  | TANGGAL | NOMOR |  |  |  |  | 
+1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14
+ |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  | 
+
+======================================== PAGE 13 ========================================
+
+
+======================================== PAGE 14 ========================================
+
+[Table 1]
+NO. | TANGGAL
+TERIMA | DARI | DOKUMEN FAKTUR/
+NOTA/SP/KONTRAK |  | NAMA
+BRANG | BANYAKNYA | HARGA
+SATUAN | JUMLAH
+HARGA | Berita Acara/Surat Penerimaan |  | KET
+ |  |  | NOMOR | TANGGAL |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  | NOMOR | TANGGAL | 
+1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+ |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  | 
+
+[Table 2]
+……………..,……………
+Penyimpan Barang
+( ………………………….. )
+NIP. ………………... |  | 
+ | BUPATI JEMBRANA,
+I PUTU ARTHA | 
+
+======================================== PAGE 15 ========================================
+
+[Table 1]
+NO. | TANGGAL | MASUK | KELUAR | SISA | KET.
+1 | 2 | 3 | 4 | 5 | 6
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+
+======================================== PAGE 16 ========================================
+
+[Table 1]
+Tanggal | No/Tgl.Surat Dasar
+Penerimaan/Pengeluar
+an | Uraian | BARANG - BARANG |  |  | HARGA SATUAN | JUMLAH BARANG YANG DITERIMA/ DIKELUARKAN/ SISA |  |  | KET.
+ |  |  | MASUK | KELUAR | SISA |  | BRTAMBAH | BERKURANG | SISA | 
+1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ATASAN LANGSUNG
+……………..,……………
+Penyimpan Barang
+( …………………… )
+( ………………………….. )
+NIP. ………………
+NIP. ………………...
+BUPATI JEMBRANA,
+I PUTU ARTHA |  |  |  |  |  |  |  |  |  | 
+
+======================================== PAGE 17 ========================================
+I PUTU ARTHA
+
+
+======================================== PAGE 18 ========================================
+
+[Table 1]
+NO. | TANGGAL | NOMOR | NAMA
+BRANG | BANYAKNYA | HARGA
+SATUAN | JUMLAH
+HARGA | UNTUK | TANGGAL
+PENYERAHA
+N | KET
+1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  | 
+
+[Table 2]
+……………..,……………
+Penyimpan Barang
+( ………………………….. )
+NIP. ………………... |  | 
+ | BUPATI JEMBRANA,
+I PUTU ARTHA | 
+
+======================================== PAGE 19 ========================================
+
+[Table 1]
+NO | NAMA BARANG | Saldo Awal
+Bulan……… |  | Mutasi Bulan…………………………….. |  |  |  | Saldo per ……………. |  | Keterangan
+ |  |  |  | Tambah |  | Digunakan |  | Jumlah
+Barang | Jumlah Harga | 
+ |  | Jlm. Brg | Harga | Jlm. Brg | Harga | Jlm. Brg | Harga |  |  | 
+1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 (3+5-7) | 10 (4+6-8) | 11
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ | JUMLAH KESELURUHAN |  |  |  |  |  |  |  |  | 
+
+======================================== PAGE 20 ========================================
+
+[Table 1]
+NO | NAMA BARANG | JUMLAH PERSEDIAAN PERTANGGAL PERHITUNGAN |  | KET.
+ |  | JUMLAH | SATUAN (Rp) | 
+1 | 2 | 3 | 4 | 5
+ |  |  |  | 
+a. | Barang Konsumsi |  | Rp. | 
+ | 1. Alat Tulis Kantor |  |  | 
+ | 2. Kertas dan Cover |  |  | 
+ | 3. Bahan Cetak |  |  | 
+ | 4. Bahan Komputer |  |  | 
+ | 5. Alat Listrik |  |  | 
+b. | Bahan Untuk Pemeliharaan |  | Rp. | 
+ | 1. Perabot Kantor |  |  | 
+c. | Suku Cadang |  | Rp. | 
+ | 1. suku cadang |  |  | 
+d. | Persediaan untuk dijual/diserahkan |  | Rp. | 
+ | kepada masyarakat/pihak lain |  |  | 
+ | 1. Tanah |  |  | 
+ | 2. Peralatan dan Mesin |  |  | 
+ | 3. Bangunan |  |  | 
+ | 4. Heawan dan tananamn |  |  | 
+e | Leges,Materai dan Benda Pos Lainnya |  | Rp. | 
+ | 1. Leges |  |  | 
+ | 2. Materai |  |  | 
+ | 3. Benda Pos Lainnya |  |  | 
+f. | Bahan Baku |  | Rp. | 
+ | 1. Bahan Bangunnan dan Konstruksi |  |  | 
+ | 2. Bahan Kimia |  |  | 
+ | 3. Bahan Bakar dan Pelumas |  |  | 
+ | 4. Bahan Baku |  |  | 
+g | Barang dalam Proses/Setengah Jadi |  | Rp. | 
+ | 1. Barang dalam proses |  |  | 
+h. | Persediaan Lainnya |  | Rp. | 
+ |  |  |  | 
+ | T O T A L |  |  | 
+
+======================================== PAGE 21 ========================================
+
+[Table 1]
+NO | KODE BARANG |  | NAMA BARANG | TIPE/ MERK | TAHUN
+PEROLEHAN | KUANTITAS BARANG |  |  | SATUAN | Rp. | Kondisi Barang |  |  | KET.
+ | JENIS BARANG | KODE BARANG |  |  |  | Menurut
+Administrasi | Hasil
+Inventarisasi | Selisih |  |  | B | R | U | 
+1 | 2 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |  |  | 12
+(6) | (7) | (8) | (9) | (10) | (11) | (12) | (13) | (14) | (15) | (16) | …...(17)….. |  |  | (18)
+ |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+
+[Table 2]
+…(19)…………..,………(20)……
+Penyimpan Barang
+( …………(21)……………….. )
+NIP. ………………... |  | 
+ |  | 
+ | BUPATI JEMBRANA,
+I PUTU ARTHA | 
+
+======================================== PAGE 22 ========================================
+    penanggungjawab pengelola persediaan dan sewaktu-waktu apabila diperlukan:
+2)  Laporan hasil inventarisasi persediaan dibuat 3 (Tiga) rangkap :
+      -    1 (satu) rangkap untuk arsip Satuan Kerja
+      -    1 (satu) rangkap untuk Kepala SKPD/Unit SKPD.
+      -    1 (satu) rangkap lainnya untuk Kepala Inspektorat Kabupaten
+3)  Laporan  hasil  inventarisasi  persediaan  dibuat  per  sub-sub  kelompok barang dalam sub kelompok barang yang sama.
+      Cara Pengisian
+      (1)   Diisi dengan Nomor urut Halaman Laporan Inventarisasi.
+      (2)   Diisi dengan Semester Pelaporan.
+      (3)   Diisi dengan Tahun Pelaporan.
+      (4)   Diisi dengan Kode SKPD/Unit SKPD.
+      (5)   Disi dengan Nama SKPD/Unit SKPD
+      (6)   Diisi dengan nomor urut pencatatan.
+   (7)  Diisi dengan kode barang per sub-sub kelompok barang sesuai dengan penggolongan dan kodefikasi yang berlaku.
+   (8)  Diisi dengan  kode jenis barang  yang didaftarkan  dalam table  barang  (enam digit).
+   (9)  Diisi dengan nama barang persediaan sesuai dengan yang didaftarkan dalam tabel barang.
+(10)  Diisi dengan merk/type barang persediaan (bila ada).
+(11)  Diisi dengan tahun perolehan barang persediaan
+(12)  Diisi dengan jumlah/kuantitas  barang persediaan sesuai dengan jumlah/kuantitas yang tersisa dalam buku barang
+(13)  Diisi   dengan   jumlah/kuantitas    barang   persediaan   sesuai   dengan kuantitas atas barang persediaan  yang ditemukan
+         dalam pelaksanaan inventarisasi (opname fisik) persediaan
+(14)  Diisi dengan selisih antara jumlah/kuantitas persediaan yang ditemukan dalam pelaksanaan inventarisasi (opname fisik) persediaan dengan jumlah/kuantitas
+         persediaan sesuai dengan jumlah/kuantitas yang tersisa dalam buku persediaan
+(15)  Diisi dengan satuan barang yang digunakan dalam tabel barang
+(16)  Diisi dengan harga perolehan terakhir persediaan
+(17)  Diisi    dengan    jumlah/kuantitas     barang    persediaan    berdasarkan kondisinya untuk tiap jenis barang persediaan,  yaitu : B untuk barang dengan  kondisi  baik;
+        R untuk barang dengan kondisi rusak, dan U untuk barang dengan kondisi Usang
+(18)  Diisi  dengan  keterangan  yang  diperlukan  untuk  masing-masing  jenis barang persediaan berdasarkan hasil inventarisasi (opname fisik) persediaan yang telah dilakukan.
+(19)  Diisi dengan  nama kota ditandatanganinya  laporan  hasil inventarisasi persediaan
+(20)  Diisi  dengan  tanggal  selesainya  pelaksanaan  inventarisasi  (opname fisik) persediaan.
+(21)  Diisi  dengan  nama  penandatangan  hasil  inventarisasi  (opname  fisik) persediaan selaku pejabat penanggung jawab/pengurus persediaan.
+               (22) Diisi  dengan  NIP  penandatangan   hasil  inventarisasi  (opname  fisik) persediaan selaku Atasan Langsung Pengurus/Penyimpan barang
+Petunjuk Pengisian Laporan Hasil Inventarisasi Persediaan (Lampiran 3)
+Penjelasan Umum
+         1) Inventarisasi  persediaan  dilakukan  paling  sedikit  1  (satu)  tahun  sekali pada akhir tahun anggaran,  pada saat pengecekan  kembali, atau pada saat serah terima
+
+
+======================================== PAGE 23 ========================================
+
+[Table 1]
+NO | NAMA BARANG | Saldo Awal
+Januari 20….. |  | MUTASI 1 Januari s/d. 31 Des. 20…….. |  |  |  | Saldo per 31 Des 20……. |  | Keteranga
+n
+ |  |  |  | Tambah |  | Digunakan |  | Jumlah
+Barang | Jumlah Harga | 
+ |  | Jlm. Brg | Harga | Jlm. Brg | Harga | Jlm. Brg | Harga |  |  | 
+1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 (3+5-7) | 10 (4+6-8) | 11
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ | JUMLAH KESELURUHAN |  |  |  |  |  |  |  |  | 
+
+======================================== PAGE 24 ========================================
+
+[Table 1]
+NO | NAMA BARANG | Saldo Awal
+Januari TAHUN…. |  | MUTASI Bln.Januari S/D. Desember 20……. |  |  |  | Saldo Per 31 Desember 20…. |  | Keteranga
+n
+ |  |  |  | Tambah |  | Digunakan |  | Jumlah Barang | Jumlah Harga | 
+ |  | Jlm. Brg | Harga | Jlm. Brg | Harga | Jlm. Brg | Harga |  |  | 
+1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 (3+5-7) | 10 (4+6-8) | 11
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ | JUMLAH KESELURUHAN |  |  |  |  |  |  |  |  | 
+
+======================================== PAGE 25 ========================================
+
+[Table 1]
+NO | Banyaknya | Nama Barang | Harga Satuan | Jumlah Harga | Keterangan
+1 | 2 | 3 | 4 | 5 | 6
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ |  |  |  |  | 
+ | JUMLAH KESELURUHAN |  |  |  | 

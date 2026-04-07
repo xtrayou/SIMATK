@@ -27,6 +27,7 @@
                                     name="name"
                                     value="<?= old('name', $produk['name']) ?>"
                                     placeholder="Nama barang / produk"
+                                    list="nama_barang_list" autocomplete="off"
                                     required>
                                 <?php if (session('errors.name')): ?>
                                     <div class="invalid-feedback"><?= session('errors.name') ?></div>
@@ -55,14 +56,15 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="sku" class="form-label fw-bold">SKU / Kode Barang <span class="text-danger">*</span></label>
+                                <label for="sku" class="form-label fw-bold">Kode Barang <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <input type="text"
                                         class="form-control <?= (session('errors.sku')) ? 'is-invalid' : '' ?>"
                                         id="sku"
                                         name="sku"
                                         value="<?= old('sku', $produk['sku']) ?>"
-                                        placeholder="Contoh: ATK-001"
+                                        placeholder="Ketik/Pilih Kode Barang..."
+                                        list="kode_barang_list" autocomplete="off"
                                         required>
                                     <?php if (session('errors.sku')): ?>
                                         <div class="invalid-feedback"><?= session('errors.sku') ?></div>
@@ -163,7 +165,7 @@
             <div class="card-body p-4">
                 <h5 class="fw-bold mb-3"><i class="bi bi-lightbulb me-2"></i>Petunjuk</h5>
                 <ul class="mb-0 ps-3 small">
-                    <li class="mb-2">Gunakan <strong>SKU</strong> yang konsisten agar mudah dalam pencarian.</li>
+                    <li class="mb-2">Gunakan <strong>Kode Barang</strong> yang konsisten agar mudah dalam pencarian.</li>
                     <li class="mb-2"><strong>Stok Minimum</strong> digunakan oleh sistem untuk memberikan notifikasi jika persediaan hampir habis.</li>
                     <li>Harga dapat diupdate sewaktu-waktu jika ada perubahan dari supplier.</li>
                 </ul>
@@ -200,6 +202,56 @@
 <?= $this->section('scripts') ?>
 <script>
     $(document).ready(function() {
+        $.getJSON('<?= base_url("api/kode-barang") ?>', function(data) {
+            const skuList = $('<datalist id="kode_barang_list"></datalist>');
+            const nameList = $('<datalist id="nama_barang_list"></datalist>');
+            data.forEach(item => {
+                skuList.append(`<option value="${item.kode}"> ${item.nama}</option>`);
+                nameList.append(`<option value="${item.nama}"> ${item.kode}</option>`);
+            });
+            $('body').append(skuList).append(nameList);
+
+            function autoSelectCategory(kode) {
+                if (kode.length >= 3) {
+                    // Extract root classification by padding with 0s. e.g. 8010302004 becomes 8010302000
+                    const parentKode = kode.substring(0, kode.length - 3) + '000';
+                    const parentMatch = data.find(item => item.kode === parentKode);
+                    if (parentMatch) {
+                        const parentName = parentMatch.nama.trim().toUpperCase();
+                        $('#category_id option').each(function() {
+                            if ($(this).text().trim().toUpperCase() === parentName) {
+                                $(this).prop('selected', true).trigger('change');
+                            }
+                        });
+                    }
+                }
+            }
+
+            $('#sku').on('change', function() {
+                const val = $(this).val();
+                const matched = data.find(item => item.kode === val);
+                if (matched) {
+                    if ($('#name').val() === '') {
+                        $('#name').val(matched.nama).trigger('input');
+                    }
+                    autoSelectCategory(matched.kode);
+                }
+            });
+
+            $('#name').on('change', function() {
+                const val = $(this).val();
+                const matched = data.find(item => item.nama === val);
+                if (matched) {
+                    if ($('#sku').val() === '') {
+                        $('#sku').val(matched.kode).trigger('change');
+                    }
+                    autoSelectCategory(matched.kode);
+                }
+            });
+        }).fail(function() {
+            console.warn("Gagal memuat data kode barang dari API");
+        });
+
         $('#name, #initial_stock, #unit, #category_id').on('input change', function() {
             const name = $('#name').val() || 'Nama Produk';
             const initial = parseInt($('#initial_stock').val()) || 0;

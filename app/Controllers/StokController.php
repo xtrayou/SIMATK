@@ -69,6 +69,11 @@ class StokController extends BaseController
         $movementData = $this->request->getPost('movements');
         $globalNotes  = $this->request->getPost('global_notes');
         $reference    = $this->request->getPost('reference_no') ?: 'IN-' . time();
+        $redirectAfter = trim((string) $this->request->getPost('_redirect'));
+        $successRedirect = '/stock/in';
+        if ($redirectAfter !== '' && str_starts_with($redirectAfter, '/')) {
+            $successRedirect = $redirectAfter;
+        }
 
         $db = \Config\Database::connect();
         $db->transStart();
@@ -84,7 +89,7 @@ class StokController extends BaseController
                     'type'         => 'IN',
                     'quantity'     => $m['quantity'],
                     'reference_no' => $reference,
-                    'notes'        => $m['notes'] ?: $globalNotes,
+                    'notes'        => ($m['notes'] ?? '') ?: $globalNotes,
                     'created_by'   => session()->get('userId') ?: null
                 ]);
                 $successCount++;
@@ -114,7 +119,7 @@ class StokController extends BaseController
                 log_message('error', 'Gagal kirim notifikasi stok masuk: ' . $e->getMessage());
             }
 
-            return redirect()->to('/stock/in')->with('success', "Berhasil memproses $successCount item barang masuk.");
+            return redirect()->to($successRedirect)->with('success', "Berhasil memproses $successCount item barang masuk.");
         } catch (Exception $e) {
             $db->transRollback();
             return redirect()->back()->withInput()->with('error', $e->getMessage());
@@ -181,7 +186,7 @@ class StokController extends BaseController
                     'type'         => 'OUT',
                     'quantity'     => $m['quantity'],
                     'reference_no' => $reference,
-                    'notes'        => $m['notes'] ?: $globalNotes,
+                    'notes'        => ($m['notes'] ?? '') ?: $globalNotes,
                     'created_by'   => session()->get('userId') ?: null
                 ]);
                 $successCount++;
@@ -366,7 +371,7 @@ class StokController extends BaseController
                     'type'         => 'ADJUSTMENT',
                     'quantity'     => $p['new_stock'],
                     'reference_no' => 'ADJ-' . time(),
-                    'notes'        => $p['notes'] ?: $globalNotes,
+                    'notes'        => ($p['notes'] ?? '') ?: $globalNotes,
                     'created_by'   => session()->get('userId') ?: null
                 ]);
                 $successCount++;
@@ -461,7 +466,7 @@ class StokController extends BaseController
         $sheet->getStyle('A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
         // Column headers
-        $headers = ['No', 'Tanggal & Waktu', 'Produk', 'SKU', 'Tipe', 'Jumlah', 'Stok Sisa', 'Referensi/Ket'];
+        $headers = ['No', 'Tanggal & Waktu', 'Produk', 'Kode Barang', 'Tipe', 'Jumlah', 'Stok Sisa', 'Referensi/Ket'];
         $col = 'A';
         foreach ($headers as $header) {
             $sheet->setCellValue($col . '4', $header);

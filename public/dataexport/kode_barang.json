@@ -1,0 +1,1678 @@
+[
+    {
+        "kode": "8000000000",
+        "nama": "PERSEDIAAN"
+    },
+    {
+        "kode": "8010000000",
+        "nama": "BARANG PAKAI HABIS"
+    },
+    {
+        "kode": "8010100000",
+        "nama": "BAHAN"
+    },
+    {
+        "kode": "8010101000",
+        "nama": "BAHAN BANGUNAN DAN KONSTRUKSI"
+    },
+    {
+        "kode": "8010101001",
+        "nama": "Aspal"
+    },
+    {
+        "kode": "8010101002",
+        "nama": "Semen"
+    },
+    {
+        "kode": "8010101003",
+        "nama": "Kaca"
+    },
+    {
+        "kode": "8010101004",
+        "nama": "Pasir"
+    },
+    {
+        "kode": "8010101005",
+        "nama": "Batu"
+    },
+    {
+        "kode": "8010101006",
+        "nama": "Cat"
+    },
+    {
+        "kode": "8010101007",
+        "nama": "Seng"
+    },
+    {
+        "kode": "8010101008",
+        "nama": "Baja"
+    },
+    {
+        "kode": "8010101009",
+        "nama": "Electro Dalas"
+    },
+    {
+        "kode": "8010101010",
+        "nama": "Patok Beton"
+    },
+    {
+        "kode": "8010101011",
+        "nama": "Tiang Beton"
+    },
+    {
+        "kode": "8010101012",
+        "nama": "Besi Beton"
+    },
+    {
+        "kode": "8010101013",
+        "nama": "Tegel"
+    },
+    {
+        "kode": "8010101014",
+        "nama": "Genteng"
+    },
+    {
+        "kode": "8010101015",
+        "nama": "Bis Beton"
+    },
+    {
+        "kode": "8010101016",
+        "nama": "Plat"
+    },
+    {
+        "kode": "8010101017",
+        "nama": "Steel Sheet Pile"
+    },
+    {
+        "kode": "8010101018",
+        "nama": "Concrete Sheet Pile"
+    },
+    {
+        "kode": "8010101019",
+        "nama": "Kawat Bronjong"
+    },
+    {
+        "kode": "8010101020",
+        "nama": "Karung"
+    },
+    {
+        "kode": "8010101021",
+        "nama": "Minyak Cat/Thinner"
+    },
+    {
+        "kode": "8010101999",
+        "nama": "Bahan Bangunan Dan Konstruksi Lainnya"
+    },
+    {
+        "kode": "8010102000",
+        "nama": "BAHAN KIMIA"
+    },
+    {
+        "kode": "8010102001",
+        "nama": "Bahan Kimia Padat"
+    },
+    {
+        "kode": "8010102002",
+        "nama": "Bahan Kimia Cair"
+    },
+    {
+        "kode": "8010102003",
+        "nama": "Bahan Kimia Gas"
+    },
+    {
+        "kode": "8010102005",
+        "nama": "Bahan Kimia Nuklir"
+    },
+    {
+        "kode": "8010102999",
+        "nama": "Bahan Kimia Lainnya"
+    },
+    {
+        "kode": "8010103000",
+        "nama": "BAHAN PELEDAK"
+    },
+    {
+        "kode": "8010103001",
+        "nama": "Anfo"
+    },
+    {
+        "kode": "8010103002",
+        "nama": "Detonator"
+    },
+    {
+        "kode": "8010103003",
+        "nama": "Dinamit"
+    },
+    {
+        "kode": "8010103004",
+        "nama": "Gelatine"
+    },
+    {
+        "kode": "8010103005",
+        "nama": "Sumbu Ledak/Api"
+    },
+    {
+        "kode": "8010103006",
+        "nama": "Amunisi"
+    },
+    {
+        "kode": "8010103999",
+        "nama": "Bahan Peledak Lainnya"
+    },
+    {
+        "kode": "8010104000",
+        "nama": "BAHAN BAKAR DAN PELUMAS"
+    },
+    {
+        "kode": "8010104001",
+        "nama": "Bahan Bakar Minyak"
+    },
+    {
+        "kode": "8010104002",
+        "nama": "Minyak Pelumas"
+    },
+    {
+        "kode": "8010104003",
+        "nama": "Minyak Hydrolis"
+    },
+    {
+        "kode": "8010104004",
+        "nama": "Bahan Bakar Gas"
+    },
+    {
+        "kode": "8010104005",
+        "nama": "Batubara"
+    },
+    {
+        "kode": "8010104999",
+        "nama": "Bahan Bakar Dan Pelumas Lainnya"
+    },
+    {
+        "kode": "8010105000",
+        "nama": "BAHAN BAKU"
+    },
+    {
+        "kode": "8010105001",
+        "nama": "Kawat"
+    },
+    {
+        "kode": "8010105002",
+        "nama": "Kayu"
+    },
+    {
+        "kode": "8010105003",
+        "nama": "Logam/Metalorgi"
+    },
+    {
+        "kode": "8010105004",
+        "nama": "Latex"
+    },
+    {
+        "kode": "8010105005",
+        "nama": "Biji Plastik"
+    },
+    {
+        "kode": "8010105006",
+        "nama": "Karet (Bahan Baku)"
+    },
+    {
+        "kode": "8010105999",
+        "nama": "Bahan Baku Lainnya"
+    },
+    {
+        "kode": "8010106000",
+        "nama": "BAHAN KIMIA NUKLIR"
+    },
+    {
+        "kode": "8010106001",
+        "nama": "Uranium - 233"
+    },
+    {
+        "kode": "8010106002",
+        "nama": "Uranium - 235"
+    },
+    {
+        "kode": "8010106003",
+        "nama": "Uranium - 238"
+    },
+    {
+        "kode": "8010106004",
+        "nama": "Plutonium (PU)"
+    },
+    {
+        "kode": "8010106005",
+        "nama": "Neptarim (NP)"
+    },
+    {
+        "kode": "8010106006",
+        "nama": "Uranium Dioksida"
+    },
+    {
+        "kode": "8010106007",
+        "nama": "Thorium"
+    },
+    {
+        "kode": "8010106999",
+        "nama": "Bahan Kimia Nuklir Lainnya"
+    },
+    {
+        "kode": "8010107000",
+        "nama": "BARANG DALAM PROSES"
+    },
+    {
+        "kode": "8010107001",
+        "nama": "Barang Dalam Proses"
+    },
+    {
+        "kode": "8010107999",
+        "nama": "Barang Dalam Proses Lainnya"
+    },
+    {
+        "kode": "8010199000",
+        "nama": "BAHAN LAINNYA"
+    },
+    {
+        "kode": "8010199999",
+        "nama": "Bahan Lainnya"
+    },
+    {
+        "kode": "8010200000",
+        "nama": "SUKU CADANG"
+    },
+    {
+        "kode": "8010201000",
+        "nama": "SUKU CADANG ALAT ANGKUTAN"
+    },
+    {
+        "kode": "8010201001",
+        "nama": "Suku Cadang Alat Angkutan Darat Bermotor"
+    },
+    {
+        "kode": "8010201002",
+        "nama": "Suku Cadang Alat Angkutan Darat Tak Bermotor"
+    },
+    {
+        "kode": "8010201003",
+        "nama": "Suku Cadang Alat Angkutan Apung Bermotor"
+    },
+    {
+        "kode": "8010201004",
+        "nama": "Suku Cadang Alat Angkutan Apung Tak Bermotor"
+    },
+    {
+        "kode": "8010201005",
+        "nama": "Suku Cadang Alat Angkutan Udara Bermotor"
+    },
+    {
+        "kode": "8010201999",
+        "nama": "Suku Cadang Alat Angkutan Lainnya"
+    },
+    {
+        "kode": "8010202000",
+        "nama": "SUKU CADANG ALAT BESAR"
+    },
+    {
+        "kode": "8010202001",
+        "nama": "Suku Cadang Alat Besar Darat"
+    },
+    {
+        "kode": "8010202002",
+        "nama": "Suku Cadang Alat Besar Apung"
+    },
+    {
+        "kode": "8010202003",
+        "nama": "Suku Cadang Alat Besar Bantu"
+    },
+    {
+        "kode": "8010202999",
+        "nama": "Suku Cadang Alat Besar Lainnya"
+    },
+    {
+        "kode": "8010203000",
+        "nama": "SUKU CADANG ALAT KEDOKTERAN"
+    },
+    {
+        "kode": "8010203001",
+        "nama": "Suku Cadang Alat Kedokteran Umum"
+    },
+    {
+        "kode": "8010203002",
+        "nama": "Suku Cadang Alat Kedokteran Gigi"
+    },
+    {
+        "kode": "8010203003",
+        "nama": "Suku Cadang Alat Kedokteran Keluarga Berencana"
+    },
+    {
+        "kode": "8010203004",
+        "nama": "Suku Cadang Alat Kedokteran Bedah"
+    },
+    {
+        "kode": "8010203005",
+        "nama": "Suku Cadang Alat Kedokteran Kebidanan Dan Penyakit Kandungan"
+    },
+    {
+        "kode": "8010203006",
+        "nama": "Suku Cadang Alat Kedokteran THT"
+    },
+    {
+        "kode": "8010203007",
+        "nama": "Suku Cadang Alat Kedokteran Mata"
+    },
+    {
+        "kode": "8010203008",
+        "nama": "Suku Cadang Alat Kedokteran Penyakit Dalam"
+    },
+    {
+        "kode": "8010203009",
+        "nama": "Suku Cadang Alat Kedokteran Alat Kesehatan Anak"
+    },
+    {
+        "kode": "8010203010",
+        "nama": "Suku Cadang Alat Kedokteran Poliklinik Set"
+    },
+    {
+        "kode": "8010203011",
+        "nama": "Suku Cadang Alat Kedokteran Untuk Penderita Cacat Tubuh"
+    },
+    {
+        "kode": "8010203012",
+        "nama": "Suku Cadang Alat Kedokteran Syaraf"
+    },
+    {
+        "kode": "8010203013",
+        "nama": "Suku Cadang Alat Kedokteran Jantung"
+    },
+    {
+        "kode": "8010203014",
+        "nama": "Suku Cadang Alat Kedokteran Nuklir"
+    },
+    {
+        "kode": "8010203015",
+        "nama": "Suku Cadang Alat Kedokteran Radiologi"
+    },
+    {
+        "kode": "8010203016",
+        "nama": "Suku Cadang Alat Kedokteran Kulit Dan Kelamin"
+    },
+    {
+        "kode": "8010203017",
+        "nama": "Suku Cadang Alat Kedokteran Ugd"
+    },
+    {
+        "kode": "8010203018",
+        "nama": "Suku Cadang Alat Kedokteran Hematologi"
+    },
+    {
+        "kode": "8010203019",
+        "nama": "Suku Cadang Alat Kedokteran Hewan"
+    },
+    {
+        "kode": "8010203999",
+        "nama": "Suku Cadang Alat Kedokteran Lainnya"
+    },
+    {
+        "kode": "8010204000",
+        "nama": "SUKU CADANG ALAT LABORATORIUM"
+    },
+    {
+        "kode": "8010204001",
+        "nama": "Suku Cadang Alat Laboratorium Kimia Air Taknik Penyehatan"
+    },
+    {
+        "kode": "8010204002",
+        "nama": "Suku Cadang Alat Laboratorium Micro Biologi Penyehatan"
+    },
+    {
+        "kode": "8010204003",
+        "nama": "Suku Cadang Alat Laboratorium Hidro Kimia"
+    },
+    {
+        "kode": "8010204004",
+        "nama": "Suku Cadang Alat Laboratorium Model Hidrolika"
+    },
+    {
+        "kode": "8010204005",
+        "nama": "Suku Cadang Alat Laboratorium Batuan/Geologi"
+    },
+    {
+        "kode": "8010204006",
+        "nama": "Suku Cadang Alat Laboratorium Bahan Bangunan Konstruksi"
+    },
+    {
+        "kode": "8010204007",
+        "nama": "Suku Cadang Alat Laboratorium Aspal, Cat Dan Kimia"
+    },
+    {
+        "kode": "8010204008",
+        "nama": "Suku Cadang Alat Laboratorium Mekanika Tanah Dan Batuan"
+    },
+    {
+        "kode": "8010204009",
+        "nama": "Suku Cadang Alat Laboratorium Cocok Tanam"
+    },
+    {
+        "kode": "8010204010",
+        "nama": "Suku Cadang Alat Laboratorium Logam, Mesin Dan Listrik"
+    },
+    {
+        "kode": "8010204011",
+        "nama": "Suku Cadang Alat Laboratorium Umum"
+    },
+    {
+        "kode": "8010204012",
+        "nama": "Suku Cadang Alat Laboratorium Microbiologi"
+    },
+    {
+        "kode": "8010204013",
+        "nama": "Suku Cadang Alat Laboratorium Kimia"
+    },
+    {
+        "kode": "8010204014",
+        "nama": "Suku Cadang Alat Laboratorium Patologi"
+    },
+    {
+        "kode": "8010204015",
+        "nama": "Suku Cadang Alat Laboratorium Immunologi"
+    },
+    {
+        "kode": "8010204016",
+        "nama": "Suku Cadang Alat Laboratorium Film"
+    },
+    {
+        "kode": "8010204017",
+        "nama": "Suku Cadang Alat Laboratorium Radio Isotop"
+    },
+    {
+        "kode": "8010204018",
+        "nama": "Suku Cadang Alat Laboratorium Makanan"
+    },
+    {
+        "kode": "8010204019",
+        "nama": "Suku Cadang Alat Laboratorium Aero Dinamika"
+    },
+    {
+        "kode": "8010204020",
+        "nama": "Suku Cadang Alat Laboratorium Standarisasi Kaliberasi Dan Instrumen Lainnya"
+    },
+    {
+        "kode": "8010204021",
+        "nama": "Suku Cadang Alat Laboratorium Farmasi"
+    },
+    {
+        "kode": "8010204022",
+        "nama": "Suku Cadang Alat Laboratorium Pemantauan Kualitas Udara"
+    },
+    {
+        "kode": "8010204023",
+        "nama": "Suku Cadang Alat Laboratorium Fisika"
+    },
+    {
+        "kode": "8010204024",
+        "nama": "Suku Cadang Alat Laboratorium Hidrodinamika"
+    },
+    {
+        "kode": "8010204025",
+        "nama": "Suku Cadang Alat Laboratorium Pengkajian Teknik Pantai"
+    },
+    {
+        "kode": "8010204026",
+        "nama": "Suku Cadang Alat Laboratorium Kematologi"
+    },
+    {
+        "kode": "8010204027",
+        "nama": "Suku Cadang Alat Laboratorium Proses Peleburan"
+    },
+    {
+        "kode": "8010204028",
+        "nama": "Suku Cadang Alat Laboratorium Pasir"
+    },
+    {
+        "kode": "8010204029",
+        "nama": "Suku Cadang Alat Laboratorium Proses Pembuatan Cetakan"
+    },
+    {
+        "kode": "8010204030",
+        "nama": "Suku Cadang Alat Laboratorium Proses Pembuatan Pola"
+    },
+    {
+        "kode": "8010204031",
+        "nama": "Suku Cadang Alat Laboratorium Metalography"
+    },
+    {
+        "kode": "8010204032",
+        "nama": "Suku Cadang Alat Laboratorium Proses Pengelasan"
+    },
+    {
+        "kode": "8010204033",
+        "nama": "Suku Cadang Alat Laboratorium Uji Proses Pengelasan"
+    },
+    {
+        "kode": "8010204034",
+        "nama": "Suku Cadang Alat Laboratorium Proses Pembuatan Logam"
+    },
+    {
+        "kode": "8010204035",
+        "nama": "Suku Cadang Alat Laboratorium Metrologie"
+    },
+    {
+        "kode": "8010204036",
+        "nama": "Suku Cadang Alat Laboratorium Proses Pelapisan Logam"
+    },
+    {
+        "kode": "8010204037",
+        "nama": "Suku Cadang Alat Laboratorium Proses Pengolahan Panas"
+    },
+    {
+        "kode": "8010204038",
+        "nama": "Suku Cadang Alat Laboratorium Proses Teknologi Tekstil"
+    },
+    {
+        "kode": "8010204039",
+        "nama": "Suku Cadang Alat Laboratorium Uji Tekstil"
+    },
+    {
+        "kode": "8010204040",
+        "nama": "Suku Cadang Alat Laboratorium Proses Teknologi Keramik"
+    },
+    {
+        "kode": "8010204041",
+        "nama": "Suku Cadang Alat Laboratorium Proses Teknologi Kulit Karet"
+    },
+    {
+        "kode": "8010204042",
+        "nama": "Suku Cadang Alat Laboratorium Uji Kulit Karet Dan Plastik"
+    },
+    {
+        "kode": "8010204043",
+        "nama": "Suku Cadang Alat Laboratorium Alat Uji Keramik"
+    },
+    {
+        "kode": "8010204044",
+        "nama": "Suku Cadang Alat Laboratorium Proses Teknologi Selulosa"
+    },
+    {
+        "kode": "8010204045",
+        "nama": "Suku Cadang Alat Laboratorium Paska Panen"
+    },
+    {
+        "kode": "8010204046",
+        "nama": "Suku Cadang Alat Laboratorium Pertanian (Suku Cadang Alat Laboratorium)"
+    },
+    {
+        "kode": "8010204047",
+        "nama": "Suku Cadang Alat Laboratorium Kualitas Air"
+    },
+    {
+        "kode": "8010204048",
+        "nama": "Suku Cadang Alat Laboratorium Elektronika Dan Daya"
+    },
+    {
+        "kode": "8010204049",
+        "nama": "Suku Cadang Alat Laboratorium Energi Surya"
+    },
+    {
+        "kode": "8010204050",
+        "nama": "Suku Cadang Alat Laboratorium Konversi Batubara Dan Bioma"
+    },
+    {
+        "kode": "8010204051",
+        "nama": "Suku Cadang Alat Laboratorium Oceanografi"
+    },
+    {
+        "kode": "8010204052",
+        "nama": "Suku Cadang Alat Laboratorium Perairan"
+    },
+    {
+        "kode": "8010204053",
+        "nama": "Suku Cadang Alat Laboratorium Biologi"
+    },
+    {
+        "kode": "8010204054",
+        "nama": "Suku Cadang Alat Laboratorium Geofisika"
+    },
+    {
+        "kode": "8010204055",
+        "nama": "Suku Cadang Alat Laboratorium Tambang"
+    },
+    {
+        "kode": "8010204056",
+        "nama": "Suku Cadang Alat Laboratorium Tambang Proses/Teknik Kimia"
+    },
+    {
+        "kode": "8010204057",
+        "nama": "Suku Cadang Alat Laboratorium Proses Industri"
+    },
+    {
+        "kode": "8010204058",
+        "nama": "Suku Cadang Alat Laboratorium Kesehatan Kerja"
+    },
+    {
+        "kode": "8010204059",
+        "nama": "Suku Cadang Alat Laboratorium Kearsipan"
+    },
+    {
+        "kode": "8010204060",
+        "nama": "Suku Cadang Alat Laboratorium Perikanan dan Kelautan"
+    },
+    {
+        "kode": "8010204999",
+        "nama": "Suku Cadang Alat Laboratorium Lainnya"
+    },
+    {
+        "kode": "8010205000",
+        "nama": "SUKU CADANG ALAT PEMANCAR"
+    },
+    {
+        "kode": "8010205001",
+        "nama": "Suku Cadang Alat Pemancar MF/MW"
+    },
+    {
+        "kode": "8010205002",
+        "nama": "Suku Cadang Alat Pemancar HF/SW"
+    },
+    {
+        "kode": "8010205003",
+        "nama": "Suku Cadang Alat Pemancar FHF/MF"
+    },
+    {
+        "kode": "8010205004",
+        "nama": "Suku Cadang Alat Pemancar UHF"
+    },
+    {
+        "kode": "8010205005",
+        "nama": "Suku Cadang Alat Pemancar SHF"
+    },
+    {
+        "kode": "8010205999",
+        "nama": "Suku Cadang Alat Pemancar Lainnya"
+    },
+    {
+        "kode": "8010206000",
+        "nama": "SUKU CADANG ALAT STUDIO DAN KOMUNIKASI"
+    },
+    {
+        "kode": "8010206001",
+        "nama": "Suku Cadang Alat Studio"
+    },
+    {
+        "kode": "8010206002",
+        "nama": "Suku Cadang Alat Komunikasi"
+    },
+    {
+        "kode": "8010206999",
+        "nama": "Suku Cadang Alat Studio Dan Komunikasi Lainnya"
+    },
+    {
+        "kode": "8010207000",
+        "nama": "SUKU CADANG ALAT PERTANIAN"
+    },
+    {
+        "kode": "8010207001",
+        "nama": "Suku Cadang Alat Pengolahan Ternak Dan Tanaman"
+    },
+    {
+        "kode": "8010207002",
+        "nama": "Suku Cadang Alat Pemeliharaan Tanaman/Ikan/Ternak"
+    },
+    {
+        "kode": "8010207003",
+        "nama": "Suku Cadang Alat Panen"
+    },
+    {
+        "kode": "8010207004",
+        "nama": "Suku Cadang Alat Penyimpanan Hasil Percobaan Pertanian"
+    },
+    {
+        "kode": "8010207005",
+        "nama": "Suku Cadang Alat Laboratorium Pertanian (Suku Cadang Alat Pertanian)"
+    },
+    {
+        "kode": "8010207006",
+        "nama": "Suku Cadang Alat Prossesing"
+    },
+    {
+        "kode": "8010207007",
+        "nama": "Suku Cadang Alat Paska Panen"
+    },
+    {
+        "kode": "8010207008",
+        "nama": "Suku Cadang Alat Produksi"
+    },
+    {
+        "kode": "8010207999",
+        "nama": "Suku Cadang Alat Pertanian Lainnya"
+    },
+    {
+        "kode": "8010208000",
+        "nama": "SUKU CADANG ALAT BENGKEL"
+    },
+    {
+        "kode": "8010208001",
+        "nama": "Suku Cadang Alat Bengkel Bermesin"
+    },
+    {
+        "kode": "8010208002",
+        "nama": "Suku Cadang Alat Bengkel Tidak Bermesin"
+    },
+    {
+        "kode": "8010208999",
+        "nama": "Suku Cadang Alat Bengkel Lainnya"
+    },
+    {
+        "kode": "8010299000",
+        "nama": "SUKU CADANG LAINNYA"
+    },
+    {
+        "kode": "8010299999",
+        "nama": "Suku Cadang Lainnya"
+    },
+    {
+        "kode": "8010300000",
+        "nama": "ALAT/BAHAN UNTUK KEGIATAN KANTOR"
+    },
+    {
+        "kode": "8010301000",
+        "nama": "ALAT TULIS KANTOR"
+    },
+    {
+        "kode": "8010301001",
+        "nama": "Alat Tulis"
+    },
+    {
+        "kode": "8010301002",
+        "nama": "Tinta Tulis, Tinta Stempel"
+    },
+    {
+        "kode": "8010301003",
+        "nama": "Penjepit Kertas"
+    },
+    {
+        "kode": "8010301004",
+        "nama": "Penghapus/Korektor"
+    },
+    {
+        "kode": "8010301005",
+        "nama": "Buku Tulis"
+    },
+    {
+        "kode": "8010301006",
+        "nama": "Ordner Dan Map"
+    },
+    {
+        "kode": "8010301007",
+        "nama": "Penggaris"
+    },
+    {
+        "kode": "8010301008",
+        "nama": "Cutter (Alat Tulis Kantor)"
+    },
+    {
+        "kode": "8010301009",
+        "nama": "Pita Mesin Ketik"
+    },
+    {
+        "kode": "8010301010",
+        "nama": "Alat Perekat"
+    },
+    {
+        "kode": "8010301011",
+        "nama": "Stadler HD"
+    },
+    {
+        "kode": "8010301012",
+        "nama": "Staples"
+    },
+    {
+        "kode": "8010301013",
+        "nama": "Isi Staples"
+    },
+    {
+        "kode": "8010301014",
+        "nama": "Barang Cetakan"
+    },
+    {
+        "kode": "8010301015",
+        "nama": "Seminar Kit"
+    },
+    {
+        "kode": "8010301999",
+        "nama": "Alat Tulis Kantor Lainnya"
+    },
+    {
+        "kode": "8010302000",
+        "nama": "KERTAS DAN COVER"
+    },
+    {
+        "kode": "8010302001",
+        "nama": "Kertas HVS"
+    },
+    {
+        "kode": "8010302002",
+        "nama": "Berbagai Kertas"
+    },
+    {
+        "kode": "8010302003",
+        "nama": "Kertas Cover"
+    },
+    {
+        "kode": "8010302004",
+        "nama": "Amplop"
+    },
+    {
+        "kode": "8010302005",
+        "nama": "Kop Surat"
+    },
+    {
+        "kode": "8010302999",
+        "nama": "Kertas Dan Cover Lainnya"
+    },
+    {
+        "kode": "8010303000",
+        "nama": "BAHAN CETAK"
+    },
+    {
+        "kode": "8010303001",
+        "nama": "Transparant Sheet"
+    },
+    {
+        "kode": "8010303002",
+        "nama": "Tinta Cetak"
+    },
+    {
+        "kode": "8010303003",
+        "nama": "Plat Cetak"
+    },
+    {
+        "kode": "8010303004",
+        "nama": "Stensil Sheet"
+    },
+    {
+        "kode": "8010303005",
+        "nama": "Chenical/Bahan Kimia Cetak"
+    },
+    {
+        "kode": "8010303006",
+        "nama": "Film Cetak"
+    },
+    {
+        "kode": "8010303999",
+        "nama": "Bahan Cetak Lainnya"
+    },
+    {
+        "kode": "8010304000",
+        "nama": "BAHAN KOMPUTER"
+    },
+    {
+        "kode": "8010304001",
+        "nama": "Continuous Form"
+    },
+    {
+        "kode": "8010304002",
+        "nama": "Computer File/Tempat Disket"
+    },
+    {
+        "kode": "8010304003",
+        "nama": "Pita Printer"
+    },
+    {
+        "kode": "8010304004",
+        "nama": "Tinta/Toner Printer"
+    },
+    {
+        "kode": "8010304005",
+        "nama": "Disket"
+    },
+    {
+        "kode": "8010304006",
+        "nama": "USB/Flash Disk"
+    },
+    {
+        "kode": "8010304007",
+        "nama": "kartu Memori"
+    },
+    {
+        "kode": "8010304008",
+        "nama": "CD/DVD Drive"
+    },
+    {
+        "kode": "8010304009",
+        "nama": "Harddisk Internal"
+    },
+    {
+        "kode": "8010304010",
+        "nama": "Mouse"
+    },
+    {
+        "kode": "8010304011",
+        "nama": "CD/DVD"
+    },
+    {
+        "kode": "8010304999",
+        "nama": "Bahan Komputer Lainnya"
+    },
+    {
+        "kode": "8010305000",
+        "nama": "PERABOT KANTOR"
+    },
+    {
+        "kode": "8010305001",
+        "nama": "Sapu Dan Sikat"
+    },
+    {
+        "kode": "8010305002",
+        "nama": "Alat-Alat Pel Dan Lap"
+    },
+    {
+        "kode": "8010305003",
+        "nama": "Ember, Slang, Dan Tempat Air Lainnya"
+    },
+    {
+        "kode": "8010305004",
+        "nama": "Keset"
+    },
+    {
+        "kode": "8010305005",
+        "nama": "Tempat Sampah"
+    },
+    {
+        "kode": "8010305006",
+        "nama": "Kunci, Kran Dan Semprotan"
+    },
+    {
+        "kode": "8010305007",
+        "nama": "Alat Pengikat"
+    },
+    {
+        "kode": "8010305008",
+        "nama": "Peralatan Ledeng"
+    },
+    {
+        "kode": "8010305009",
+        "nama": "Bahan Kimia Untuk Pembersih"
+    },
+    {
+        "kode": "8010305010",
+        "nama": "Alat Untuk Makan Dan Minum"
+    },
+    {
+        "kode": "8010305011",
+        "nama": "Kaos Lampu Petromak"
+    },
+    {
+        "kode": "8010305012",
+        "nama": "Kaca Lampu Petromak"
+    },
+    {
+        "kode": "8010305013",
+        "nama": "Pengharum Ruangan"
+    },
+    {
+        "kode": "8010305014",
+        "nama": "Kuas"
+    },
+    {
+        "kode": "801030515",
+        "nama": "Segel/Tanda Pengaman"
+    },
+    {
+        "kode": "8010305999",
+        "nama": "Perabot Kantor Lainnya"
+    },
+    {
+        "kode": "8010306000",
+        "nama": "ALAT LISTRIK"
+    },
+    {
+        "kode": "8010306001",
+        "nama": "Kabel Listrik"
+    },
+    {
+        "kode": "8010306002",
+        "nama": "Lampu Listrik"
+    },
+    {
+        "kode": "8010306003",
+        "nama": "Stop Kontak"
+    },
+    {
+        "kode": "8010306004",
+        "nama": "Saklar"
+    },
+    {
+        "kode": "8010306005",
+        "nama": "Stacker"
+    },
+    {
+        "kode": "8010306006",
+        "nama": "Balast"
+    },
+    {
+        "kode": "8010306007",
+        "nama": "Starter"
+    },
+    {
+        "kode": "8010306008",
+        "nama": "Vitting"
+    },
+    {
+        "kode": "8010306009",
+        "nama": "Accu"
+    },
+    {
+        "kode": "8010306010",
+        "nama": "Batu Baterai"
+    },
+    {
+        "kode": "8010306011",
+        "nama": "Stavol"
+    },
+    {
+        "kode": "8010306999",
+        "nama": "Alat Listrik Lainnya"
+    },
+    {
+        "kode": "8010307000",
+        "nama": "PERLENGKAPAN DINAS"
+    },
+    {
+        "kode": "8010307001",
+        "nama": "Bahan Baku Pakaian"
+    },
+    {
+        "kode": "8010307002",
+        "nama": "Penutup Kepala"
+    },
+    {
+        "kode": "8010307003",
+        "nama": "Penutup Badan"
+    },
+    {
+        "kode": "8010307004",
+        "nama": "Penutup Tangan"
+    },
+    {
+        "kode": "8010307005",
+        "nama": "Penutup Kaki"
+    },
+    {
+        "kode": "8010307006",
+        "nama": "Atribut"
+    },
+    {
+        "kode": "8010307007",
+        "nama": "Perlengkapan Lapangan"
+    },
+    {
+        "kode": "8010307999",
+        "nama": "Perlengkapan Dinas Lainnya"
+    },
+    {
+        "kode": "8010308000",
+        "nama": "KAPORLAP DAN PERLENGKAPAN SATWA"
+    },
+    {
+        "kode": "8010308001",
+        "nama": "Kaporlap dan Perlengkapan Satwa Anjing"
+    },
+    {
+        "kode": "8010308002",
+        "nama": "Kaporlap dan Perlengkapan Satwa Kuda"
+    },
+    {
+        "kode": "8010308999",
+        "nama": "Kaporlap Dan Perlengkapan Satwa Lainnya"
+    },
+    {
+        "kode": "8010309000",
+        "nama": "ALAT/BAHAN UNTUK KEGIATAN KANTOR LAINNYA"
+    },
+    {
+        "kode": "8010309001",
+        "nama": "Materai"
+    },
+    {
+        "kode": "8010309002",
+        "nama": "Benda Pos Lainnya"
+    },
+    {
+        "kode": "8010309999",
+        "nama": "Alat/bahan Untuk Kegiatan Kantor Lain-lain"
+    },
+    {
+        "kode": "8010400000",
+        "nama": "OBAT-OBATAN"
+    },
+    {
+        "kode": "8010401000",
+        "nama": "OBAT"
+    },
+    {
+        "kode": "8010401001",
+        "nama": "Obat Cair"
+    },
+    {
+        "kode": "8010401002",
+        "nama": "Obat Padat"
+    },
+    {
+        "kode": "8010401003",
+        "nama": "Obat Gas"
+    },
+    {
+        "kode": "8010401004",
+        "nama": "Obat Serbuk/Tepung"
+    },
+    {
+        "kode": "8010401005",
+        "nama": "Obat Gel/Salep"
+    },
+    {
+        "kode": "8010401006",
+        "nama": "Alat/Obat Kontrasepsi Keluarga Berencana"
+    },
+    {
+        "kode": "8010401007",
+        "nama": "Non Alat/Obat Kontrasepsi Keluarga Berencana"
+    },
+    {
+        "kode": "8010401999",
+        "nama": "Obat Lainnya"
+    },
+    {
+        "kode": "8010499999",
+        "nama": "Obat-Obatan Lainnya"
+    },
+    {
+        "kode": "8010500000",
+        "nama": "PERSEDIAAN UNTUK DIJUAL/DISERAHKAN"
+    },
+    {
+        "kode": "8010501000",
+        "nama": "PERSEDIAAN UNTUK DIJUAL/DISERAHKAN KEPADA MASYARAKAT"
+    },
+    {
+        "kode": "8010501001",
+        "nama": "Pita Cukai, Materai, Leges"
+    },
+    {
+        "kode": "8010501002",
+        "nama": "Tanah dan Bangunan"
+    },
+    {
+        "kode": "8010501003",
+        "nama": "Hewan dan Tanaman"
+    },
+    {
+        "kode": "8010501004",
+        "nama": "Peralatan dan Mesin"
+    },
+    {
+        "kode": "8010501005",
+        "nama": "Jalan, Irigasi, dan Jaringan"
+    },
+    {
+        "kode": "8010501006",
+        "nama": "Aset Tetap Lainnya"
+    },
+    {
+        "kode": "8010501007",
+        "nama": "Aset Lain-lain"
+    },
+    {
+        "kode": "8010501008",
+        "nama": "Barang Persediaan"
+    },
+    {
+        "kode": "8010501999",
+        "nama": "Persediaan Untuk Dijual/Diserahkan Kepada Masyarakat Lainnya"
+    },
+    {
+        "kode": "8010599999",
+        "nama": "Persediaan Untuk Dijual/diserahkan Lainnya"
+    },
+    {
+        "kode": "8010600000",
+        "nama": "PERSEDIAAN UNTUK TUJUAN STRATEGIS/BERJAGA-JAGA"
+    },
+    {
+        "kode": "8010601000",
+        "nama": "PERSEDIAAN UNTUK TUJUAN STRATEGIS/BERJAGA-JAGA"
+    },
+    {
+        "kode": "8010601001",
+        "nama": "Cadangan Energi"
+    },
+    {
+        "kode": "8010601002",
+        "nama": "Cadangan Pangan"
+    },
+    {
+        "kode": "8010601999",
+        "nama": "Persediaan Untuk Tujuan Strategis/Berjaga-jaga Lainnya"
+    },
+    {
+        "kode": "8010699999",
+        "nama": "Persediaan Untuk Tujuan Strategis/Berjaga-jaga Lainnya"
+    },
+    {
+        "kode": "8010700000",
+        "nama": "NATURA DAN PAKAN"
+    },
+    {
+        "kode": "8010701000",
+        "nama": "NATURA"
+    },
+    {
+        "kode": "8010701001",
+        "nama": "Makanan/Sembako"
+    },
+    {
+        "kode": "8010701002",
+        "nama": "Minuman"
+    },
+    {
+        "kode": "8010701999",
+        "nama": "Natura Lainnya"
+    },
+    {
+        "kode": "8010702000",
+        "nama": "PAKAN"
+    },
+    {
+        "kode": "8010702001",
+        "nama": "Pakan Hewan"
+    },
+    {
+        "kode": "8010702002",
+        "nama": "Pakan Ikan"
+    },
+    {
+        "kode": "8010702999",
+        "nama": "Pakan Lainnya"
+    },
+    {
+        "kode": "8010799000",
+        "nama": "NATURA DAN PAKAN LAINNYA"
+    },
+    {
+        "kode": "8010799999",
+        "nama": "Natura Dan Pakan Lainnya"
+    },
+    {
+        "kode": "8010800000",
+        "nama": "PERSEDIAAN PENELITIAN BIOLOGI"
+    },
+    {
+        "kode": "8010801000",
+        "nama": "PERSEDIAAN PENELITIAN BIOLOGI"
+    },
+    {
+        "kode": "8010801001",
+        "nama": "Hewan/Ternak"
+    },
+    {
+        "kode": "8010801002",
+        "nama": "Biota Laut/Ikan"
+    },
+    {
+        "kode": "8010801003",
+        "nama": "Tanaman"
+    },
+    {
+        "kode": "8010801999",
+        "nama": "Persediaan Penelitian Biologi Lainnya"
+    },
+    {
+        "kode": "8010899999",
+        "nama": "Persediaan Penelitian Biologi Lainnya"
+    },
+    {
+        "kode": "8020000000",
+        "nama": "BARANG TAK HABIS PAKAI"
+    },
+    {
+        "kode": "8020100000",
+        "nama": "KOMPONEN"
+    },
+    {
+        "kode": "8020101000",
+        "nama": "KOMPONEN JEMBATAN BAJA"
+    },
+    {
+        "kode": "8020101001",
+        "nama": "Komponen Jembatan Bailley"
+    },
+    {
+        "kode": "8020101002",
+        "nama": "Komponen Jembatan Baja Prefab"
+    },
+    {
+        "kode": "8020101999",
+        "nama": "Komponen Jembatan Baja Lainnya"
+    },
+    {
+        "kode": "8020102000",
+        "nama": "KOMPONEN JEMBATAN PRATEKAN"
+    },
+    {
+        "kode": "8020102001",
+        "nama": "Komponen Jembatan Pratekan Prefab"
+    },
+    {
+        "kode": "8020102999",
+        "nama": "Komponen Jembatan Pratekan Lainnya"
+    },
+    {
+        "kode": "8020103000",
+        "nama": "KOMPONEN PERALATAN"
+    },
+    {
+        "kode": "8020103001",
+        "nama": "Dinamo Amper"
+    },
+    {
+        "kode": "8020103002",
+        "nama": "Dinamo Start"
+    },
+    {
+        "kode": "8020103003",
+        "nama": "Transmisi"
+    },
+    {
+        "kode": "8020103004",
+        "nama": "Injection Pump"
+    },
+    {
+        "kode": "8020103005",
+        "nama": "Karburator Unit"
+    },
+    {
+        "kode": "8020103006",
+        "nama": "Motor Hidrolik"
+    },
+    {
+        "kode": "8020103007",
+        "nama": "Engine Bensin"
+    },
+    {
+        "kode": "8020103008",
+        "nama": "Engine Diesel"
+    },
+    {
+        "kode": "8020103999",
+        "nama": "Komponen Peralatan Lainnya"
+    },
+    {
+        "kode": "8020104000",
+        "nama": "KOMPONEN RAMBU-RAMBU"
+    },
+    {
+        "kode": "8020104001",
+        "nama": "Komponen Rambu-Rambu Darat"
+    },
+    {
+        "kode": "8020104002",
+        "nama": "Komponen Rambu-Rambu Udara"
+    },
+    {
+        "kode": "8020104999",
+        "nama": "Komponen Rambu-Rambu Lainnya"
+    },
+    {
+        "kode": "8020105000",
+        "nama": "ATTACHMENT"
+    },
+    {
+        "kode": "8020105001",
+        "nama": "Blade"
+    },
+    {
+        "kode": "8020105002",
+        "nama": "Boom"
+    },
+    {
+        "kode": "8020105003",
+        "nama": "Bucket"
+    },
+    {
+        "kode": "8020105004",
+        "nama": "Scarifier"
+    },
+    {
+        "kode": "8020105999",
+        "nama": "Attachment Lainnya"
+    },
+    {
+        "kode": "8020199000",
+        "nama": "KOMPONEN LAINNYA"
+    },
+    {
+        "kode": "8020199999",
+        "nama": "Komponen Lainnya"
+    },
+    {
+        "kode": "8020200000",
+        "nama": "P I P A"
+    },
+    {
+        "kode": "8020201000",
+        "nama": "PIPA AIR BESI TUANG (DCI)"
+    },
+    {
+        "kode": "8020201001",
+        "nama": "DCI Filter"
+    },
+    {
+        "kode": "8020201002",
+        "nama": "Pipa Air Besi Tuang"
+    },
+    {
+        "kode": "8020201999",
+        "nama": "Pipa Air Besi Tuang (DCI) Lainnya"
+    },
+    {
+        "kode": "8020202000",
+        "nama": "PIPA ASBES SEMEN (ACP)"
+    },
+    {
+        "kode": "8020202001",
+        "nama": "A C P 1,0"
+    },
+    {
+        "kode": "8020202002",
+        "nama": "A C P 1,5"
+    },
+    {
+        "kode": "8020202003",
+        "nama": "A C P 2,0"
+    },
+    {
+        "kode": "8020202004",
+        "nama": "A C P 2,5"
+    },
+    {
+        "kode": "8020202005",
+        "nama": "A C P 3,0"
+    },
+    {
+        "kode": "8020202999",
+        "nama": "Pipa Asbes Semen (ACP) Lainnya"
+    },
+    {
+        "kode": "8020203000",
+        "nama": "PIPA BAJA"
+    },
+    {
+        "kode": "8020203001",
+        "nama": "Pipa Baja Gelombang"
+    },
+    {
+        "kode": "8020203002",
+        "nama": "Pipa Baja Konstruksi (CSP)"
+    },
+    {
+        "kode": "8020203003",
+        "nama": "Pipa Baja Lapis Polyethelene"
+    },
+    {
+        "kode": "8020203004",
+        "nama": "Pipa Baja Lapis Seng (GIP)"
+    },
+    {
+        "kode": "8020203999",
+        "nama": "Pipa Baja Lainnya"
+    },
+    {
+        "kode": "8020204000",
+        "nama": "PIPA BETON PRATEKAN"
+    },
+    {
+        "kode": "8020204001",
+        "nama": "Fitter Pipa Beton Pratekan"
+    },
+    {
+        "kode": "8020204002",
+        "nama": "Pipa Beton Pratekan"
+    },
+    {
+        "kode": "8020204999",
+        "nama": "Pipa Beton Pratekan Lainnya"
+    },
+    {
+        "kode": "8020205000",
+        "nama": "PIPA FIBER GLASS"
+    },
+    {
+        "kode": "8020205001",
+        "nama": "Filter Pipa Fiber Glass"
+    },
+    {
+        "kode": "8020205002",
+        "nama": "Pipa Fiber Glass"
+    },
+    {
+        "kode": "8020205999",
+        "nama": "Pipa Fiber Glass Lainnya"
+    },
+    {
+        "kode": "8020206000",
+        "nama": "PIPA PLASTIK PVC (UPVC)"
+    },
+    {
+        "kode": "8020206001",
+        "nama": "Pipa Plastik PVC"
+    },
+    {
+        "kode": "8020206002",
+        "nama": "UPVC Fitter"
+    },
+    {
+        "kode": "8020206999",
+        "nama": "Pipa Plastik PVC (UPVC) Lainnya"
+    },
+    {
+        "kode": "8020299000",
+        "nama": "P I P A LAINNYA"
+    },
+    {
+        "kode": "8020299999",
+        "nama": "P I P A Lainnya"
+    },
+    {
+        "kode": "8020300000",
+        "nama": "RAMBU-RAMBU"
+    },
+    {
+        "kode": "8020301000",
+        "nama": "RAMBU-RAMBU"
+    },
+    {
+        "kode": "8020301001",
+        "nama": "Rambu - Rambu Lalu Lintas"
+    },
+    {
+        "kode": "8020301002",
+        "nama": "Rambu-rambu Lingkungan hidup dan kebersihan"
+    },
+    {
+        "kode": "8020399999",
+        "nama": "Rambu-Rambu Lainnya"
+    },
+    {
+        "kode": "8030000000",
+        "nama": "BARANG BEKAS DIPAKAI"
+    },
+    {
+        "kode": "8030100000",
+        "nama": "KOMPONEN BEKAS DAN PIPA BEKAS"
+    },
+    {
+        "kode": "8030101000",
+        "nama": "KOMPONEN BEKAS"
+    },
+    {
+        "kode": "8030101001",
+        "nama": "Komponen Jembatan Baja Bekas"
+    },
+    {
+        "kode": "8030101002",
+        "nama": "Komponen Jembatan Pratekan Bekas"
+    },
+    {
+        "kode": "8030101003",
+        "nama": "Komponen Peralatan Bekas"
+    },
+    {
+        "kode": "8030101004",
+        "nama": "Attachment Bekas"
+    },
+    {
+        "kode": "8030101005",
+        "nama": "Kotak dan Bilik Suara"
+    },
+    {
+        "kode": "8030101999",
+        "nama": "Komponen Bekas Lainnya"
+    },
+    {
+        "kode": "8030102000",
+        "nama": "PIPA BEKAS"
+    },
+    {
+        "kode": "8030102001",
+        "nama": "Pipa Air Besi Tuang Bekas"
+    },
+    {
+        "kode": "8030102002",
+        "nama": "Pipa Asbes Semen Bekas"
+    },
+    {
+        "kode": "8030102003",
+        "nama": "Pipa Baja Bekas"
+    },
+    {
+        "kode": "8030102004",
+        "nama": "Pipa Beton Pratekan Bekas"
+    },
+    {
+        "kode": "8030102005",
+        "nama": "Pipa Fiber Gelas Bekas"
+    },
+    {
+        "kode": "8030102006",
+        "nama": "Pipa Plastik PVC (UPVC) Bekas"
+    },
+    {
+        "kode": "8030102999",
+        "nama": "Pipa Bekas Lainnya"
+    },
+    {
+        "kode": "8030199000",
+        "nama": "KOMPONEN BEKAS DAN PIPA BEKAS LAINNYA"
+    },
+    {
+        "kode": "8030199999",
+        "nama": "Komponen Bekas Dan Pipa Bekas Lainnya"
+    }
+]
