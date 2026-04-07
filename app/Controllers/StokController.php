@@ -18,6 +18,7 @@ class StokController extends BaseController
 
     public function __construct()
     {
+        // Inisialisasi model yang dipakai di seluruh proses stok.
         $this->modelProduk        = new ProdukModel();
         $this->modelKategori       = new KategoriModel();
         $this->modelMutasiStok  = new MutasiStokModel();
@@ -29,6 +30,7 @@ class StokController extends BaseController
      */
     public function stockIn()
     {
+        // Menyiapkan halaman Barang Masuk beserta data produk, kategori, dan riwayat terbaru.
         $this->setPageData('Barang Masuk', 'Input stok barang masuk ke gudang / inventory');
 
         $products   = $this->modelProduk->getProductsWithCategory();
@@ -56,6 +58,7 @@ class StokController extends BaseController
      */
     public function storeStockIn()
     {
+        // Memvalidasi dan menyimpan transaksi barang masuk (multi-item) dalam satu referensi.
         $rules = [
             'movements' => 'required',
             'movements.*.product_id' => 'required',
@@ -131,6 +134,7 @@ class StokController extends BaseController
      */
     public function stockOut()
     {
+        // Menyiapkan halaman Barang Keluar dengan produk yang masih punya stok.
         $this->setPageData('Barang Keluar', 'Input pengeluaran stok barang dari gudang');
 
         $products   = $this->modelProduk->where('current_stock >', 0)->orderBy('name', 'ASC')->findAll();
@@ -158,6 +162,7 @@ class StokController extends BaseController
      */
     public function storeStockOut()
     {
+        // Memvalidasi dan menyimpan transaksi barang keluar, lalu kirim notifikasi stok.
         $rules = [
             'movements' => 'required',
             'movements.*.product_id' => 'required',
@@ -235,6 +240,7 @@ class StokController extends BaseController
      */
     public function movements()
     {
+        // Menampilkan halaman mutasi stok gabungan (mode IN/OUT) beserta filter dan statistik.
         $currentType = $this->request->getGet('type') ?: 'IN';
         if (!in_array($currentType, ['IN', 'OUT'], true)) {
             $currentType = 'IN';
@@ -309,6 +315,7 @@ class StokController extends BaseController
      */
     public function history()
     {
+        // Menampilkan riwayat mutasi stok berdasarkan filter produk, tipe, dan rentang tanggal.
         $this->setPageData('Riwayat Stok', 'History pergerakan keluar dan masuk barang');
 
         $filters = [
@@ -337,6 +344,7 @@ class StokController extends BaseController
      */
     public function adjustment()
     {
+        // Menyiapkan halaman penyesuaian stok untuk koreksi sesuai kondisi fisik.
         $this->setPageData('Penyesuaian Stok', 'Koreksi stok barang sesuai kondisi fisik gudang');
 
         $data = [
@@ -351,6 +359,7 @@ class StokController extends BaseController
      */
     public function storeAdjustment()
     {
+        // Menyimpan penyesuaian stok per item dan memicu notifikasi jika stok rendah/habis.
         $adjustments = $this->request->getPost('adjustments');
         $globalNotes = $this->request->getPost('global_notes') ?: 'Penyesuaian stok manual';
 
@@ -409,6 +418,7 @@ class StokController extends BaseController
      */
     public function alerts()
     {
+        // Menampilkan daftar peringatan stok rendah/habis beserta ringkasan statistik.
         $this->setPageData('Peringatan Stok', 'Daftar barang yang stoknya menipis atau habis');
 
         $lowStockProducts = $this->modelProduk->getLowStockProducts();
@@ -433,6 +443,7 @@ class StokController extends BaseController
      */
     public function exportHistory($format = 'excel')
     {
+        // Mengekspor riwayat stok ke format Excel atau PDF berdasarkan parameter format.
         $filters = [
             'product_id' => $this->request->getGet('product'),
             'type'       => $this->request->getGet('type'),
@@ -452,6 +463,7 @@ class StokController extends BaseController
 
     private function exportHistoryExcel(array $movements)
     {
+        // Membuat file Excel riwayat mutasi stok dan mengirimkannya sebagai unduhan.
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -509,6 +521,7 @@ class StokController extends BaseController
 
     private function exportHistoryPDF(array $movements)
     {
+        // Merender view riwayat ke PDF menggunakan Dompdf lalu mengirimkan file unduhan.
         $html = view('stock/history_pdf', ['movements' => $movements]);
 
         $options = new \Dompdf\Options();
@@ -530,6 +543,7 @@ class StokController extends BaseController
      */
     public function getProductStock($id)
     {
+        // Mengembalikan detail stok produk dalam format JSON untuk kebutuhan AJAX.
         $product = $this->modelProduk->getProductWithCategory((int) $id);
         if (!$product) {
             return $this->jsonResponse([

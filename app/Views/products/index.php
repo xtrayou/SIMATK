@@ -80,6 +80,8 @@
                 </div>
             </div>
             <div class="card-body">
+                <?php // Tampilkan notifikasi ketika aksi sebelumnya (tambah, ubah, hapus) berhasil. 
+                ?>
                 <?php if (session()->getFlashdata('success')): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <?= session()->getFlashdata('success') ?>
@@ -87,6 +89,8 @@
                     </div>
                 <?php endif; ?>
 
+                <?php // Jika data produk ada, render tabel; jika kosong, tampilkan empty state. 
+                ?>
                 <?php if (!empty($daftarProduk)): ?>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle" id="productsTable">
@@ -101,6 +105,8 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <?php // Loop semua produk untuk membentuk setiap baris pada tabel. 
+                                ?>
                                 <?php foreach ($daftarProduk as $idx => $p): ?>
                                     <tr>
                                         <td class="text-center border-start border-end"><?= $idx + 1 ?></td>

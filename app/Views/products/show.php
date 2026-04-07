@@ -59,7 +59,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-6 mb-4">
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body p-4">
@@ -77,10 +77,10 @@
                             <span class="fw-bold"><?= number_format($statistik['total_masuk'] - $statistik['total_keluar']) ?></span>
                         </div>
                         <div class="mt-4 d-grid gap-2">
-                            <a href="<?= base_url('/stock/in?product='.$produk['id']) ?>" class="btn btn-sm btn-outline-success">
+                            <a href="<?= base_url('/stock/in?product=' . $produk['id']) ?>" class="btn btn-sm btn-outline-success">
                                 <i class="bi bi-arrow-down-circle me-1"></i> Input Stok Masuk
                             </a>
-                            <a href="<?= base_url('/stock/out?product='.$produk['id']) ?>" class="btn btn-sm btn-outline-danger">
+                            <a href="<?= base_url('/stock/out?product=' . $produk['id']) ?>" class="btn btn-sm btn-outline-danger">
                                 <i class="bi bi-arrow-up-circle me-1"></i> Input Stok Keluar
                             </a>
                         </div>
@@ -93,12 +93,14 @@
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                         <h6 class="mb-0 fw-bold">10 Mutasi Terakhir</h6>
-                        <a href="<?= base_url('/stock/history?product='.$produk['id']) ?>" class="btn btn-sm btn-light border small">
+                        <a href="<?= base_url('/stock/history?product=' . $produk['id']) ?>" class="btn btn-sm btn-light border small">
                             Lihat Semua
                         </a>
                     </div>
                     <div class="card-body p-0">
-                        <?php if(!empty($riwayatStok)): ?>
+                        <?php // Jika ada data mutasi, tampilkan tabel; jika kosong, tampilkan placeholder. 
+                        ?>
+                        <?php if (!empty($riwayatStok)): ?>
                             <div class="table-responsive">
                                 <table class="table table-sm table-hover mb-0">
                                     <thead class="bg-light small">
@@ -111,11 +113,15 @@
                                         </tr>
                                     </thead>
                                     <tbody class="small">
-                                        <?php foreach($riwayatStok as $mut): ?>
+                                        <?php // Render daftar mutasi stok terbaru untuk produk ini. 
+                                        ?>
+                                        <?php foreach ($riwayatStok as $mut): ?>
                                             <tr>
                                                 <td class="ps-4 text-muted"><?= date('d/m/Y H:i', strtotime($mut['created_at'])) ?></td>
                                                 <td>
-                                                    <?php if($mut['type'] == 'IN'): ?>
+                                                    <?php // Badge warna dibedakan berdasarkan tipe mutasi IN/OUT. 
+                                                    ?>
+                                                    <?php if ($mut['type'] == 'IN'): ?>
                                                         <span class="badge bg-success-light text-success border-success small">MASUK</span>
                                                     <?php else: ?>
                                                         <span class="badge bg-danger-light text-danger border-danger small">KELUAR</span>
@@ -161,14 +167,16 @@
                         <label class="text-muted small d-block mb-1">Harga Jual</label>
                         <p class="fw-bold mb-0">Rp <?= number_format($produk['price'], 0, ',', '.') ?></p>
                     </div>
-                    <?php if($produk['price'] > 0): ?>
-                    <div class="col-12">
-                        <?php $margin = (($produk['price'] - $produk['cost_price']) / $produk['price']) * 100; ?>
-                        <div class="p-2 border rounded bg-light text-center">
-                            <small class="text-muted d-block">Margin Keuntungan</small>
-                            <span class="fw-bold text-success fs-5"><?= number_format($margin, 1) ?>%</span>
+                    <?php // Hitung margin hanya jika harga jual valid (> 0) untuk menghindari pembagian nol. 
+                    ?>
+                    <?php if ($produk['price'] > 0): ?>
+                        <div class="col-12">
+                            <?php $margin = (($produk['price'] - $produk['cost_price']) / $produk['price']) * 100; ?>
+                            <div class="p-2 border rounded bg-light text-center">
+                                <small class="text-muted d-block">Margin Keuntungan</small>
+                                <span class="fw-bold text-success fs-5"><?= number_format($margin, 1) ?>%</span>
+                            </div>
                         </div>
-                    </div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -180,9 +188,20 @@
 
 <?= $this->section('styles') ?>
 <style>
-    .bg-primary-light { background-color: rgba(67, 94, 190, 0.1); }
-    .bg-success-light { background-color: rgba(25, 135, 84, 0.1); }
-    .bg-danger-light { background-color: rgba(220, 53, 69, 0.1); }
-    .italic { font-style: italic; }
+    .bg-primary-light {
+        background-color: rgba(67, 94, 190, 0.1);
+    }
+
+    .bg-success-light {
+        background-color: rgba(25, 135, 84, 0.1);
+    }
+
+    .bg-danger-light {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+
+    .italic {
+        font-style: italic;
+    }
 </style>
 <?= $this->endSection() ?>

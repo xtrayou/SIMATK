@@ -3,6 +3,7 @@
 <?= $this->section('content'); ?>
 
 <?php
+// Tentukan mode laporan aktif (stok/opname) lalu siapkan query dasar untuk mempertahankan filter.
 $reportMode = $report_mode ?? 'stock';
 
 $baseQuery = [
@@ -245,18 +246,22 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
         </div>
     </div>
 </div>
-<?php if (($filters['is_archived'] ?? false) && empty($products)): ?>
+<?php if (($filters['is_archived'] ?? false) && !($filters['archive_found'] ?? true)): ?>
+    <?php // Beri peringatan jika mode arsip aktif tetapi data periode tersebut tidak ditemukan. 
+    ?>
     <div class="row mb-3">
         <div class="col-12">
             <div class="alert alert-warning mb-0">
                 <i class="bi bi-exclamation-triangle me-2"></i>
-                Data arsip stock opname untuk periode <strong><?= esc(($filters['month'] ?? date('m')) . '/' . ($filters['year'] ?? date('Y'))) ?></strong> tidak ditemukan.
+                Data arsip <?= $reportMode === 'opname' ? 'stock opname' : 'laporan stok' ?> untuk periode <strong><?= esc(($filters['month'] ?? date('m')) . '/' . ($filters['year'] ?? date('Y'))) ?></strong> tidak ditemukan.
                 Laporan periode ini tidak bisa dianggap valid sampai arsip bulan tersebut tersedia.
             </div>
         </div>
     </div>
 <?php endif; ?>
 <?php if ($reportMode === 'stock' && !empty($category_breakdown)): ?>
+    <?php // Tampilkan visualisasi komposisi nilai stok per kategori saat mode laporan stok aktif. 
+    ?>
     <!-- Category Breakdown Chart -->
     <div class="row mb-4">
         <div class="col-12">
@@ -298,6 +303,8 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
     </div>
 <?php endif ?>
 <?php if ($reportMode === 'stock'): ?>
+    <?php // Tabel detail stok hanya ditampilkan pada mode laporan stok. 
+    ?>
     <!-- Detailed Stock Report -->
     <div class="row">
         <div class="col-12">
@@ -394,6 +401,8 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
 <?php endif; ?>
 
 <?php if ($reportMode === 'opname'): ?>
+    <?php // Section khusus ringkasan hasil stock opname per produk. 
+    ?>
     <!-- Section Stock Opname -->
     <div class="row mt-4">
         <div class="col-12">
@@ -497,7 +506,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                             i : 0;
                     };
 
-                    // Total over current page
+                    // Hitung total kolom stok pada halaman aktif (dipakai sebagai validasi cepat di footer callback).
                     api
                         .column(4, {
                             page: 'current'
@@ -523,6 +532,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
 
         // Category breakdown chart
         <?php if ($reportMode === 'stock' && !empty($category_breakdown)): ?>
+            // Dataset chart diambil dari breakdown kategori yang sama dengan tabel ringkasan.
             const categoryData = {
                 labels: <?= json_encode(array_keys($category_breakdown)) ?>,
                 datasets: [{
@@ -562,13 +572,13 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
             });
         <?php endif ?>
 
-        // Auto-submit form on filter change
+        // Kirim ulang filter otomatis saat dropdown filter berubah.
         $('#category, #stock_status, #sort_by, #sort_order, #month, #year').on('change', function() {
             $('#filterForm').submit();
         });
     });
 
-    // Export functions
+    // Ekspor laporan mengikuti parameter filter yang sedang aktif di URL.
     function exportReport(format) {
         const params = new URLSearchParams(window.location.search);
         const url = `<?= base_url('/reports/stock/export/') ?>${format}?${params.toString()}`;

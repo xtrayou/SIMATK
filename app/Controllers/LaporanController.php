@@ -49,11 +49,22 @@ class LaporanController extends BaseController
             $year = (int) date('Y');
         }
 
-        // Tentukan apakah pakai data arsip atau stok real-time
-        $isArchived = $this->isArchivedPeriod($month, $year);
-        $products = $isArchived
-            ? $this->getArchivedStockReport($month, $year, $categoryFilter, $sortBy, $sortOrder)
-            : $this->getCurrentStockReport($categoryFilter, $stockStatus, $sortBy, $sortOrder);
+        // Mode stock menampilkan data stok saat ini (realtime) agar selalu tersedia.
+        if ($reportMode === 'stock') {
+            $isArchived = false;
+            $archiveFound = true;
+            $products = $this->getCurrentStockReport($categoryFilter, $stockStatus, $sortBy, $sortOrder, $month, $year);
+        } else {
+            // Mode opname wajib membaca arsip asli untuk periode yang dipilih.
+            $isArchived = true;
+            // Cek ketersediaan arsip periode secara independen dari filter kategori.
+            $archiveSource = $this->getArchivedStockReport($month, $year, null, 'name', 'ASC');
+            $archiveFound = !empty($archiveSource);
+
+            $products = $archiveFound
+                ? $this->getArchivedStockReport($month, $year, $categoryFilter, $sortBy, $sortOrder)
+                : [];
+        }
 
         $summary = [
             'total_products' => count($products),
@@ -95,7 +106,7 @@ class LaporanController extends BaseController
                 'month'        => sprintf('%02d', $month),
                 'year'         => (string) $year,
                 'is_archived'  => $isArchived,
-                'archive_found' => !$isArchived || !empty($products),
+                'archive_found' => $archiveFound,
             ]
         ];
 
@@ -109,6 +120,7 @@ class LaporanController extends BaseController
     {
         $currentMonth = (int) date('m');
         $currentYear  = (int) date('Y');
+
         return !($month === $currentMonth && $year === $currentYear);
     }
 
@@ -183,10 +195,43 @@ class LaporanController extends BaseController
     }
 
     /**
-     * Ambil data stok dari database produk saat ini
+     * Ambil data stok dari database produk saat ini.
+     * Jika periode dipilih, hanya produk yang punya pergerakan pada periode tersebut yang ditampilkan.
      */
-    private function getCurrentStockReport(?string $categoryFilter, ?string $stockStatus, string $sortBy, string $sortOrder): array
+    private function getCurrentStockReport(?string $categoryFilter, ?string $stockStatus, string $sortBy, string $sortOrder, ?int $month = null, ?int $year = null): array
     {
+        $sortOrder = strtoupper($sortOrder) === 'DESC' ? 'DESC' : 'ASC';
+        $validSorts = ['name', 'current_stock', 'stock_value', 'category_name'];
+        if (!in_array($sortBy, $validSorts, true)) {
+            $sortBy = 'name';
+        }
+
+        $month = $month ?: (int) date('m');
+        $year  = $year ?: (int) date('Y');
+
+        $periodStart = sprintf('%04d-%02d-01', $year, $month);
+        $periodEnd = date('Y-m-t', strtotime($periodStart));
+        if ($year === (int) date('Y') && $month === (int) date('m')) {
+            $periodEnd = date('Y-m-d');
+        }
+
+        $movedProductRows = $this->modelMutasiStok
+            ->select('product_id')
+            ->where('DATE(created_at) >=', $periodStart)
+            ->where('DATE(created_at) <=', $periodEnd)
+            ->groupBy('product_id')
+            ->findAll();
+
+        $movedProductIds = array_values(array_unique(array_map(
+            static fn(array $row): int => (int) ($row['product_id'] ?? 0),
+            $movedProductRows
+        )));
+        $movedProductIds = array_values(array_filter($movedProductIds, static fn(int $id): bool => $id > 0));
+
+        if (empty($movedProductIds)) {
+            return [];
+        }
+
         $builder = $this->modelProduk->select("
                 products.*, 
                 categories.name as category_name,
@@ -198,7 +243,8 @@ class LaporanController extends BaseController
                 END as stock_status
             ")
             ->join('categories', 'categories.id = products.category_id')
-            ->where('products.is_active', true);
+            ->where('products.is_active', true)
+            ->whereIn('products.id', $movedProductIds);
 
         if ($categoryFilter) {
             $builder->where('products.category_id', $categoryFilter);
@@ -222,10 +268,7 @@ class LaporanController extends BaseController
             }
         }
 
-        $validSorts = ['name', 'current_stock', 'stock_value', 'category_name'];
-        if (in_array($sortBy, $validSorts)) {
-            $builder->orderBy($sortBy, $sortOrder);
-        }
+        $builder->orderBy($sortBy, $sortOrder);
 
         return $builder->findAll();
     }
@@ -649,27 +692,27 @@ class LaporanController extends BaseController
         $year  = $year ?: ($this->request->getGet('year') ?: date('Y'));
         $month = (int) $month;
         $year = (int) $year;
+        $reportMode = strtolower((string) ($this->request->getGet('report_mode') ?? 'stock'));
 
         // Jika ada file stock opname arsip untuk bulan/tahun tersebut,
         // langsung kirim file itu (tidak generate dari data stok saat ini)
-        $archivedFile = $this->findArchivedStockOpnameExcel($month, $year);
-        if ($archivedFile && is_file($archivedFile)) {
-            $filename = basename($archivedFile);
+        if ($reportMode === 'opname') {
+            $archivedFile = $this->findArchivedStockOpnameExcel($month, $year);
+            if ($archivedFile && is_file($archivedFile)) {
+                $filename = basename($archivedFile);
 
-            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header('Content-Disposition: attachment;filename="' . $filename . '"');
-            header('Cache-Control: max-age=0');
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                header('Content-Disposition: attachment;filename="' . $filename . '"');
+                header('Cache-Control: max-age=0');
 
-            readfile($archivedFile);
-            exit;
-        }
+                readfile($archivedFile);
+                exit;
+            }
 
-        // Jika memilih bulan arsip tapi file/data arsip tidak ada, jangan fallback ke semua stok saat ini.
-        if ($this->isArchivedPeriod($month, $year)) {
             return redirect()->back()->with('error', 'Data arsip stock opname untuk periode yang dipilih tidak ditemukan.');
         }
 
-        // Untuk bulan berjalan, generate berdasarkan stok saat ini
+        // Mode stock: generate berdasarkan data stok periode (berdasarkan pergerakan bulan dipilih).
         $products = $this->getStockReportData();
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -834,10 +877,11 @@ class LaporanController extends BaseController
         $year  = $year ?: ($this->request->getGet('year') ?: date('Y'));
         $month = (int) $month;
         $year = (int) $year;
+        $reportMode = strtolower((string) ($this->request->getGet('report_mode') ?? 'stock'));
 
         // Hormati periode arsip: jika tidak ada data arsip, jangan fallback ke data live lintas bulan.
         $products = $this->getStockReportData();
-        if ($this->isArchivedPeriod($month, $year) && empty($products)) {
+        if ($reportMode === 'opname' && empty($products)) {
             return redirect()->back()->with('error', 'Data arsip stock opname untuk periode yang dipilih tidak ditemukan.');
         }
 
@@ -957,27 +1001,23 @@ class LaporanController extends BaseController
     }
 
     /**
-     * Get stock report data for export
-     */
-    /**
-     * Get stock report data for export - checks if archived or current
+     * Get stock report data for export sesuai mode laporan.
      */
     private function getStockReportData(): array
     {
         $month = (int) ($this->request->getGet('month') ?: date('m'));
         $year  = (int) ($this->request->getGet('year') ?: date('Y'));
+        $reportMode = strtolower((string) ($this->request->getGet('report_mode') ?? 'stock'));
         $categoryFilter = $this->request->getGet('category');
         $stockStatus    = $this->request->getGet('stock_status');
         $sortBy         = $this->request->getGet('sort_by') ?: 'name';
         $sortOrder      = $this->request->getGet('sort_order') ?: 'ASC';
 
-        $isArchived = $this->isArchivedPeriod($month, $year);
-
-        if ($isArchived) {
+        if ($reportMode === 'opname') {
             return $this->getArchivedStockReport($month, $year, $categoryFilter, $sortBy, $sortOrder);
-        } else {
-            return $this->getCurrentStockReport($categoryFilter, $stockStatus, $sortBy, $sortOrder);
         }
+
+        return $this->getCurrentStockReport($categoryFilter, $stockStatus, $sortBy, $sortOrder, $month, $year);
     }
 
     /**

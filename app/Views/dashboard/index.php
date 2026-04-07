@@ -44,24 +44,24 @@
     </div>
 
     <?php if ($userRole === 'superadmin'): ?>
-    <div class="col-6 col-lg-3 col-md-6">
-        <div class="card inventory-card">
-            <div class="card-body px-4 py-4-5">
-                <div class="row">
-                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
-                        <div class="stats-icon green mb-2">
-                            <i class="bi bi-currency-dollar"></i>
+        <div class="col-6 col-lg-3 col-md-6">
+            <div class="card inventory-card">
+                <div class="card-body px-4 py-4-5">
+                    <div class="row">
+                        <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
+                            <div class="stats-icon green mb-2">
+                                <i class="bi bi-currency-dollar"></i>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                        <h6 class="text-muted font-semibold">Nilai Inventory</h6>
-                        <h6 class="font-extrabold mb-0"><?= format_currency($inventory_value) ?></h6>
-                        <small class="text-muted">Total valuasi</small>
+                        <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                            <h6 class="text-muted font-semibold">Nilai Inventory</h6>
+                            <h6 class="font-extrabold mb-0"><?= format_currency($inventory_value) ?></h6>
+                            <small class="text-muted">Total valuasi</small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     <?php endif; ?>
 
     <div class="col-6 col-lg-3 col-md-6">
@@ -149,6 +149,15 @@
                             <div class="d-block">
                                 <strong>Barang Keluar</strong>
                                 <small class="d-block">Keluarkan stok</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="<?= base_url('/requests') ?>" class="btn btn-primary w-100 btn-lg">
+                            <i class="bi bi-clipboard-check"></i>
+                            <div class="d-block">
+                                <strong>Permintaan</strong>
+                                <small class="d-block">Kelola permintaan</small>
                             </div>
                         </a>
                     </div>
@@ -361,43 +370,44 @@
 </div>
 
 <?php if ($userRole === 'superadmin'): ?>
-<!-- Top Produk Berdasarkan Nilai -->
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5><i class="bi bi-trophy-fill text-warning"></i> Top Produk Berdasarkan Nilai</h5>
-                <a href="<?= base_url('/reports/valuation') ?>" class="btn btn-sm btn-outline-primary">
-                    Laporan Detail
-                </a>
-            </div>
-            <div class="card-body">
-                <?php if (!empty($top_products)): ?>
-                    <div class="row">
-                        <?php foreach ($top_products as $peringkat => $produkTeratas): ?>
-                            <div class="col-12 col-md-6 col-lg-4 mb-3">
-                                <div class="card border-0 bg-light">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center">
-                                            <div class="rank-badge me-3">
-                                                <span class="badge bg-<?= $peringkat == 0 ? 'warning' : ($peringkat == 1 ? 'secondary' : 'dark') ?> fs-6">
-                                                    #<?= $peringkat + 1 ?>
-                                                </span>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1"><?= esc($produkTeratas['name']) ?></h6>
-                                                <small class="text-muted"><?= esc($produkTeratas['category_name']) ?></small>
-                                                <div class="mt-2">
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <small class="text-muted">Stok:</small>
-                                                            <strong class="d-block"><?= number_format($produkTeratas['current_stock']) ?></strong>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <small class="text-muted">Nilai:</small>
-                                                            <strong class="d-block text-success">
-                                                                <?= format_currency($produkTeratas['total_value']) ?>
-                                                            </strong>
+    <!-- Top Produk Berdasarkan Nilai -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="bi bi-trophy-fill text-warning"></i> Top Produk Berdasarkan Nilai</h5>
+                    <a href="<?= base_url('/reports/valuation') ?>" class="btn btn-sm btn-outline-primary">
+                        Laporan Detail
+                    </a>
+                </div>
+                <div class="card-body">
+                    <?php if (!empty($top_products)): ?>
+                        <div class="row">
+                            <?php foreach ($top_products as $peringkat => $produkTeratas): ?>
+                                <div class="col-12 col-md-6 col-lg-4 mb-3">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rank-badge me-3">
+                                                    <span class="badge bg-<?= $peringkat == 0 ? 'warning' : ($peringkat == 1 ? 'secondary' : 'dark') ?> fs-6">
+                                                        #<?= $peringkat + 1 ?>
+                                                    </span>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1"><?= esc($produkTeratas['name']) ?></h6>
+                                                    <small class="text-muted"><?= esc($produkTeratas['category_name']) ?></small>
+                                                    <div class="mt-2">
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <small class="text-muted">Stok:</small>
+                                                                <strong class="d-block"><?= number_format($produkTeratas['current_stock']) ?></strong>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <small class="text-muted">Nilai:</small>
+                                                                <strong class="d-block text-success">
+                                                                    <?= format_currency($produkTeratas['total_value']) ?>
+                                                                </strong>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -405,19 +415,18 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        <?php endforeach ?>
-                    </div>
-                <?php else: ?>
-                    <div class="text-center py-4">
-                        <i class="bi bi-graph-down fs-1 text-muted"></i>
-                        <p class="text-muted">Belum ada data produk dengan nilai tinggi</p>
-                    </div>
-                <?php endif ?>
+                            <?php endforeach ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center py-4">
+                            <i class="bi bi-graph-down fs-1 text-muted"></i>
+                            <p class="text-muted">Belum ada data produk dengan nilai tinggi</p>
+                        </div>
+                    <?php endif ?>
+                </div>
             </div>
         </div>
     </div>
-</div>
 <?php endif; ?>
 
 <?= $this->endSection() ?>
@@ -452,7 +461,9 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'top' }
+                    legend: {
+                        position: 'top'
+                    }
                 },
                 scales: {
                     y: {
@@ -488,7 +499,9 @@
                 responsive: true,
                 maintainAspectRatio: true,
                 plugins: {
-                    legend: { display: true }
+                    legend: {
+                        display: true
+                    }
                 }
             }
         });
@@ -513,35 +526,35 @@
             let grafik, namaFile;
 
             if (jenis === 'pergerakan') {
-                grafik    = grafikPergerakan;
-                namaFile  = 'grafik-pergerakan-stok.png';
+                grafik = grafikPergerakan;
+                namaFile = 'grafik-pergerakan-stok.png';
             } else if (jenis === 'status') {
-                grafik    = grafikStatus;
-                namaFile  = 'grafik-status-stok.png';
+                grafik = grafikStatus;
+                namaFile = 'grafik-status-stok.png';
             }
 
             if (grafik) {
                 const tautan = document.createElement('a');
                 tautan.download = namaFile;
-                tautan.href     = grafik.toBase64Image();
+                tautan.href = grafik.toBase64Image();
                 tautan.click();
             }
         };
 
         // ── Notifikasi stok rendah ───────────────────────────────────
         <?php if ($low_stock_count > 0): ?>
-        if ('Notification' in window) {
-            Notification.requestPermission().then(izin => {
-                if (izin === 'granted') {
-                    setInterval(() => {
-                        new Notification('Peringatan Inventori', {
-                            body: '<?= $low_stock_count ?> produk memiliki stok rendah',
-                            icon: '<?= base_url("assets/static/images/logo/favicon.png") ?>'
-                        });
-                    }, 300000); // tiap 5 menit
-                }
-            });
-        }
+            if ('Notification' in window) {
+                Notification.requestPermission().then(izin => {
+                    if (izin === 'granted') {
+                        setInterval(() => {
+                            new Notification('Peringatan Inventori', {
+                                body: '<?= $low_stock_count ?> produk memiliki stok rendah',
+                                icon: '<?= base_url("assets/static/images/logo/favicon.png") ?>'
+                            });
+                        }, 300000); // tiap 5 menit
+                    }
+                });
+            }
         <?php endif ?>
     });
 </script>
@@ -617,15 +630,31 @@
     }
 
     @keyframes skeleton-loading {
-        0%   { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
     }
 
     @media (max-width: 768px) {
-        .quick-stat h4 { font-size: 1.5rem; }
-        .btn-lg        { padding: 0.75rem; }
-        .btn-lg strong { font-size: 0.9rem; }
-        .btn-lg small  { font-size: 0.75rem; }
+        .quick-stat h4 {
+            font-size: 1.5rem;
+        }
+
+        .btn-lg {
+            padding: 0.75rem;
+        }
+
+        .btn-lg strong {
+            font-size: 0.9rem;
+        }
+
+        .btn-lg small {
+            font-size: 0.75rem;
+        }
     }
 </style>
 <?= $this->endSection() ?>

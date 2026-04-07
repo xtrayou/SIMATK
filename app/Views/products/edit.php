@@ -197,6 +197,7 @@
 <?= $this->section('scripts') ?>
 <script>
     $(document).ready(function() {
+        // Ambil referensi kode barang lalu bangun datalist autocomplete untuk SKU dan nama barang.
         $.getJSON('<?= base_url("api/kode-barang") ?>', function(data) {
             const skuList = $('<datalist id="kode_barang_list"></datalist>');
             const nameList = $('<datalist id="nama_barang_list"></datalist>');
@@ -206,8 +207,10 @@
             });
             $('body').append(skuList).append(nameList);
 
+            // Otomatis memilih kategori induk berdasarkan pola kode barang.
             function autoSelectCategory(kode) {
                 if (kode.length >= 3) {
+                    // Contoh: 8010302004 -> 8010302000 (3 digit terakhir jadi 000).
                     const parentKode = kode.substring(0, kode.length - 3) + '000';
                     const parentMatch = data.find(item => item.kode === parentKode);
                     if (parentMatch) {
@@ -221,6 +224,7 @@
                 }
             }
 
+            // Saat SKU dipilih, isi nama produk jika kosong lalu sinkronkan kategori.
             $('#sku').on('change', function() {
                 const val = $(this).val();
                 const matched = data.find(item => item.kode === val);
@@ -232,6 +236,7 @@
                 }
             });
 
+            // Saat nama produk dipilih, isi SKU jika kosong lalu sinkronkan kategori.
             $('#name').on('change', function() {
                 const val = $(this).val();
                 const matched = data.find(item => item.nama === val);
@@ -246,6 +251,7 @@
             console.warn("Gagal memuat data kode barang dari API");
         });
 
+        // Cegah klik ganda saat submit dan tampilkan indikator proses update.
         $('#productForm').on('submit', function() {
             $('#btnSubmit').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Memperbarui...');
         });

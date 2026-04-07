@@ -2,6 +2,23 @@
 
 <?= $this->section('content') ?>
 
+<?php
+$abcSummary = $analytics['abc_analysis']['summary'] ?? [];
+$totalAbcProducts = max(1, (int) ($abcSummary['total_products'] ?? 0));
+$aCount = (int) ($abcSummary['A_count'] ?? 0);
+$bCount = (int) ($abcSummary['B_count'] ?? 0);
+$cCount = (int) ($abcSummary['C_count'] ?? 0);
+
+$reorderSuggestions = $analytics['reorder_suggestions'] ?? [];
+$topReorderSuggestions = array_slice($reorderSuggestions, 0, 10);
+$urgencyColors = [
+    'critical' => 'danger',
+    'high' => 'warning',
+    'medium' => 'info',
+    'low' => 'secondary'
+];
+?>
+
 <div class="row mb-4">
     <div class="col-12">
         <div class="card bg-gradient-primary text-white">
@@ -106,7 +123,7 @@
                                     <div class="abc-indicator bg-danger me-2"></div>
                                     <h6 class="mb-0">Category A - High Value</h6>
                                 </div>
-                                <p class="mb-1"><?= $analytics['abc_analysis']['summary']['A_count'] ?> products (<?= number_format(($analytics['abc_analysis']['summary']['A_count'] / $analytics['abc_analysis']['summary']['total_products']) * 100, 1) ?>%)</p>
+                                <p class="mb-1"><?= $aCount ?> products (<?= number_format(($aCount / $totalAbcProducts) * 100, 1) ?>%)</p>
                                 <small class="text-muted">Requires tight control and frequent review</small>
                             </div>
 
@@ -115,7 +132,7 @@
                                     <div class="abc-indicator bg-warning me-2"></div>
                                     <h6 class="mb-0">Category B - Medium Value</h6>
                                 </div>
-                                <p class="mb-1"><?= $analytics['abc_analysis']['summary']['B_count'] ?> products (<?= number_format(($analytics['abc_analysis']['summary']['B_count'] / $analytics['abc_analysis']['summary']['total_products']) * 100, 1) ?>%)</p>
+                                <p class="mb-1"><?= $bCount ?> products (<?= number_format(($bCount / $totalAbcProducts) * 100, 1) ?>%)</p>
                                 <small class="text-muted">Moderate control with periodic review</small>
                             </div>
 
@@ -124,7 +141,7 @@
                                     <div class="abc-indicator bg-success me-2"></div>
                                     <h6 class="mb-0">Category C - Low Value</h6>
                                 </div>
-                                <p class="mb-1"><?= $analytics['abc_analysis']['summary']['C_count'] ?> products (<?= number_format(($analytics['abc_analysis']['summary']['C_count'] / $analytics['abc_analysis']['summary']['total_products']) * 100, 1) ?>%)</p>
+                                <p class="mb-1"><?= $cCount ?> products (<?= number_format(($cCount / $totalAbcProducts) * 100, 1) ?>%)</p>
                                 <small class="text-muted">Simple controls and bulk management</small>
                             </div>
                         </div>
@@ -165,10 +182,10 @@
                     <h5><i class="bi bi-arrow-clockwise"></i> Reorder Suggestions</h5>
                     <small class="text-muted">Products that need attention</small>
                 </div>
-                <span class="badge bg-warning fs-6"><?= count($analytics['reorder_suggestions']) ?> items</span>
+                <span class="badge bg-warning fs-6"><?= count($reorderSuggestions) ?> items</span>
             </div>
             <div class="card-body">
-                <?php if (!empty($analytics['reorder_suggestions'])): ?>
+                <?php if (!empty($reorderSuggestions)): ?>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -182,7 +199,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach (array_slice($analytics['reorder_suggestions'], 0, 10) as $suggestion): ?>
+                                <?php foreach ($topReorderSuggestions as $suggestion): ?>
                                     <tr class="<?= $suggestion['urgency'] == 'critical' ? 'table-danger' : ($suggestion['urgency'] == 'high' ? 'table-warning' : '') ?>">
                                         <td>
                                             <div>
@@ -197,15 +214,7 @@
                                             <small class="d-block text-muted">Min: <?= number_format($suggestion['product']['min_stock']) ?></small>
                                         </td>
                                         <td>
-                                            <?php
-                                            $urgencyColors = [
-                                                'critical' => 'danger',
-                                                'high' => 'warning',
-                                                'medium' => 'info',
-                                                'low' => 'secondary'
-                                            ];
-                                            ?>
-                                            <span class="badge bg-<?= $urgencyColors[$suggestion['urgency']] ?>">
+                                            <span class="badge bg-<?= $urgencyColors[$suggestion['urgency']] ?? 'secondary' ?>">
                                                 <?= ucfirst($suggestion['urgency']) ?>
                                             </span>
                                         </td>
@@ -227,10 +236,10 @@
                         </table>
                     </div>
 
-                    <?php if (count($analytics['reorder_suggestions']) > 10): ?>
+                    <?php if (count($reorderSuggestions) > 10): ?>
                         <div class="text-center mt-3">
                             <a href="<?= base_url('/stock/alerts') ?>" class="btn btn-outline-primary">
-                                View All <?= count($analytics['reorder_suggestions']) ?> Suggestions
+                                View All <?= count($reorderSuggestions) ?> Suggestions
                             </a>
                         </div>
                     <?php endif ?>
@@ -290,102 +299,139 @@
             const period = $(this).val();
             window.location.href = `<?= base_url('/reports/analytics') ?>?period=${period}`;
         });
-        // ABC Analysis Chart
-        const abcData = {
-            labels: ['Category A (High Value)', 'Category B (Medium Value)', 'Category C (Low Value)'],
-            datasets: [{
-                data: [
-                    <?= $analytics['abc_analysis']['summary']['A_count'] ?>,
-                    <?= $analytics['abc_analysis']['summary']['B_count'] ?>,
-                    <?= $analytics['abc_analysis']['summary']['C_count'] ?>
-                ],
-                backgroundColor: ['#dc3545', '#ffc107', '#198754'],
-                borderWidth: 3,
-                borderColor: '#fff'
-            }]
+
+        function generateDateLabels(days) {
+            const labels = [];
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('id-ID', {
+                    month: 'short',
+                    day: 'numeric'
+                }));
+            }
+            return labels;
+        }
+
+        function generateRandomData(points, min, max) {
+            const data = [];
+            for (let i = 0; i < points; i++) {
+                data.push(Math.floor(Math.random() * (max - min + 1)) + min);
+            }
+            return data;
+        }
+
+        const lineChartBaseOptions = {
+            responsive: true,
+            maintainAspectRatio: false
         };
 
-        const abcCtx = document.getElementById('abcChart').getContext('2d');
-        new Chart(abcCtx, {
-            type: 'doughnut',
-            data: abcData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 20
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                return context.label + ': ' + context.parsed + ' products (' + percentage + '%)';
+        function buildLineChart(ctx, data, extraOptions = {}) {
+            return new Chart(ctx, {
+                type: 'line',
+                data,
+                options: {
+                    ...lineChartBaseOptions,
+                    ...extraOptions
+                }
+            });
+        }
+
+        // ABC Analysis Chart
+        const abcCanvas = document.getElementById('abcChart');
+        if (abcCanvas) {
+            const abcData = {
+                labels: ['Category A (High Value)', 'Category B (Medium Value)', 'Category C (Low Value)'],
+                datasets: [{
+                    data: [<?= $aCount ?>, <?= $bCount ?>, <?= $cCount ?>],
+                    backgroundColor: ['#dc3545', '#ffc107', '#198754'],
+                    borderWidth: 3,
+                    borderColor: '#fff'
+                }]
+            };
+
+            const abcCtx = abcCanvas.getContext('2d');
+            new Chart(abcCtx, {
+                type: 'doughnut',
+                data: abcData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return context.label + ': ' + context.parsed + ' products (' + percentage + '%)';
+                                }
                             }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
 
         // Performance Gauge Chart
-        const performanceCtx = document.getElementById('performanceGauge').getContext('2d');
-        new Chart(performanceCtx, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [87, 13], // 87% performance
-                    backgroundColor: ['#198754', '#e9ecef'],
-                    borderWidth: 0,
-                    circumference: 180,
-                    rotation: 270
-                }]
-            },
-            options: {
-                responsive: false,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        enabled: false
+        const performanceCanvas = document.getElementById('performanceGauge');
+        if (performanceCanvas) {
+            const performanceCtx = performanceCanvas.getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [87, 13],
+                        backgroundColor: ['#198754', '#e9ecef'],
+                        borderWidth: 0,
+                        circumference: 180,
+                        rotation: 270
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
 
         // Movement Trend Chart
-        const movementTrendData = {
-            labels: generateDateLabels(<?= $period ?>),
-            datasets: [{
-                label: 'Stock In',
-                data: generateRandomData(<?= $period ?>, 10, 50),
-                borderColor: '#198754',
-                backgroundColor: 'rgba(25, 135, 84, 0.1)',
-                fill: true,
-                tension: 0.4
-            }, {
-                label: 'Stock Out',
-                data: generateRandomData(<?= $period ?>, 5, 30),
-                borderColor: '#dc3545',
-                backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        };
+        const movementTrendCanvas = document.getElementById('movementTrendChart');
+        if (movementTrendCanvas) {
+            const movementTrendData = {
+                labels: generateDateLabels(<?= $period ?>),
+                datasets: [{
+                    label: 'Stock In',
+                    data: generateRandomData(<?= $period ?>, 10, 50),
+                    borderColor: '#198754',
+                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Stock Out',
+                    data: generateRandomData(<?= $period ?>, 5, 30),
+                    borderColor: '#dc3545',
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            };
 
-        const movementTrendCtx = document.getElementById('movementTrendChart').getContext('2d');
-        new Chart(movementTrendCtx, {
-            type: 'line',
-            data: movementTrendData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
+            const movementTrendCtx = movementTrendCanvas.getContext('2d');
+            buildLineChart(movementTrendCtx, movementTrendData, {
                 scales: {
                     y: {
                         beginAtZero: true
@@ -396,29 +442,26 @@
                         position: 'top'
                     }
                 }
-            }
-        });
+            });
+        }
 
         // Value Trend Chart
-        const valueTrendData = {
-            labels: generateDateLabels(<?= $period ?>),
-            datasets: [{
-                label: 'Inventory Value',
-                data: generateRandomData(<?= $period ?>, 500000000, 750000000),
-                borderColor: '#0d6efd',
-                backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        };
+        const valueTrendCanvas = document.getElementById('valueTrendChart');
+        if (valueTrendCanvas) {
+            const valueTrendData = {
+                labels: generateDateLabels(<?= $period ?>),
+                datasets: [{
+                    label: 'Inventory Value',
+                    data: generateRandomData(<?= $period ?>, 500000000, 750000000),
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            };
 
-        const valueTrendCtx = document.getElementById('valueTrendChart').getContext('2d');
-        new Chart(valueTrendCtx, {
-            type: 'line',
-            data: valueTrendData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
+            const valueTrendCtx = valueTrendCanvas.getContext('2d');
+            buildLineChart(valueTrendCtx, valueTrendData, {
                 scales: {
                     y: {
                         beginAtZero: false,
@@ -441,29 +484,7 @@
                         }
                     }
                 }
-            }
-        });
-
-        // Helper functions
-        function generateDateLabels(days) {
-            const labels = [];
-            for (let i = days - 1; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                labels.push(date.toLocaleDateString('id-ID', {
-                    month: 'short',
-                    day: 'numeric'
-                }));
-            }
-            return labels;
-        }
-
-        function generateRandomData(points, min, max) {
-            const data = [];
-            for (let i = 0; i < points; i++) {
-                data.push(Math.floor(Math.random() * (max - min + 1)) + min);
-            }
-            return data;
+            });
         }
     });
 </script>

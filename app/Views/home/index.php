@@ -13,922 +13,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-
-    <style>
-        :root {
-            --primary-color: #00b8d4;
-            --primary-light: #00e5ff;
-            --primary-dark: #00838f;
-            --secondary-color: #71717a;
-            --accent-color: #00d4e6;
-            --dark-color: #18181b;
-            --light-color: #f5f5f4;
-        }
-
-        * {
-            font-family: Arial, sans-serif;
-        }
-
-        .font-accent {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-style: italic;
-        }
-
-        .font-accent-normal {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-style: normal;
-        }
-
-        .text-highlight {
-            position: relative;
-            display: inline-block;
-        }
-
-        .text-highlight::after {
-            content: '';
-            position: absolute;
-            bottom: 5px;
-            left: -4px;
-            right: -4px;
-            height: 35%;
-            background: rgba(0, 229, 255, 0.25);
-            border-radius: 4px;
-            z-index: -1;
-            transform: skewX(-3deg);
-        }
-
-        /* ── Navbar ── */
-        .navbar-home {
-            background: rgba(0, 0, 0, 0.18);
-            padding: 20px 0;
-            transition: background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .navbar-home.scrolled {
-            padding: 10px 0;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: white !important;
-            transition: color 0.3s ease;
-        }
-
-        .navbar-home.scrolled .navbar-brand {
-            color: var(--primary-color) !important;
-        }
-
-        .nav-link {
-            color: white !important;
-            font-weight: 500;
-            margin: 0 10px;
-            transition: color 0.3s ease;
-        }
-
-        .navbar-toggler {
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            padding: 6px 10px;
-        }
-
-        .navbar-toggler:focus {
-            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
-        }
-
-        .navbar-toggler-icon {
-            background-image: none;
-            width: 1.2rem;
-            height: 1.2rem;
-            position: relative;
-        }
-
-        .navbar-toggler-icon::before,
-        .navbar-toggler-icon::after,
-        .navbar-toggler-icon span {
-            content: '';
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: white;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-
-        .navbar-toggler-icon::before {
-            top: 1px;
-        }
-
-        .navbar-toggler-icon span {
-            top: 8px;
-        }
-
-        .navbar-toggler-icon::after {
-            top: 15px;
-        }
-
-        .navbar-home.scrolled .navbar-toggler {
-            border-color: rgba(0, 131, 143, 0.45);
-        }
-
-        .navbar-home.scrolled .navbar-toggler-icon::before,
-        .navbar-home.scrolled .navbar-toggler-icon::after,
-        .navbar-home.scrolled .navbar-toggler-icon span {
-            background: var(--primary-dark);
-        }
-
-        .navbar-home.scrolled .nav-link {
-            color: var(--dark-color) !important;
-        }
-
-        .nav-link:hover {
-            color: rgba(255, 255, 255, 0.8) !important;
-        }
-
-        .navbar-home.scrolled .nav-link:hover {
-            color: var(--primary-color) !important;
-        }
-
-        .btn-login {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-            border: none;
-            padding: 10px 25px;
-            border-radius: 50px;
-            color: white !important;
-            font-weight: 500;
-            transition: box-shadow 0.3s ease, filter 0.3s ease;
-        }
-
-        .btn-login:hover {
-            box-shadow: 0 5px 20px rgba(0, 184, 212, 0.4);
-            filter: brightness(1.03);
-        }
-
-        /* ── Hero ── */
-        .hero-section {
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.34) 40%, rgba(0, 0, 0, 0.26) 100%),
-                url('<?= base_url("img/hero.jpg") ?>');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-section::after {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(0, 0, 0, 0.18) 0%, transparent 70%);
-            border-radius: 50%;
-            top: -200px;
-            right: -150px;
-            animation: pulseHero 8s ease-in-out infinite;
-        }
-
-        @keyframes pulseHero {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.3;
-            }
-
-            50% {
-                transform: scale(1.1);
-                opacity: 0.5;
-            }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 20px;
-            line-height: 1.3;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            letter-spacing: -0.5px;
-        }
-
-        .hero-subtitle {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.95);
-            margin-bottom: 35px;
-            line-height: 1.8;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-hero {
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .btn-hero-primary {
-            background: white;
-            color: var(--primary-color);
-            border: none;
-            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-hero-primary:hover {
-            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);
-            color: var(--primary-color);
-        }
-
-        .btn-hero-outline {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.8);
-        }
-
-        .btn-hero-outline:hover {
-            background: white;
-            color: var(--primary-color);
-        }
-
-        /* ── Sections ── */
-        .features-section,
-        .how-section {
-            padding: 100px 0;
-            background: linear-gradient(135deg, #f5f5f4, #e0f7fa, #f4f4f5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .contact-section {
-            padding: 100px 0;
-            background: white;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--dark-color);
-            margin-bottom: 15px;
-            letter-spacing: -0.5px;
-        }
-
-        .section-subtitle {
-            color: var(--secondary-color);
-            font-size: 1.1rem;
-            margin-bottom: 50px;
-            line-height: 1.8;
-        }
-
-        /* Feature cards */
-        .feature-card {
-            background: white;
-            border-radius: 24px;
-            padding: 45px 35px;
-            text-align: center;
-            transition: box-shadow 0.3s ease, border-color 0.3s ease;
-            border: 1px solid rgba(82, 82, 91, 0.1);
-            box-shadow: 0 10px 40px rgba(82, 82, 91, 0.1);
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .feature-card:hover {
-            box-shadow: 0 25px 50px rgba(82, 82, 91, 0.2);
-            border-color: rgba(82, 82, 91, 0.2);
-        }
-
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-
-        .feature-icon {
-            width: 90px;
-            height: 90px;
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            margin: 0 auto 30px;
-            transition: box-shadow 0.3s ease;
-        }
-
-        .feature-icon.purple {
-            background: linear-gradient(135deg, #18181b, #424242);
-            color: white;
-            box-shadow: 0 10px 30px rgba(82, 82, 91, 0.3);
-        }
-
-        .feature-icon.blue {
-            background: linear-gradient(135deg, #00838f, #00e5ff);
-            color: white;
-            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.3);
-        }
-
-        .feature-icon.green {
-            background: linear-gradient(135deg, #37474f, #78909c);
-            color: white;
-            box-shadow: 0 10px 30px rgba(82, 82, 91, 0.3);
-        }
-
-        .feature-icon.orange {
-            background: linear-gradient(135deg, #006064, #00bcd4);
-            color: white;
-            box-shadow: 0 10px 30px rgba(0, 188, 212, 0.3);
-        }
-
-        .feature-card h4 {
-            font-weight: 700;
-            font-size: 1.25rem;
-            color: var(--dark-color);
-            margin-bottom: 15px;
-        }
-
-        .feature-card p {
-            color: var(--secondary-color);
-            margin-bottom: 0;
-            font-size: 0.95rem;
-            line-height: 1.7;
-        }
-
-        /* Stats */
-        .stats-section {
-            padding: 80px 0;
-            background: linear-gradient(135deg, #18181b, #1a1a2e, #16213e, #00838f, #00e5ff);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-item {
-            text-align: center;
-            color: white;
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 700;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .stat-label {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-style: italic;
-            opacity: 0.85;
-            font-size: 1rem;
-        }
-
-        /* Peminjaman */
-        .peminjaman-section {
-            padding: 100px 0;
-            background: linear-gradient(135deg, #fafaf9, #e0f7fa, #f4f4f5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .peminjaman-card {
-            background: white;
-            border-radius: 24px;
-            padding: 50px 40px;
-            box-shadow: 0 15px 50px rgba(82, 82, 91, 0.12);
-            border: 1px solid rgba(82, 82, 91, 0.1);
-            transition: box-shadow 0.3s ease, border-color 0.3s ease;
-        }
-
-        .peminjaman-card:hover {
-            box-shadow: 0 20px 60px rgba(82, 82, 91, 0.2);
-            border-color: rgba(82, 82, 91, 0.2);
-        }
-
-        .peminjaman-form .form-label {
-            font-weight: 500;
-            color: var(--dark-color);
-            margin-bottom: 8px;
-        }
-
-        .peminjaman-form .form-control,
-        .peminjaman-form .form-select {
-            border-radius: 12px;
-            padding: 14px 18px;
-            border: 2px solid #e9ecef;
-            font-size: 0.95rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .peminjaman-form .form-control:focus,
-        .peminjaman-form .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(0, 184, 212, 0.2);
-        }
-
-        .peminjaman-form .btn-submit {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-            border: none;
-            padding: 14px 40px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: box-shadow 0.3s ease, filter 0.3s ease;
-        }
-
-        .peminjaman-form .btn-submit:hover {
-            box-shadow: 0 10px 30px rgba(0, 184, 212, 0.4);
-            filter: brightness(1.03);
-        }
-
-        .peminjaman-info {
-            background: linear-gradient(135deg, #18181b, #1a1a2e, #16213e, #00b8d4);
-            border-radius: 24px;
-            padding: 45px;
-            color: white;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0, 184, 212, 0.3);
-        }
-
-        .peminjaman-info h4 {
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .peminjaman-info-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 20px;
-        }
-
-        .peminjaman-info-item i {
-            font-size: 1.5rem;
-            margin-right: 15px;
-            opacity: 0.9;
-        }
-
-        .peminjaman-info-item h6 {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .peminjaman-info-item p {
-            opacity: 0.9;
-            margin-bottom: 0;
-            font-size: 0.9rem;
-        }
-
-        .barang-badge {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 7px 12px;
-            border-radius: 20px;
-            font-size: 0.78rem;
-            font-weight: 500;
-            display: inline-block;
-            max-width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .kategori-preview,
-        .kategori-all {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .kategori-all-wrap {
-            max-height: 180px;
-            overflow-y: auto;
-            padding-right: 4px;
-            margin-top: 10px;
-        }
-
-        .kategori-all-wrap::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .kategori-all-wrap::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.35);
-            border-radius: 999px;
-        }
-
-        .btn-kategori-toggle {
-            margin-top: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            color: white;
-            background: rgba(255, 255, 255, 0.08);
-            font-size: 0.8rem;
-            border-radius: 999px;
-            padding: 4px 12px;
-        }
-
-        .btn-kategori-toggle:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.16);
-        }
-
-        /* Contact */
-        .contact-card {
-            background: white;
-            border-radius: 16px;
-            padding: 28px 20px;
-            text-align: center;
-            border: 1px solid rgba(82, 82, 91, 0.1);
-            transition: box-shadow 0.3s ease, border-color 0.3s ease;
-            height: 100%;
-        }
-
-        .contact-card:hover {
-            box-shadow: 0 12px 30px rgba(82, 82, 91, 0.16);
-            border-color: rgba(82, 82, 91, 0.2);
-        }
-
-        .contact-card .contact-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-            color: white;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            margin-bottom: 14px;
-        }
-
-        .contact-card h6 {
-            font-weight: 700;
-            color: var(--dark-color);
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-        }
-
-        .contact-card p {
-            color: var(--secondary-color);
-            margin-bottom: 0;
-            font-size: 0.85rem;
-            line-height: 1.5;
-        }
-
-        .contact-card a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .contact-card a:hover {
-            color: var(--primary-light);
-        }
-
-        .social-bar {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 32px;
-        }
-
-        .social-bar a {
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.15rem;
-            color: white;
-            transition: box-shadow 0.3s ease, filter 0.3s ease;
-        }
-
-        .social-bar a.sb-ig {
-            background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-        }
-
-        .social-bar a.sb-fb {
-            background: #1877F2;
-        }
-
-        .social-bar a.sb-web {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-        }
-
-        .social-bar a.sb-link {
-            background: linear-gradient(135deg, #00b894, #00cec9);
-        }
-
-        .social-bar a:hover {
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            filter: brightness(1.05);
-        }
-
-        /* Footer */
-        .footer {
-            background: linear-gradient(135deg, #18181b, #1e1e2e, #00838f);
-            padding: 40px 0 20px;
-            color: white;
-        }
-
-        .footer-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 10px;
-        }
-
-        .footer-text {
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.6;
-            font-size: 0.9rem;
-        }
-
-        .footer-nav-link {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s ease;
-        }
-
-        .footer-nav-link:hover {
-            color: white;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 12px;
-        }
-
-        .social-links a {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            font-size: 1rem;
-        }
-
-        .social-links a:hover {
-            background: var(--primary-color);
-            box-shadow: 0 8px 18px rgba(0, 184, 212, 0.35);
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 24px;
-            padding-top: 16px;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.85rem;
-        }
-
-        /* Modal Login */
-        .modal-content {
-            border-radius: 20px;
-            border: none;
-        }
-
-        .resi-modal-content {
-            border: none;
-            border-radius: 22px;
-            overflow: hidden;
-            background: linear-gradient(135deg, #f8fdff, #ffffff);
-            box-shadow: 0 20px 50px rgba(0, 131, 143, 0.2);
-        }
-
-        .resi-modal-header {
-            border-bottom: 1px solid rgba(0, 184, 212, 0.15);
-            background: linear-gradient(135deg, rgba(0, 184, 212, 0.08), rgba(0, 229, 255, 0.08));
-        }
-
-        .resi-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(0, 184, 212, 0.12);
-            color: var(--primary-dark);
-            border-radius: 999px;
-            padding: 6px 12px;
-            font-size: 0.86rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .resi-code-box {
-            border: 2px dashed rgba(0, 184, 212, 0.35);
-            background: #f1fdff;
-            border-radius: 14px;
-            padding: 16px 14px;
-            text-align: center;
-            font-size: 1.45rem;
-            letter-spacing: 2px;
-            font-weight: 700;
-            color: #006064;
-            word-break: break-all;
-        }
-
-        .modal-header {
-            border-bottom: none;
-            padding: 30px 30px 0;
-        }
-
-        .modal-body {
-            padding: 30px;
-        }
-
-        .modal-title {
-            font-weight: 700;
-            color: var(--dark-color);
-        }
-
-        .form-control {
-            border-radius: 10px;
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(0, 184, 212, 0.15);
-        }
-
-        .btn-login-submit {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            width: 100%;
-            transition: box-shadow 0.3s ease, filter 0.3s ease;
-        }
-
-        .btn-login-submit:hover {
-            box-shadow: 0 5px 20px rgba(0, 184, 212, 0.4);
-            filter: brightness(1.03);
-        }
-
-        .scroll-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-            color: white;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            cursor: pointer;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
-            z-index: 1000;
-        }
-
-        .scroll-top.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .scroll-top:hover {
-            box-shadow: 0 10px 30px rgba(0, 184, 212, 0.4);
-            filter: brightness(1.03);
-        }
-
-        .input-group-text {
-            background: var(--light-color);
-            border: 2px solid #e9ecef;
-            border-right: none;
-            border-radius: 12px 0 0 12px;
-        }
-
-        .input-group .form-control {
-            border-left: none;
-            border-radius: 0 12px 12px 0;
-        }
-
-        @media (max-width:992px) {
-            .navbar-home {
-                background: rgba(24, 24, 27, 0.88);
-                backdrop-filter: blur(8px);
-            }
-
-            .navbar-home .navbar-collapse {
-                margin-top: 12px;
-                background: rgba(255, 255, 255, 0.96);
-                border-radius: 16px;
-                padding: 14px 16px;
-                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-            }
-
-            .navbar-home .nav-link {
-                color: var(--dark-color) !important;
-                margin: 8px 0;
-            }
-
-            .navbar-home .nav-link:hover {
-                color: var(--primary-color) !important;
-            }
-
-            .navbar-home .btn-login {
-                width: 100%;
-                margin-top: 8px;
-            }
-
-            .hero-title {
-                font-size: 2.5rem;
-            }
-
-        }
-
-        @media (max-width:768px) {
-            .hero-title {
-                font-size: 2rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .stat-number {
-                font-size: 2rem;
-            }
-
-            .peminjaman-card {
-                padding: 30px 20px;
-            }
-
-            .kategori-all-wrap {
-                max-height: 150px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="<?= base_url('css/home.css') ?>">
 </head>
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-home fixed-top" id="navbarUtama">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="<?= base_url('/') ?>">
-                <i class="bi bi-box-seam-fill me-2" style="font-size:1.8rem;"></i>
-                <span>SIMA<span class="font-accent">TIK</span></span>
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
-                <span class="navbar-toggler-icon"><span></span></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarMenu">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link" href="#beranda">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#permintaan">Permintaan ATK</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#fitur">Fitur Unggulan</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
-                </ul>
-                <div class="d-flex align-items-center">
-                    <?php if (session()->get('isLoggedIn')): ?>
-                        <a href="<?= base_url('dashboard') ?>" class="btn btn-login">
-                            <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                        </a>
-                    <?php else: ?>
-                        <a href="#" class="btn btn-login" data-bs-toggle="modal" data-bs-target="#modalMasuk">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Masuk
-                        </a>
-                    <?php endif; ?>
-                </div>
-
-            </div>
-        </div>
-    </nav>
+    <?= $this->include('partials/navbar') ?>
 
     <!-- Hero -->
     <section class="hero-section" id="beranda">
@@ -948,8 +38,8 @@
                             <a href="#permintaan" class="btn btn-hero btn-hero-primary">
                                 <i class="bi bi-rocket-takeoff me-2"></i>Klik untuk membuat permintaan
                             </a>
-                            <a href="#fitur" class="btn btn-hero btn-hero-outline">
-                                <i class="bi bi-stars me-2"></i>Fitur Unggulan
+                            <a href="#kontak" class="btn btn-hero btn-hero-outline">
+                                <i class="bi bi-chat-dots me-2"></i>Hubungi Kami
                             </a>
                         </div>
                     </div>
@@ -1072,17 +162,26 @@
                                 <input type="hidden" id="barangDimintaId" name="product_id" value="<?= esc($oldProductId) ?>">
                                 <datalist id="daftarBarangAutocomplete">
                                     <?php foreach ($daftarProduk as $produk): ?>
+                                        <?php
+                                        $stokProduk = (int) ($produk['current_stock'] ?? 0);
+                                        if ($stokProduk <= 0) {
+                                            $statusStokLabel = '🔴 Perlu pengadaan';
+                                        } elseif ($stokProduk <= 10) {
+                                            $statusStokLabel = '🟡 Terbatas';
+                                        } else {
+                                            $statusStokLabel = '🟢 Tersedia';
+                                        }
+                                        ?>
                                         <option value="<?= esc($produk['name']) ?>"
                                             data-id="<?= $produk['id'] ?>"
                                             data-kategori="<?= $produk['category_id'] ?>"
                                             data-stok="<?= $produk['current_stock'] ?>"
                                             data-satuan="<?= esc($produk['unit']) ?>"
                                             data-tersedia="<?= $produk['current_stock'] > 0 ? '1' : '0' ?>"
-                                            label="Stok: <?= $produk['current_stock'] ?> <?= esc($produk['unit']) ?><?= $produk['current_stock'] <= 0 ? ' (Stok Habis)' : '' ?>">
+                                            label="Status: <?= esc($statusStokLabel) ?>">
                                         </option>
                                     <?php endforeach ?>
                                 </datalist>
-                                <div id="infoStok" class="form-text text-muted mt-1"></div>
                             </div>
 
                             <div class="row">
@@ -1093,7 +192,7 @@
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-hash"></i></span>
                                         <input type="number" class="form-control" id="jumlahDiminta" name="quantity"
-                                            value="<?= old('quantity', 1) ?>" min="1" placeholder="0" required>
+                                            value="<?= old('quantity', 1) ?>" min="1" placeholder="0" autocomplete="off" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -1128,7 +227,7 @@
                             <i class="bi bi-check-circle"></i>
                             <div>
                                 <h6>Barang yang Tersedia</h6>
-                                <p>Permintaan terbatas untuk ATK dan Barang Habis Pakai yang tersedia di inventaris.</p>
+                                <p>Permintaan dapat diajukan sesuai kebutuhan, termasuk saat stok sedang terbatas.</p>
                             </div>
                         </div>
                         <div class="peminjaman-info-item">
@@ -1179,47 +278,6 @@
                                 </div>
                             </div>
                         <?php endif ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Fitur -->
-    <section class="features-section" id="fitur">
-        <div class="container">
-            <div class="text-center" data-aos="fade-up">
-                <span class="badge px-4 py-2 rounded-pill" style="font-size:1.05rem;font-weight:600;background:#e0f7fa;color:#006064;">Fitur Sistem</span>
-                <h2 class="section-title mt-2">Fitur <span class="font-accent">Unggulan</span></h2>
-                <p class="section-subtitle">Sistem inventaris <span class="font-accent">modern</span> untuk kemudahan pengelolaan</p>
-            </div>
-            <div class="row g-4 justify-content-center">
-                <div class="col-xl-3 col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="feature-card">
-                        <div class="feature-icon purple"><i class="bi bi-box-seam"></i></div>
-                        <h4>Manajemen <span class="font-accent">Stok</span></h4>
-                        <p>Kelola stok ATK dengan <span class="font-accent">mudah.</span> Catat barang masuk dan keluar secara real-time.</p>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="feature-card">
-                        <div class="feature-icon blue"><i class="bi bi-graph-up-arrow"></i></div>
-                        <h4>Laporan & <span class="font-accent">Analitik</span></h4>
-                        <p>Dapatkan laporan lengkap dan <span class="font-accent">analisis penggunaan</span> ATK dalam berbagai format.</p>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                    <div class="feature-card">
-                        <div class="feature-icon green"><i class="bi bi-bell"></i></div>
-                        <h4><span class="font-accent">Notifikasi</span> Stok</h4>
-                        <p>Terima <span class="font-accent">peringatan otomatis</span> ketika stok mencapai batas minimum.</p>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                    <div class="feature-card">
-                        <div class="feature-icon orange"><i class="bi bi-clipboard-check"></i></div>
-                        <h4 class="font-accent-normal">Permintaan ATK</h4>
-                        <p>Ajukan permintaan dengan sistem <span class="font-accent">tracking</span> yang terorganisir.</p>
                     </div>
                 </div>
             </div>
@@ -1300,35 +358,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-5 mb-4 mb-lg-0">
-                    <div class="footer-brand"><i class="bi bi-box-seam-fill me-2"></i>SIMA<span class="font-accent" style="color:rgba(255,255,255,0.9);">TIK</span></div>
-                    <p class="footer-text mb-0">Sistem Inventaris ATK — <span class="font-accent">Fakultas Ilmu Komputer</span>, Universitas Singaperbangsa Karawang.</p>
-                </div>
-                <div class="col-lg-4 mb-4 mb-lg-0">
-                    <div class="d-flex flex-wrap gap-3 justify-content-lg-center">
-                        <a href="#beranda" class="footer-nav-link">Beranda</a>
-                        <a href="#fitur" class="footer-nav-link">Fitur</a>
-                        <a href="#permintaan" class="footer-nav-link">Permintaan</a>
-                        <a href="#kontak" class="footer-nav-link">Kontak</a>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="social-links justify-content-lg-end">
-                        <a href="https://www.instagram.com/fasilkomunsika" target="_blank" title="Instagram"><i class="bi bi-instagram"></i></a>
-                        <a href="https://www.facebook.com/fasilkom.unsika/" target="_blank" title="Facebook"><i class="bi bi-facebook"></i></a>
-                        <a href="https://cs.unsika.ac.id/" target="_blank" title="Website"><i class="bi bi-globe"></i></a>
-                        <a href="https://unsika.link/layananfasilkom" target="_blank" title="Layanan"><i class="bi bi-link-45deg"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; <?= date('Y') ?> SIMATK — Fakultas Ilmu Komputer UNSIKA. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <?= $this->include('partials/footer') ?>
 
     <!-- Modal Kode Resi -->
     <div class="modal fade" id="modalKodeResi" tabindex="-1" aria-labelledby="judulModalKodeResi" aria-hidden="true">
@@ -1548,8 +578,6 @@
         const inputBarang = document.getElementById('barangDiminta');
         const inputBarangId = document.getElementById('barangDimintaId');
         const datalistBarang = document.getElementById('daftarBarangAutocomplete');
-        const inputJumlah = document.getElementById('jumlahDiminta');
-        const infoStok = document.getElementById('infoStok');
 
         const semuaBarang = datalistBarang ?
             Array.from(datalistBarang.options).map((opt) => ({
@@ -1557,34 +585,26 @@
                 nama: String(opt.value || '').trim(),
                 kategori: String(opt.dataset.kategori || ''),
                 stok: Number(opt.dataset.stok || 0),
-                satuan: String(opt.dataset.satuan || ''),
-                tersedia: String(opt.dataset.tersedia || '0') === '1',
             })) : [];
+
+        function getStockStatusLabel(stok) {
+            if (stok <= 0) return '🔴 Perlu pengadaan';
+            if (stok <= 10) return '🟡 Terbatas';
+            return '🟢 Tersedia';
+        }
 
         function renderDatalist(kategoriId = '') {
             if (!datalistBarang) return;
             const filtered = semuaBarang.filter((item) => !kategoriId || item.kategori === kategoriId);
             datalistBarang.innerHTML = filtered.map((item) => {
-                const status = item.tersedia ? '' : ' (Stok Habis)';
                 const safeNama = item.nama
                     .replace(/&/g, '&amp;')
                     .replace(/"/g, '&quot;')
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;');
-                const safeSatuan = item.satuan
-                    .replace(/&/g, '&amp;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;');
 
-                return `<option value="${safeNama}" label="Stok: ${item.stok} ${safeSatuan}${status}"></option>`;
+                return `<option value="${safeNama}" label="Status: ${getStockStatusLabel(item.stok)}"></option>`;
             }).join('');
-        }
-
-        function setInfoStok(message = '', className = 'form-text text-muted mt-1') {
-            if (!infoStok) return;
-            infoStok.textContent = message;
-            infoStok.className = className;
         }
 
         function sinkronBarangTerpilih() {
@@ -1594,8 +614,7 @@
 
             if (!keyword) {
                 inputBarangId.value = '';
-                setInfoStok('');
-                if (inputJumlah) inputJumlah.removeAttribute('max');
+                inputBarang.setCustomValidity('');
                 return;
             }
 
@@ -1612,26 +631,12 @@
 
             if (!ditemukan) {
                 inputBarangId.value = '';
-                setInfoStok('Pilih barang dari saran autocomplete agar data valid.', 'form-text text-danger mt-1');
-                if (inputJumlah) inputJumlah.removeAttribute('max');
-                return;
-            }
-
-            if (!ditemukan.tersedia || ditemukan.stok <= 0) {
-                inputBarangId.value = '';
-                setInfoStok('Barang ini stoknya habis. Pilih barang lain.', 'form-text text-danger mt-1');
-                if (inputJumlah) inputJumlah.removeAttribute('max');
+                inputBarang.setCustomValidity('Silakan pilih barang dari daftar autocomplete agar data valid.');
                 return;
             }
 
             inputBarangId.value = ditemukan.id;
-            setInfoStok(`Stok tersedia: ${ditemukan.stok} ${ditemukan.satuan}`, 'form-text text-success mt-1');
-            if (inputJumlah) {
-                inputJumlah.setAttribute('max', String(ditemukan.stok));
-                if (Number(inputJumlah.value || 0) > ditemukan.stok) {
-                    inputJumlah.value = String(ditemukan.stok);
-                }
-            }
+            inputBarang.setCustomValidity('');
         }
 
         if (selectKategori) {
@@ -1642,8 +647,6 @@
                     inputBarang.setCustomValidity('');
                 }
                 if (inputBarangId) inputBarangId.value = '';
-                setInfoStok('');
-                if (inputJumlah) inputJumlah.removeAttribute('max');
             });
         }
 

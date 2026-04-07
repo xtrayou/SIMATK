@@ -25,6 +25,31 @@
                     </form>
                 </li>
 
+                <!-- Notifications -->
+                <li class="nav-item dropdown me-3 nav-notif">
+                    <a
+                        class="nav-link position-relative"
+                        href="#"
+                        id="navbarNotifTrigger"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        data-api-latest="<?= base_url('/api/notifications') ?>"
+                        data-notif-page="<?= base_url('/notifications') ?>">
+                        <i class="bi bi-bell fs-5"></i>
+                        <span id="navbarNotifBadge" class="badge rounded-pill bg-danger notif-badge d-none">0</span>
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-notif" aria-labelledby="navbarNotifTrigger">
+                        <div class="notif-header d-flex justify-content-between align-items-center">
+                            <strong>Notifikasi</strong>
+                            <a href="<?= base_url('/notifications') ?>" class="small text-decoration-none">Lihat semua</a>
+                        </div>
+                        <div id="navbarNotifList" class="notif-list"></div>
+                        <div id="navbarNotifEmpty" class="notif-empty text-muted small">Belum ada notifikasi baru.</div>
+                    </div>
+                </li>
+
                 <!-- Dropdown User -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
