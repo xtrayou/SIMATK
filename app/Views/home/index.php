@@ -8,7 +8,7 @@
 
     <link rel="shortcut icon" href="<?= base_url('assets/static/images/logo/favicon.svg') ?>" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
@@ -93,7 +93,9 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="unitKerja" class="form-label">
-                                        <i class="bi bi-building me-1"></i>Unit Kerja / Prodi <span class="text-danger">*</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" class="me-1" aria-hidden="true" style="margin-top:-2px;">
+                                            <path d="M6.5 15V1.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5V15h-2v-2h-2v2h-2zm-5 0V7.5a.5.5 0 0 1 .5-.5h3V15h-3zM2 8v1h2V8H2zm0 2v1h2v-1H2zm0 2v1h2v-1H2zm6-9v1h1V3H8zm2 0v1h1V3h-1zM8 5v1h1V5H8zm2 0v1h1V5h-1zM8 7v1h1V7H8zm2 0v1h1V7h-1zM8 9v1h1V9H8zm2 0v1h1V9h-1z" />
+                                        </svg>Unit Kerja / Prodi <span class="text-danger">*</span>
                                     </label>
                                     <select class="form-select" id="unitKerja" name="borrower_unit" required>
                                         <option value="">Pilih Unit Kerja</option>
