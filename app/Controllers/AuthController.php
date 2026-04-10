@@ -62,9 +62,9 @@ class AuthController extends BaseController
             }
 
             // Set dynamic session data
-            $role = (string) ($user['role'] ?? 'admin');
+            $role = (string) ($user['role'] ?? '');
             if (!in_array($role, ['superadmin', 'admin'], true)) {
-                $role = 'admin';
+                return redirect()->back()->withInput()->with('loginError', 'Role akun tidak valid. Hubungi superadmin.');
             }
 
             $sessionData = [
@@ -74,12 +74,13 @@ class AuthController extends BaseController
                 'role'       => $role,
                 'isLoggedIn'    => true,
                 'last_activity' => time(),
+                'perm_last_fetch' => time(),
             ];
 
             // Load permissions for user's role
             try {
                 $modelHakAkses = new HakAksesModel();
-                $sessionData['permissions'] = $modelHakAkses->getPermissionNamesByRole($role);
+                $sessionData['permissions'] = $modelHakAkses->getByUser((int) $user['id']);
             } catch (\Exception $e) {
                 $sessionData['permissions'] = [];
             }

@@ -7,6 +7,9 @@ use App\Models\KategoriModel;
 use App\Models\ProdukModel;
 use App\Models\MutasiStokModel;
 
+/**
+ * DasborController - Controller untuk halaman dashboard utama
+ */
 class DasborController extends BaseController
 {
     protected ProdukModel $modelProduk;
@@ -25,59 +28,59 @@ class DasborController extends BaseController
         $this->setPageData('Dashboard', 'Ringkasan sistem inventaris dan statistik');
 
         $stats = [
-            'total_products'     => $this->countActiveProducts(),
-            'total_categories'   => $this->countActiveCategories(),
-            'inventory_value'    => $this->modelProduk->getTotalInventoryValue(),
-            'low_stock_count'    => count($this->modelProduk->getLowStockProducts()),
-            'out_of_stock_count' => $this->countOutOfStockProducts(),
+            'total_products'     => $this->hitungProdukAktif(),
+            'total_categories'   => $this->hitungKategoriAktif(),
+            'inventory_value'    => $this->modelProduk->getTotalNilaiInventaris(),
+            'low_stock_count'    => count($this->modelProduk->getProdukStokRendah()),
+            'out_of_stock_count' => $this->hitungProdukStokHabis(),
         ];
 
         $data = array_merge($stats, [
-            'recent_movements'    => $this->modelMutasiStok->getMovementsWithProduct(10),
-            'low_stock_products'  => $this->modelProduk->getLowStockProducts(8),
-            'top_products'        => $this->getTopProductsByValue(5),
+            'recent_movements'    => $this->modelMutasiStok->getMutasiDenganProduk(10),
+            'low_stock_products'  => $this->modelProduk->getProdukStokRendah(8),
+            'top_products'        => $this->getProdukTeratasBerdasarkanNilai(5),
             'chart_data'          => [
-                'monthly_movements'      => $this->getMonthlyMovementChartData(),
-                'category_distribution'  => $this->getCategoryDistributionChartData(),
-                'stock_status_pie'       => $this->getStockStatusChartData(),
+                'monthly_movements'      => $this->getDataChartMutasiBulanan(),
+                'category_distribution'  => $this->getDataChartDistribusiKategori(),
+                'stock_status_pie'       => $this->getDataChartStatusStok(),
             ],
-            'quick_stats' => $this->getQuickStats(),
+            'quick_stats' => $this->getStatistikCepat(),
         ]);
 
         return $this->render('dashboard/index', $data);
     }
 
     /**
-     * Count active products
+     * Hitung produk aktif
      */
-    private function countActiveProducts(): int
+    private function hitungProdukAktif(): int
     {
         return $this->modelProduk->where('is_active', true)->countAllResults();
     }
 
     /**
-     * Count active categories
+     * Hitung kategori aktif
      */
-    private function countActiveCategories(): int
+    private function hitungKategoriAktif(): int
     {
         return $this->modelKategori->where('is_active', true)->countAllResults();
     }
 
     /**
-     * Count out of stock products
+     * Hitung produk yang stoknya habis
      */
-    private function countOutOfStockProducts(): int
+    private function hitungProdukStokHabis(): int
     {
         return $this->modelProduk
-            ->where('current_stock', 0)
+            ->where('IFNULL(stock_baik, current_stock) <= 0', null, false)
             ->where('is_active', true)
             ->countAllResults();
     }
 
     /**
-     * Get quick weekly stats
+     * Ambil statistik cepat mingguan
      */
-    private function getQuickStats(): array
+    private function getStatistikCepat(): array
     {
         $today = date('Y-m-d');
         $thisWeek = date('Y-m-d', strtotime('-7 days'));
@@ -98,9 +101,9 @@ class DasborController extends BaseController
     }
 
     /**
-     * Get top products by financial value
+     * Ambil produk teratas berdasarkan nilai finansial
      */
-    private function getTopProductsByValue(int $limit = 5): array
+    private function getProdukTeratasBerdasarkanNilai(int $limit = 5): array
     {
         return $this->modelProduk->select('
                 products.*,
@@ -116,18 +119,17 @@ class DasborController extends BaseController
     }
 
     /**
-     * Prepare monthly movement chart data
+     * Siapkan data chart mutasi bulanan
      */
-    private function getMonthlyMovementChartData(): array
+    private function getDataChartMutasiBulanan(): array
     {
-        $movements = $this->modelMutasiStok->getMonthlyMovements();
+        $movements = $this->modelMutasiStok->getMutasiBulanan();
         $monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
         $labels = [];
         $stockIn = array_fill(0, 6, 0);
         $stockOut = array_fill(0, 6, 0);
 
-        // Define labels for the last 6 months
         for ($i = 5; $i >= 0; $i--) {
             $labels[] = $monthNames[(int) date('n', strtotime("-$i months")) - 1];
         }
@@ -149,9 +151,9 @@ class DasborController extends BaseController
     }
 
     /**
-     * Prepare category distribution chart data
+     * Siapkan data chart distribusi kategori
      */
-    private function getCategoryDistributionChartData(): array
+    private function getDataChartDistribusiKategori(): array
     {
         $categories = $this->modelKategori->select('
                 categories.name,
@@ -172,20 +174,23 @@ class DasborController extends BaseController
     }
 
     /**
-     * Prepare stock status pie chart data
+     * Siapkan data chart pie status stok
      */
-    private function getStockStatusChartData(): array
+    private function getDataChartStatusStok(): array
     {
-        $outOfStock = $this->modelProduk->where('current_stock', 0)->where('is_active', true)->countAllResults();
+        $outOfStock = $this->modelProduk
+            ->where('IFNULL(stock_baik, current_stock) <= 0', null, false)
+            ->where('is_active', true)
+            ->countAllResults();
 
         $lowStock = $this->modelProduk
-            ->where('current_stock <= products.min_stock', null, false)
-            ->where('current_stock >', 0)
+            ->where('IFNULL(stock_baik, current_stock) <= products.min_stock', null, false)
+            ->where('IFNULL(stock_baik, current_stock) > 0', null, false)
             ->where('is_active', true)
             ->countAllResults();
 
         $normalStock = $this->modelProduk
-            ->where('current_stock > products.min_stock', null, false)
+            ->where('IFNULL(stock_baik, current_stock) > products.min_stock', null, false)
             ->where('is_active', true)
             ->countAllResults();
 

@@ -15,7 +15,21 @@ class HakAksesModel extends Model
 
     private function normalizeRole(string $role): string
     {
-        return $role === 'superadmin' ? 'admin' : $role;
+        $role = strtolower(trim($role));
+
+        if (in_array($role, ['staff', 'user'], true)) {
+            return 'admin';
+        }
+
+        return in_array($role, ['superadmin', 'admin'], true) ? $role : 'admin';
+    }
+
+    /**
+     * Daftar role yang dikelola di modul hak akses.
+     */
+    public function getManageableRoles(): array
+    {
+        return ['superadmin', 'admin'];
     }
 
     /**
@@ -38,6 +52,29 @@ class HakAksesModel extends Model
     {
         $perms = $this->getPermissionsByRole($role);
         return array_column($perms, 'name');
+    }
+
+    /**
+     * Ambil nama permission berdasarkan user yang sedang login.
+     */
+    public function getByUser(int $userId): array
+    {
+        if ($userId <= 0) {
+            return [];
+        }
+
+        $db = \Config\Database::connect();
+        $user = $db->table('users')
+            ->select('role')
+            ->where('id', $userId)
+            ->get()
+            ->getRowArray();
+
+        if (!$user || empty($user['role'])) {
+            return [];
+        }
+
+        return $this->getPermissionNamesByRole((string) $user['role']);
     }
 
     /**

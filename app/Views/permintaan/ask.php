@@ -230,8 +230,8 @@
                                                     <?php foreach ($daftarProduk as $p): ?>
                                                         <option value="<?= $p['id'] ?>"
                                                             data-unit="<?= esc($p['unit']) ?>"
-                                                            data-stock="<?= $p['current_stock'] ?>">
-                                                            <?= esc($p['name']) ?> &nbsp;·&nbsp; Stok: <?= $p['current_stock'] ?> <?= esc($p['unit']) ?>
+                                                            data-stock="<?= (int) ($p['stock_baik'] ?? $p['current_stock']) ?>">
+                                                            <?= esc($p['name']) ?> &nbsp;·&nbsp; Stok: <?= (int) ($p['stock_baik'] ?? $p['current_stock']) ?> <?= esc($p['unit']) ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>

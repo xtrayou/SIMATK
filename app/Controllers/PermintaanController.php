@@ -9,6 +9,12 @@ use App\Models\MutasiStokModel;
 use App\Models\NotifikasiModel;
 use Exception;
 
+/**
+ * PermintaanController - Controller untuk mengelola permintaan ATK
+ *
+ * Relasi:
+ * - Permintaan terkait Produk dan Pengguna
+ */
 class PermintaanController extends BaseController
 {
     protected PermintaanModel $modelPermintaan;
@@ -21,12 +27,15 @@ class PermintaanController extends BaseController
     {
         $this->modelPermintaan       = new PermintaanModel();
         $this->modelItemPermintaan   = new ItemPermintaanModel();
-        $this->modelProduk       = new ProdukModel();
-        $this->modelMutasiStok = new MutasiStokModel();
-        $this->modelNotifikasi  = new NotifikasiModel();
+        $this->modelProduk           = new ProdukModel();
+        $this->modelMutasiStok       = new MutasiStokModel();
+        $this->modelNotifikasi       = new NotifikasiModel();
     }
 
-    private function appendResiToUrl(string $url, string $kodeResi): string
+    /**
+     * Tambahkan kode resi ke URL sebagai query parameter
+     */
+    private function tambahkanResiKeUrl(string $url, string $kodeResi): string
     {
         $fragment = '';
         if (str_contains($url, '#')) {
@@ -38,10 +47,13 @@ class PermintaanController extends BaseController
         return $url . $separator . 'resi=' . rawurlencode($kodeResi) . $fragment;
     }
 
-    private function generateUniqueReceiptCode(): string
+    /**
+     * Generate kode resi unik berdasarkan timestamp
+     */
+    private function generateKodeResiUnik(): string
     {
         do {
-            $kode = date('Ymd-His'); // format: YYYYMMDD-HHMMSS
+            $kode = date('Ymd-His');
             $exists = $this->modelPermintaan->where('receipt_code', $kode)->countAllResults() > 0;
             if ($exists) {
                 sleep(1);
@@ -51,30 +63,39 @@ class PermintaanController extends BaseController
         return $kode;
     }
 
-    private function generateReceiptCodeFromTimestamp(int $timestamp): string
+    /**
+     * Generate kode resi dari timestamp tertentu
+     */
+    private function generateKodeResiDariTimestamp(int $timestamp): string
     {
         return date('Ymd-His', $timestamp);
     }
 
-    private function ensureUniqueReceiptCodeForRow(string $candidate, int $excludeId, int $baseTimestamp): string
+    /**
+     * Pastikan kode resi unik untuk baris tertentu
+     */
+    private function pastikanKodeResiUnik(string $kandidat, int $excludeId, int $baseTimestamp): string
     {
-        $code = $candidate;
+        $kode = $kandidat;
         $ts = $baseTimestamp;
 
         while (
             $this->modelPermintaan
-                ->where('receipt_code', $code)
-                ->where('id !=', $excludeId)
-                ->countAllResults() > 0
+            ->where('receipt_code', $kode)
+            ->where('id !=', $excludeId)
+            ->countAllResults() > 0
         ) {
             $ts++;
-            $code = $this->generateReceiptCodeFromTimestamp($ts);
+            $kode = $this->generateKodeResiDariTimestamp($ts);
         }
 
-        return $code;
+        return $kode;
     }
 
-    private function backfillMissingReceiptCodes(): void
+    /**
+     * Isi ulang kode resi yang kosong pada data lama
+     */
+    private function isiKodeResiKosong(): void
     {
         $rows = $this->modelPermintaan
             ->select('id, created_at')
@@ -94,22 +115,22 @@ class PermintaanController extends BaseController
                 $timestamp = time();
             }
 
-            $candidate = $this->generateReceiptCodeFromTimestamp($timestamp);
-            $uniqueCode = $this->ensureUniqueReceiptCodeForRow($candidate, (int) $row['id'], $timestamp);
+            $kandidat = $this->generateKodeResiDariTimestamp($timestamp);
+            $kodeUnik = $this->pastikanKodeResiUnik($kandidat, (int) $row['id'], $timestamp);
 
             $this->modelPermintaan->update((int) $row['id'], [
-                'receipt_code' => $uniqueCode,
+                'receipt_code' => $kodeUnik,
             ]);
         }
     }
 
     /**
-     * Show request list
+     * Tampilkan daftar permintaan
      */
     public function index()
     {
         $this->setPageData('Daftar Permintaan', 'Manajemen permintaan dan distribusi ATK');
-        $this->backfillMissingReceiptCodes();
+        $this->isiKodeResiKosong();
 
         $status = $this->request->getGet('status');
         $filterResi = trim((string) $this->request->getGet('resi'));
@@ -134,13 +155,13 @@ class PermintaanController extends BaseController
             'filterResi'     => $filterResi,
         ];
 
-        return $this->render('requests/index', $data);
+        return $this->render('permintaan/index', $data);
     }
 
     /**
-     * Create request form
+     * Form tambah/buat permintaan baru
      */
-    public function create()
+    public function tambah()
     {
         $this->setPageData('Buat Permintaan', 'Formulir permintaan ATK baru');
 
@@ -150,13 +171,13 @@ class PermintaanController extends BaseController
             'daftarProduk' => $products
         ];
 
-        return $this->render('requests/create', $data);
+        return $this->render('permintaan/create', $data);
     }
 
     /**
-     * Store new request
+     * Simpan permintaan baru (dari admin)
      */
-    public function store()
+    public function simpan()
     {
         $rules = [
             'borrower_name' => 'required|min_length[3]|max_length[150]',
@@ -175,7 +196,7 @@ class PermintaanController extends BaseController
         $db->transStart();
 
         try {
-            $kodeResi = $this->generateUniqueReceiptCode();
+            $kodeResi = $this->generateKodeResiUnik();
             $requestId = $this->modelPermintaan->insert([
                 'borrower_name'       => $this->request->getPost('borrower_name'),
                 'borrower_identifier' => $this->request->getPost('borrower_identifier'),
@@ -207,7 +228,7 @@ class PermintaanController extends BaseController
             }
 
             $redirectUrl = $this->request->getPost('_redirect') ?: '/requests';
-            $redirectUrlDenganResi = $this->appendResiToUrl($redirectUrl, $kodeResi);
+            $redirectUrlDenganResi = $this->tambahkanResiKeUrl($redirectUrl, $kodeResi);
 
             // Kirim notifikasi permintaan baru
             try {
@@ -229,11 +250,11 @@ class PermintaanController extends BaseController
     }
 
     /**
-     * Request details
+     * Tampilkan detail permintaan
      */
-    public function show($id)
+    public function detail($id)
     {
-        $dataPermintaan = $this->modelPermintaan->getRequestWithItems((int)$id);
+        $dataPermintaan = $this->modelPermintaan->getPermintaanDenganItem((int)$id);
 
         if (!$dataPermintaan) {
             return redirect()->to('/requests')->with('error', 'Data tidak ditemukan.');
@@ -241,13 +262,13 @@ class PermintaanController extends BaseController
 
         $this->setPageData('Detail Permintaan', 'Review detail permintaan ATK');
 
-        return $this->render('requests/show', ['pinjaman' => $dataPermintaan]);
+        return $this->render('permintaan/show', ['pinjaman' => $dataPermintaan]);
     }
 
     /**
-     * AJAX Approve
+     * Setujui permintaan (AJAX)
      */
-    public function approve($id)
+    public function setujui($id)
     {
         $dataPermintaan = $this->modelPermintaan->find($id);
         if (!$dataPermintaan) return $this->jsonResponse(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
@@ -266,9 +287,9 @@ class PermintaanController extends BaseController
     }
 
     /**
-     * AJAX Distribute (Decrease Stock)
+     * Distribusikan barang dan kurangi stok (AJAX)
      */
-    public function distribute($id)
+    public function distribusikan($id)
     {
         $dataPermintaan = $this->modelPermintaan->find($id);
         if (!$dataPermintaan) {
@@ -309,11 +330,11 @@ class PermintaanController extends BaseController
                 continue;
             }
 
-            $stokSekarang = (int) $produk['current_stock'];
+            $stokSekarang = (int) ($produk['stock_baik'] ?? $produk['current_stock']);
             $jumlahDiminta = (int) $item['quantity'];
 
             if ($stokSekarang < $jumlahDiminta) {
-                $errorStok[] = "{$produk['name']}: stok tersedia {$stokSekarang}, diminta {$jumlahDiminta}";
+                $errorStok[] = "{$produk['name']}: stok baik tersedia {$stokSekarang}, diminta {$jumlahDiminta}";
             }
         }
 
@@ -328,14 +349,13 @@ class PermintaanController extends BaseController
         $db->transStart();
 
         try {
-            // Get current user ID
             $userId = session()->get('userId');
             if (!$userId || !is_numeric($userId)) {
                 throw new Exception('Session tidak valid. Silakan login ulang.');
             }
 
             foreach ($daftarItem as $item) {
-                $this->modelMutasiStok->createMovement([
+                $this->modelMutasiStok->buatMutasi([
                     'product_id'   => $item['product_id'],
                     'type'         => 'OUT',
                     'quantity'     => $item['quantity'],
@@ -357,10 +377,15 @@ class PermintaanController extends BaseController
                 foreach ($daftarItem as $item) {
                     $produk = $this->modelProduk->find($item['product_id']);
                     if (!$produk) continue;
-                    if ((int)$produk['current_stock'] <= 0) {
-                        $this->modelNotifikasi->createOutOfStockNotification($produk);
-                    } elseif ((int)$produk['current_stock'] <= (int)($produk['min_stock'] ?? 0)) {
-                        $this->modelNotifikasi->createLowStockNotification($produk);
+
+                    $stokBaikSaatIni = (int) ($produk['stock_baik'] ?? $produk['current_stock']);
+                    $produkUntukNotifikasi = $produk;
+                    $produkUntukNotifikasi['current_stock'] = $stokBaikSaatIni;
+
+                    if ($stokBaikSaatIni <= 0) {
+                        $this->modelNotifikasi->createOutOfStockNotification($produkUntukNotifikasi);
+                    } elseif ($stokBaikSaatIni <= (int) ($produk['min_stock'] ?? 0)) {
+                        $this->modelNotifikasi->createLowStockNotification($produkUntukNotifikasi);
                     }
                 }
             } catch (\Throwable $e) {
@@ -376,9 +401,9 @@ class PermintaanController extends BaseController
     }
 
     /**
-     * AJAX Cancel
+     * Batalkan permintaan (AJAX)
      */
-    public function cancel($id)
+    public function batalkan($id)
     {
         $dataPermintaan = $this->modelPermintaan->find($id);
         if (!$dataPermintaan) return $this->jsonResponse(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
@@ -407,7 +432,7 @@ class PermintaanController extends BaseController
     {
         $produk = $this->modelProduk
             ->where('is_active', true)
-            ->where('current_stock >', 0)
+            ->where('IFNULL(stock_baik, current_stock) >', 0, false)
             ->orderBy('name', 'ASC')
             ->findAll();
 
@@ -416,7 +441,7 @@ class PermintaanController extends BaseController
             'daftarProduk' => $produk,
         ];
 
-        return view('requests/ask', $data);
+        return view('permintaan/ask', $data);
     }
 
     /**
@@ -441,7 +466,7 @@ class PermintaanController extends BaseController
         $db->transStart();
 
         try {
-            $kodeResi = $this->generateUniqueReceiptCode();
+            $kodeResi = $this->generateKodeResiUnik();
             $requestId = $this->modelPermintaan->insert([
                 'borrower_name'       => $this->request->getPost('borrower_name'),
                 'borrower_identifier' => $this->request->getPost('borrower_identifier'),
@@ -484,7 +509,7 @@ class PermintaanController extends BaseController
             }
 
             if (!empty($redirectUrl)) {
-                $redirectUrlDenganResi = $this->appendResiToUrl($redirectUrl, $kodeResi);
+                $redirectUrlDenganResi = $this->tambahkanResiKeUrl($redirectUrl, $kodeResi);
                 return redirect()->to($redirectUrlDenganResi)
                     ->with('success', 'Permintaan berhasil diajukan.')
                     ->with('kode_resi', $kodeResi);
@@ -509,9 +534,10 @@ class PermintaanController extends BaseController
             'title'         => 'Permintaan Terkirim | SIMATK',
             'request_id'    => session()->getFlashdata('request_id'),
             'borrower_name' => session()->getFlashdata('borrower_name'),
+            'kode_resi'     => session()->getFlashdata('kode_resi'),
         ];
 
-        return view('requests/ask_success', $data);
+        return view('permintaan/ask_success', $data);
     }
 
     /**
@@ -523,39 +549,49 @@ class PermintaanController extends BaseController
             'title' => 'Lacak Permintaan ATK | SIMATK',
         ];
 
-        return view('requests/track', $data);
+        return view('permintaan/track', $data);
     }
 
     /**
-     * Proses pencarian status permintaan publik
+     * Proses pencarian/lacak status permintaan publik
      */
-    public function trackStatus()
+    public function lacakStatus()
     {
-        $referenceNo = trim($this->request->getPost('reference_no') ?? '');
-        $email = trim($this->request->getPost('email') ?? '');
+        $referenceNo = trim((string) $this->request->getPost('reference_no'));
+        $email = strtolower(trim((string) $this->request->getPost('email')));
 
         // Validasi input
         if (empty($referenceNo) || empty($email)) {
             return redirect()->back()->withInput()->with('error', 'Nomor referensi dan email harus diisi.');
         }
 
-        // Parse nomor referensi - format: REQ-0001
-        if (!preg_match('/^REQ-(\d+)$/i', $referenceNo, $matches)) {
-            return redirect()->back()->withInput()->with('error', 'Format nomor referensi tidak valid. Gunakan format: REQ-0001');
+        $dataPermintaan = null;
+
+        // Legacy fallback format: REQ-0001
+        if (preg_match('/^REQ-(\d+)$/i', $referenceNo, $matches)) {
+            $dataPermintaan = $this->modelPermintaan->find((int) $matches[1]);
+        } else {
+            // Format utama: receipt_code (contoh 20260410-120305)
+            $dataPermintaan = $this->modelPermintaan->where('receipt_code', $referenceNo)->first();
         }
-
-        $requestId = (int) $matches[1];
-
-        // Cari permintaan berdasarkan ID dan email
-        $dataPermintaan = $this->modelPermintaan->find($requestId);
 
         if (!$dataPermintaan) {
             return redirect()->back()->withInput()->with('error', 'Permintaan tidak ditemukan.');
         }
 
         // Validasi email
-        if (strtolower($dataPermintaan['email']) !== strtolower($email)) {
+        if (strtolower((string) ($dataPermintaan['email'] ?? '')) !== $email) {
             return redirect()->back()->withInput()->with('error', 'Email tidak sesuai dengan data permintaan.');
+        }
+
+        $requestId = (int) ($dataPermintaan['id'] ?? 0);
+        if ($requestId <= 0) {
+            return redirect()->back()->withInput()->with('error', 'Data permintaan tidak valid.');
+        }
+
+        $referenceNoDisplay = (string) ($dataPermintaan['receipt_code'] ?? '');
+        if ($referenceNoDisplay === '') {
+            $referenceNoDisplay = 'REQ-' . str_pad((string) $requestId, 4, '0', STR_PAD_LEFT);
         }
 
         // Ambil detail item permintaan
@@ -581,12 +617,12 @@ class PermintaanController extends BaseController
 
         $data = [
             'title'              => 'Lacak Permintaan ATK | SIMATK',
-            'referenceNo'        => $referenceNo,
+            'referenceNo'        => $referenceNoDisplay,
             'permintaan'         => $dataPermintaan,
             'itemPermintaan'     => $itemEnriched,
             'statusBadges'       => $statusBadges,
         ];
 
-        return view('requests/track_result', $data);
+        return view('permintaan/track_result', $data);
     }
 }

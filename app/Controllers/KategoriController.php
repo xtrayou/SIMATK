@@ -6,6 +6,12 @@ use App\Controllers\BaseController;
 use App\Models\KategoriModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
+/**
+ * KategoriController - Controller untuk mengelola kategori produk
+ *
+ * Relasi:
+ * - Kategori memiliki banyak Produk
+ */
 class KategoriController extends BaseController
 {
     protected KategoriModel $modelKategori;
@@ -16,9 +22,9 @@ class KategoriController extends BaseController
     }
 
     /**
-     * Map form data to array
+     * Ambil data form dan mapping ke array
      */
-    private function getFormData(): array
+    private function getDataForm(): array
     {
         return [
             'name'        => trim((string) $this->request->getPost('name')),
@@ -28,11 +34,11 @@ class KategoriController extends BaseController
     }
 
     /**
-     * Common validation logic
+     * Validasi request dan kembalikan redirect jika gagal
      */
-    private function validateRequest(array $rules): ?RedirectResponse
+    private function validasiRequest(array $aturan): ?RedirectResponse
     {
-        if ($this->validate($rules)) {
+        if ($this->validate($aturan)) {
             return null;
         }
 
@@ -42,14 +48,14 @@ class KategoriController extends BaseController
     }
 
     /**
-     * Find category by ID or redirect
+     * Cari kategori berdasarkan ID atau redirect jika tidak ditemukan
      */
-    private function findCategoryOrRedirect(int $id)
+    private function cariKategoriAtauRedirect(int $id)
     {
-        $category = $this->modelKategori->find($id);
+        $kategori = $this->modelKategori->find($id);
 
-        if ($category) {
-            return $category;
+        if ($kategori) {
+            return $kategori;
         }
 
         return redirect()->to('/categories')
@@ -57,7 +63,7 @@ class KategoriController extends BaseController
     }
 
     /**
-     * List categories
+     * Tampilkan daftar kategori
      */
     public function index()
     {
@@ -74,9 +80,9 @@ class KategoriController extends BaseController
             $orderBy = 'name';
         }
 
-        $totalData  = $this->modelKategori->countCategories($keyword, $filterStatus);
+        $totalData  = $this->modelKategori->hitungKategori($keyword, $filterStatus);
         $offset     = ($page - 1) * $perPage;
-        $categories = $this->modelKategori->getCategoriesWithProductCount(
+        $categories = $this->modelKategori->getKategoriDenganJumlahProduk(
             $keyword, $filterStatus, $orderBy, $orderDir, $perPage, $offset
         );
 
@@ -96,7 +102,10 @@ class KategoriController extends BaseController
         ]);
     }
 
-    public function create()
+    /**
+     * Form tambah kategori baru
+     */
+    public function tambah()
     {
         $this->setPageData('Tambah Kategori', 'Buat kategori produk baru');
 
@@ -106,25 +115,31 @@ class KategoriController extends BaseController
         ]);
     }
 
-    public function store()
+    /**
+     * Simpan kategori baru
+     */
+    public function simpan()
     {
-        $error = $this->validateRequest([
+        $error = $this->validasiRequest([
             'name'        => 'required|min_length[3]|max_length[100]|is_unique[categories.name]',
             'description' => 'permit_empty|max_length[500]',
         ]);
         
         if ($error) return $error;
 
-        if ($this->modelKategori->insert($this->getFormData())) {
+        if ($this->modelKategori->insert($this->getDataForm())) {
             return redirect()->to('/categories')->with('success', 'Kategori berhasil ditambahkan');
         }
 
         return redirect()->back()->withInput()->with('error', 'Gagal menambahkan kategori');
     }
 
-    public function edit($id)
+    /**
+     * Form ubah/edit kategori
+     */
+    public function ubah($id)
     {
-        $category = $this->findCategoryOrRedirect((int) $id);
+        $category = $this->cariKategoriAtauRedirect((int) $id);
         if ($category instanceof RedirectResponse) return $category;
 
         $this->setPageData('Edit Kategori', 'Edit Kategori: ' . $category['name']);
@@ -135,33 +150,39 @@ class KategoriController extends BaseController
         ]);
     }
 
-    public function update($id)
+    /**
+     * Perbarui data kategori
+     */
+    public function perbarui($id)
     {
-        $category = $this->findCategoryOrRedirect((int) $id);
+        $category = $this->cariKategoriAtauRedirect((int) $id);
         if ($category instanceof RedirectResponse) return $category;
 
-        $error = $this->validateRequest([
+        $error = $this->validasiRequest([
             'name'        => "required|min_length[3]|max_length[100]|is_unique[categories.name,id,{$id}]",
             'description' => 'permit_empty|max_length[500]',
         ]);
         
         if ($error) return $error;
 
-        if ($this->modelKategori->update($id, $this->getFormData())) {
+        if ($this->modelKategori->update($id, $this->getDataForm())) {
             return redirect()->to('/categories')->with('success', 'Kategori berhasil diperbarui');
         }
 
         return redirect()->back()->withInput()->with('error', 'Gagal memperbarui kategori');
     }
 
-    public function delete($id): RedirectResponse
+    /**
+     * Hapus kategori
+     */
+    public function hapus($id): RedirectResponse
     {
         $category = $this->modelKategori->find($id);
         if (!$category) {
             return redirect()->to('/categories')->with('error', 'Kategori tidak ditemukan');
         }
 
-        if ($this->modelKategori->canDelete((int) $id) === false) {
+        if ($this->modelKategori->bisaDihapus((int) $id) === false) {
             return redirect()->to('/categories')
                 ->with('error', 'Kategori tidak bisa dihapus karena masih digunakan oleh produk');
         }

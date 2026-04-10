@@ -4,6 +4,13 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
+/**
+ * ProdukModel - Model untuk mengelola data produk/barang
+ *
+ * Relasi:
+ * - Produk memiliki Kategori (category_id → categories.id)
+ * - PergerakanStok terkait Produk (stock_movements.product_id → products.id)
+ */
 class ProdukModel extends Model
 {
     protected $table = 'products';
@@ -24,15 +31,17 @@ class ProdukModel extends Model
         'is_active',
     ];
 
-
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
     /**
-     * Get filtered products with category information
+     * Ambil produk yang terfilter beserta informasi kategori
+     *
+     * @param array $filter Filter berupa search, category, stock_status
+     * @return array Daftar produk terfilter
      */
-    public function getFilteredProducts(array $filters = []): array
+    public function getProdukTerfilter(array $filter = []): array
     {
         $builder = $this->select("
                     products.id, 
@@ -58,20 +67,20 @@ class ProdukModel extends Model
             ->join('categories', 'categories.id = products.category_id')
             ->where('products.is_active', true);
 
-        if (!empty($filters['search'])) {
+        if (!empty($filter['search'])) {
             $builder->groupStart()
-                ->like('products.name', $filters['search'])
-                ->orLike('products.sku', $filters['search'])
-                ->orLike('products.description', $filters['search'])
+                ->like('products.name', $filter['search'])
+                ->orLike('products.sku', $filter['search'])
+                ->orLike('products.description', $filter['search'])
                 ->groupEnd();
         }
 
-        if (!empty($filters['category'])) {
-            $builder->where('products.category_id', $filters['category']);
+        if (!empty($filter['category'])) {
+            $builder->where('products.category_id', $filter['category']);
         }
 
-        if (!empty($filters['stock_status'])) {
-            switch ($filters['stock_status']) {
+        if (!empty($filter['stock_status'])) {
+            switch ($filter['stock_status']) {
                 case 'habis':
                     $builder->where('products.current_stock', 0);
                     break;
@@ -89,9 +98,11 @@ class ProdukModel extends Model
     }
 
     /**
-     * Get all products with category name
+     * Ambil semua produk beserta nama kategori
+     *
+     * @return array Daftar produk dengan kategori
      */
-    public function getProductsWithCategory(): array
+    public function getProdukDenganKategori(): array
     {
         return $this->select('products.id, products.name, products.sku, products.category_id, products.current_stock, products.unit, categories.name as category_name')
             ->join('categories', 'categories.id = products.category_id')
@@ -101,9 +112,12 @@ class ProdukModel extends Model
     }
 
     /**
-     * Get single product with category name
+     * Ambil satu produk beserta nama kategori berdasarkan ID
+     *
+     * @param int $id ID produk
+     * @return array|null Data produk atau null jika tidak ditemukan
      */
-    public function getProductWithCategory(int $id): ?array
+    public function getProdukDenganKategoriById(int $id): ?array
     {
         return $this->select('products.id, products.name, products.sku, products.category_id, products.description, products.price, products.cost_price, products.min_stock, products.current_stock, products.stock_baik, products.stock_rusak, products.unit, products.is_active, categories.name as category_name')
             ->join('categories', 'categories.id = products.category_id')
@@ -112,11 +126,13 @@ class ProdukModel extends Model
     }
 
     /**
-     * Calculate total inventory value (stock * price)
+     * Hitung total nilai inventaris (stok × harga modal)
+     *
+     * @return float Total nilai inventaris
      */
-    public function getTotalInventoryValue(): float
+    public function getTotalNilaiInventaris(): float
     {
-        $result = $this->select('SUM(current_stock * price) as total_value', false)
+        $result = $this->select('SUM(current_stock * cost_price) as total_value', false)
             ->where('is_active', true)
             ->first();
 
@@ -124,16 +140,19 @@ class ProdukModel extends Model
     }
 
     /**
-     * Get products with low stock
+     * Ambil produk dengan stok rendah
+     *
+     * @param int $limit Batas jumlah data (0 = semua)
+     * @return array Daftar produk stok rendah
      */
-    public function getLowStockProducts(int $limit = 0): array
+    public function getProdukStokRendah(int $limit = 0): array
     {
-        $builder = $this->select('products.id, products.name, products.sku, products.current_stock, products.min_stock, products.unit, categories.name as category_name')
+        $builder = $this->select('products.id, products.name, products.sku, products.current_stock, products.stock_baik, products.min_stock, products.unit, categories.name as category_name, IFNULL(products.stock_baik, products.current_stock) as available_stock', false)
             ->join('categories', 'categories.id = products.category_id')
-            ->where('products.current_stock <= products.min_stock', null, false)
-            ->where('products.current_stock >', 0)
+            ->where('IFNULL(products.stock_baik, products.current_stock) <= products.min_stock', null, false)
+            ->where('IFNULL(products.stock_baik, products.current_stock) > 0', null, false)
             ->where('products.is_active', true)
-            ->orderBy('products.current_stock', 'ASC');
+            ->orderBy('IFNULL(products.stock_baik, products.current_stock)', 'ASC', false);
 
         if ($limit > 0) {
             $builder->limit($limit);
@@ -143,18 +162,22 @@ class ProdukModel extends Model
     }
 
     /**
-     * Generate SKU automatically based on category and product name
+     * Generate kode produk otomatis berdasarkan kategori dan nama produk
+     *
+     * @param int    $idKategori  ID kategori
+     * @param string $namaProduk  Nama produk
+     * @return string|null Kode produk yang digenerate atau null jika kategori tidak ditemukan
      */
-    public function generateSKU(int $categoryId, string $productName): ?string
+    public function generateKodeProduk(int $idKategori, string $namaProduk): ?string
     {
         $modelKategori = new KategoriModel();
-        $category = $modelKategori->find($categoryId);
-        if (!$category) {
+        $kategori = $modelKategori->find($idKategori);
+        if (!$kategori) {
             return null;
         }
 
-        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $category['name'] ?? ''), 0, 3));
-        $namePart = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $productName), 0, 3));
+        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $kategori['name'] ?? ''), 0, 3));
+        $namePart = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $namaProduk), 0, 3));
 
         $lastProduct = $this->like('sku', $prefix . $namePart, 'after')
             ->orderBy('id', 'DESC')

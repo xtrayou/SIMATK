@@ -9,6 +9,17 @@ use App\Models\NotifikasiModel;
 use App\Controllers\BaseController;
 use Exception;
 
+/**
+ * StokController - Controller untuk mengelola stok barang
+ *
+ * Menangani:
+ * - Barang masuk (stokMasuk)
+ * - Barang keluar (stokKeluar)
+ * - Mutasi stok (mutasi)
+ * - Riwayat stok (riwayat)
+ * - Penyesuaian stok (penyesuaian)
+ * - Peringatan stok (peringatan)
+ */
 class StokController extends BaseController
 {
     protected ProdukModel $modelProduk;
@@ -18,7 +29,6 @@ class StokController extends BaseController
 
     public function __construct()
     {
-        // Inisialisasi model yang dipakai di seluruh proses stok.
         $this->modelProduk        = new ProdukModel();
         $this->modelKategori       = new KategoriModel();
         $this->modelMutasiStok  = new MutasiStokModel();
@@ -26,15 +36,14 @@ class StokController extends BaseController
     }
 
     /**
-     * Stock In page
+     * Halaman Barang Masuk
      */
     public function stockIn()
     {
-        // Menyiapkan halaman Barang Masuk beserta data produk, kategori, dan riwayat terbaru.
         $this->setPageData('Barang Masuk', 'Input stok barang masuk ke gudang / inventory');
 
-        $products   = $this->modelProduk->getProductsWithCategory();
-        $categories = $this->modelKategori->getActiveCategories();
+        $products   = $this->modelProduk->getProdukDenganKategori();
+        $categories = $this->modelKategori->getKategoriAktif();
 
         $recentHistory = $this->modelMutasiStok->select('stock_movements.*, products.name as product_name, products.sku as product_sku')
             ->join('products', 'products.id = stock_movements.product_id')
@@ -54,15 +63,15 @@ class StokController extends BaseController
     }
 
     /**
-     * Process Stock In
+     * Proses simpan Barang Masuk
      */
     public function storeStockIn()
     {
-        // Memvalidasi dan menyimpan transaksi barang masuk (multi-item) dalam satu referensi.
         $rules = [
             'movements' => 'required',
             'movements.*.product_id' => 'required',
-            'movements.*.quantity'   => 'required|integer|greater_than[0]'
+            'movements.*.quantity'   => 'required|integer|greater_than[0]',
+            'movements.*.damaged_quantity' => 'permit_empty|is_natural',
         ];
 
         if (!$this->validate($rules)) {
@@ -87,10 +96,11 @@ class StokController extends BaseController
             foreach ($movementData as $m) {
                 if (empty($m['product_id']) || empty($m['quantity'])) continue;
 
-                $this->modelMutasiStok->createMovement([
+                $this->modelMutasiStok->buatMutasi([
                     'product_id'   => $m['product_id'],
                     'type'         => 'IN',
                     'quantity'     => $m['quantity'],
+                    'damaged_quantity' => (int) ($m['damaged_quantity'] ?? 0),
                     'reference_no' => $reference,
                     'notes'        => ($m['notes'] ?? '') ?: $globalNotes,
                     'created_by'   => session()->get('userId') ?: null
@@ -108,12 +118,12 @@ class StokController extends BaseController
             try {
                 foreach ($movementData as $m) {
                     if (empty($m['product_id'])) continue;
-                    /** @var array $product */
                     $produk = $this->modelProduk->find($m['product_id']);
                     if ($produk) {
+                        $qtyNotifikasi = (int) ($m['quantity'] ?? 0) + (int) ($m['damaged_quantity'] ?? 0);
                         $this->modelNotifikasi->createStockInNotification(
                             (string) $produk['name'],
-                            (int)$m['quantity'],
+                            $qtyNotifikasi,
                             $reference
                         );
                     }
@@ -130,15 +140,17 @@ class StokController extends BaseController
     }
 
     /**
-     * Stock Out page
+     * Halaman Barang Keluar
      */
     public function stockOut()
     {
-        // Menyiapkan halaman Barang Keluar dengan produk yang masih punya stok.
         $this->setPageData('Barang Keluar', 'Input pengeluaran stok barang dari gudang');
 
-        $products   = $this->modelProduk->where('current_stock >', 0)->orderBy('name', 'ASC')->findAll();
-        $categories = $this->modelKategori->getActiveCategories();
+        $products   = $this->modelProduk
+            ->where('IFNULL(stock_baik, current_stock) >', 0, false)
+            ->orderBy('name', 'ASC')
+            ->findAll();
+        $categories = $this->modelKategori->getKategoriAktif();
 
         $recentHistory = $this->modelMutasiStok->select('stock_movements.*, products.name as product_name, products.sku as product_sku')
             ->join('products', 'products.id = stock_movements.product_id')
@@ -158,11 +170,10 @@ class StokController extends BaseController
     }
 
     /**
-     * Process Stock Out
+     * Proses simpan Barang Keluar
      */
     public function storeStockOut()
     {
-        // Memvalidasi dan menyimpan transaksi barang keluar, lalu kirim notifikasi stok.
         $rules = [
             'movements' => 'required',
             'movements.*.product_id' => 'required',
@@ -186,7 +197,7 @@ class StokController extends BaseController
             foreach ($movementData as $m) {
                 if (empty($m['product_id']) || empty($m['quantity'])) continue;
 
-                $this->modelMutasiStok->createMovement([
+                $this->modelMutasiStok->buatMutasi([
                     'product_id'   => $m['product_id'],
                     'type'         => 'OUT',
                     'quantity'     => $m['quantity'],
@@ -207,7 +218,6 @@ class StokController extends BaseController
             try {
                 foreach ($movementData as $m) {
                     if (empty($m['product_id'])) continue;
-                    /** @var array $product */
                     $produk = $this->modelProduk->find($m['product_id']);
                     if (!$produk) continue;
 
@@ -217,11 +227,14 @@ class StokController extends BaseController
                         $reference
                     );
 
-                    // Cek apakah stok habis atau rendah
-                    if ((int)$produk['current_stock'] <= 0) {
-                        $this->modelNotifikasi->createOutOfStockNotification($produk);
-                    } elseif ((int)$produk['current_stock'] <= (int)($produk['min_stock'] ?? 0)) {
-                        $this->modelNotifikasi->createLowStockNotification($produk);
+                    $stokBaikSaatIni = (int) ($produk['stock_baik'] ?? $produk['current_stock']);
+                    $produkUntukNotifikasi = $produk;
+                    $produkUntukNotifikasi['current_stock'] = $stokBaikSaatIni;
+
+                    if ($stokBaikSaatIni <= 0) {
+                        $this->modelNotifikasi->createOutOfStockNotification($produkUntukNotifikasi);
+                    } elseif ($stokBaikSaatIni <= (int) ($produk['min_stock'] ?? 0)) {
+                        $this->modelNotifikasi->createLowStockNotification($produkUntukNotifikasi);
                     }
                 }
             } catch (\Throwable $e) {
@@ -236,11 +249,10 @@ class StokController extends BaseController
     }
 
     /**
-     * Stock Movements page (unified IN/OUT view)
+     * Halaman Mutasi Stok (tampilan gabungan IN/OUT)
      */
     public function movements()
     {
-        // Menampilkan halaman mutasi stok gabungan (mode IN/OUT) beserta filter dan statistik.
         $currentType = $this->request->getGet('type') ?: 'IN';
         if (!in_array($currentType, ['IN', 'OUT'], true)) {
             $currentType = 'IN';
@@ -259,7 +271,6 @@ class StokController extends BaseController
             'end_date'   => $this->request->getGet('end_date'),
         ];
 
-        // Build query for recent movements
         $builder = $this->modelMutasiStok
             ->select('stock_movements.*, products.name as product_name, products.sku as product_sku, categories.name as category_name')
             ->join('products', 'products.id = stock_movements.product_id')
@@ -283,7 +294,7 @@ class StokController extends BaseController
             ->limit(20)
             ->findAll();
 
-        // Stats
+        // Statistik
         $statsBuilder = $this->modelMutasiStok->where('type', $currentType);
         $totalTransactions = $statsBuilder->countAllResults(false);
         $totalQuantity     = (int) $this->modelMutasiStok
@@ -292,7 +303,7 @@ class StokController extends BaseController
             ->first()['quantity'];
 
         $products   = $this->modelProduk->orderBy('name', 'ASC')->findAll();
-        $categories = $this->modelKategori->getActiveCategories();
+        $categories = $this->modelKategori->getKategoriAktif();
 
         $data = [
             'current_type'     => $currentType,
@@ -311,11 +322,10 @@ class StokController extends BaseController
     }
 
     /**
-     * Stock History page
+     * Halaman Riwayat Stok
      */
     public function history()
     {
-        // Menampilkan riwayat mutasi stok berdasarkan filter produk, tipe, dan rentang tanggal.
         $this->setPageData('Riwayat Stok', 'History pergerakan keluar dan masuk barang');
 
         $filters = [
@@ -325,7 +335,7 @@ class StokController extends BaseController
             'end_date'   => $this->request->getGet('end_date')
         ];
 
-        $movements = $this->modelMutasiStok->getMovementsWithProduct(0, $filters);
+        $movements = $this->modelMutasiStok->getMutasiDenganProduk(0, $filters);
 
         $data = [
             'daftarMutasi'   => $movements,
@@ -340,28 +350,27 @@ class StokController extends BaseController
     }
 
     /**
-     * Stock Adjustment page
+     * Halaman Penyesuaian Stok
      */
     public function adjustment()
     {
-        // Menyiapkan halaman penyesuaian stok untuk koreksi sesuai kondisi fisik.
         $this->setPageData('Penyesuaian Stok', 'Koreksi stok barang sesuai kondisi fisik gudang');
 
         $data = [
-            'daftarProduk' => $this->modelProduk->getProductsWithCategory()
+            'daftarProduk' => $this->modelProduk->getProdukDenganKategori()
         ];
 
         return $this->render('stock/adjustment', $data);
     }
 
     /**
-     * Save Stock Adjustment
+     * Simpan Penyesuaian Stok
      */
     public function storeAdjustment()
     {
-        // Menyimpan penyesuaian stok per item dan memicu notifikasi jika stok rendah/habis.
         $adjustments = $this->request->getPost('adjustments');
         $globalNotes = $this->request->getPost('global_notes') ?: 'Penyesuaian stok manual';
+        $reference = $this->request->getPost('reference_no') ?: 'ADJ-' . time();
 
         if (empty($adjustments)) {
             return redirect()->back()->with('error', 'Tidak ada data penyesuaian yang dikirim.');
@@ -373,13 +382,22 @@ class StokController extends BaseController
         try {
             $successCount = 0;
             foreach ($adjustments as $p) {
-                if (!isset($p['product_id']) || !isset($p['new_stock'])) continue;
+                if (!isset($p['product_id'])) continue;
 
-                $this->modelMutasiStok->createMovement([
+                $stokBaik = isset($p['stock_baik'])
+                    ? max(0, (int) $p['stock_baik'])
+                    : max(0, (int) ($p['new_stock'] ?? 0));
+                $stokRusak = isset($p['stock_rusak'])
+                    ? max(0, (int) $p['stock_rusak'])
+                    : 0;
+
+                $this->modelMutasiStok->buatMutasi([
                     'product_id'   => $p['product_id'],
                     'type'         => 'ADJUSTMENT',
-                    'quantity'     => $p['new_stock'],
-                    'reference_no' => 'ADJ-' . time(),
+                    'quantity'     => $stokBaik + $stokRusak,
+                    'adjusted_good_stock'    => $stokBaik,
+                    'adjusted_damaged_stock' => $stokRusak,
+                    'reference_no' => $reference,
                     'notes'        => ($p['notes'] ?? '') ?: $globalNotes,
                     'created_by'   => session()->get('userId') ?: null
                 ]);
@@ -396,10 +414,14 @@ class StokController extends BaseController
                     $produk = $this->modelProduk->find($p['product_id']);
                     if (!$produk) continue;
 
-                    if ((int)$produk['current_stock'] <= 0) {
-                        $this->modelNotifikasi->createOutOfStockNotification($produk);
-                    } elseif ((int)$produk['current_stock'] <= (int)($produk['min_stock'] ?? 0)) {
-                        $this->modelNotifikasi->createLowStockNotification($produk);
+                    $stokBaikSaatIni = (int) ($produk['stock_baik'] ?? $produk['current_stock']);
+                    $produkUntukNotifikasi = $produk;
+                    $produkUntukNotifikasi['current_stock'] = $stokBaikSaatIni;
+
+                    if ($stokBaikSaatIni <= 0) {
+                        $this->modelNotifikasi->createOutOfStockNotification($produkUntukNotifikasi);
+                    } elseif ($stokBaikSaatIni <= (int) ($produk['min_stock'] ?? 0)) {
+                        $this->modelNotifikasi->createLowStockNotification($produkUntukNotifikasi);
                     }
                 }
             } catch (\Throwable $e) {
@@ -414,15 +436,17 @@ class StokController extends BaseController
     }
 
     /**
-     * Stock Alerts page
+     * Halaman Peringatan Stok
      */
     public function alerts()
     {
-        // Menampilkan daftar peringatan stok rendah/habis beserta ringkasan statistik.
         $this->setPageData('Peringatan Stok', 'Daftar barang yang stoknya menipis atau habis');
 
-        $lowStockProducts = $this->modelProduk->getLowStockProducts();
-        $outOfStockProducts = $this->modelProduk->where('current_stock', 0)->where('is_active', true)->findAll();
+        $lowStockProducts = $this->modelProduk->getProdukStokRendah();
+        $outOfStockProducts = $this->modelProduk
+            ->where('is_active', true)
+            ->where('IFNULL(stock_baik, current_stock) <= 0', null, false)
+            ->findAll();
         $totalActive = $this->modelProduk->where('is_active', true)->countAllResults(false);
 
         $data = [
@@ -439,11 +463,10 @@ class StokController extends BaseController
     }
 
     /**
-     * Export Stock History
+     * Ekspor Riwayat Stok
      */
     public function exportHistory($format = 'excel')
     {
-        // Mengekspor riwayat stok ke format Excel atau PDF berdasarkan parameter format.
         $filters = [
             'product_id' => $this->request->getGet('product'),
             'type'       => $this->request->getGet('type'),
@@ -451,8 +474,7 @@ class StokController extends BaseController
             'end_date'   => $this->request->getGet('end_date')
         ];
 
-        // Ambil semua data tanpa limit (0)
-        $movements = $this->modelMutasiStok->getMovementsWithProduct(0, $filters);
+        $movements = $this->modelMutasiStok->getMutasiDenganProduk(0, $filters);
 
         if ($format === 'excel') {
             return $this->exportHistoryExcel($movements);
@@ -461,13 +483,14 @@ class StokController extends BaseController
         }
     }
 
+    /**
+     * Ekspor riwayat stok ke Excel
+     */
     private function exportHistoryExcel(array $movements)
     {
-        // Membuat file Excel riwayat mutasi stok dan mengirimkannya sebagai unduhan.
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Header
         $sheet->setCellValue('A1', 'RIWAYAT MUTASI STOK INVENTORY');
         $sheet->mergeCells('A1:G1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
@@ -477,7 +500,6 @@ class StokController extends BaseController
         $sheet->mergeCells('A2:G2');
         $sheet->getStyle('A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-        // Column headers
         $headers = ['No', 'Tanggal & Waktu', 'Produk', 'Kode Barang', 'Tipe', 'Jumlah', 'Stok Sisa', 'Referensi/Ket'];
         $col = 'A';
         foreach ($headers as $header) {
@@ -489,7 +511,6 @@ class StokController extends BaseController
             $col++;
         }
 
-        // Data
         $row = 5;
         foreach ($movements as $index => $mut) {
             $sheet->setCellValue('A' . $row, $index + 1);
@@ -503,7 +524,6 @@ class StokController extends BaseController
             $row++;
         }
 
-        // Auto size columns
         foreach (range('A', 'H') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
@@ -519,9 +539,11 @@ class StokController extends BaseController
         exit;
     }
 
+    /**
+     * Ekspor riwayat stok ke PDF
+     */
     private function exportHistoryPDF(array $movements)
     {
-        // Merender view riwayat ke PDF menggunakan Dompdf lalu mengirimkan file unduhan.
         $html = view('stock/history_pdf', ['movements' => $movements]);
 
         $options = new \Dompdf\Options();
@@ -539,12 +561,11 @@ class StokController extends BaseController
     }
 
     /**
-     * Get single product stock details (AJAX helper)
+     * Ambil detail stok satu produk (AJAX helper)
      */
     public function getProductStock($id)
     {
-        // Mengembalikan detail stok produk dalam format JSON untuk kebutuhan AJAX.
-        $product = $this->modelProduk->getProductWithCategory((int) $id);
+        $product = $this->modelProduk->getProdukDenganKategoriById((int) $id);
         if (!$product) {
             return $this->jsonResponse([
                 'status'  => false,
@@ -570,6 +591,8 @@ class StokController extends BaseController
                 'sku'           => $product['sku'],
                 'unit'          => $product['unit'],
                 'current_stock' => $currentStock,
+                'stock_baik'    => (int) ($product['stock_baik'] ?? $currentStock),
+                'stock_rusak'   => (int) ($product['stock_rusak'] ?? 0),
                 'min_stock'     => $minStock,
                 'stock_status'  => $stockStatus,
             ],

@@ -37,7 +37,7 @@
                             <span>Kategori</span>
                         </a>
                     </li>
-                    
+
                     <li class="sidebar-item <?= strpos(uri_string(), 'kode-barang') !== false ? 'active' : '' ?>">
                         <a href="<?= base_url('/kode-barang') ?>" class="sidebar-link">
                             <i class="bi bi-upc-scan"></i>
@@ -98,12 +98,19 @@
                 <!-- SUPERADMIN -->
                 <?php if ($role === 'superadmin'): ?>
 
-                    <li class="sidebar-title">Pengaturan</li>
+                    <li class="sidebar-title">Administrasi</li>
 
-                    <li class="sidebar-item <?= uri_string() == 'users' ? 'active' : '' ?>">
+                    <li class="sidebar-item <?= strpos(uri_string(), 'users') === 0 ? 'active' : '' ?>">
                         <a href="<?= base_url('/users') ?>" class="sidebar-link">
+                            <i class="bi bi-people"></i>
+                            <span>Manajemen User</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item <?= strpos(uri_string(), 'permissions') === 0 ? 'active' : '' ?>">
+                        <a href="<?= base_url('/permissions') ?>" class="sidebar-link">
                             <i class="bi bi-shield-lock"></i>
-                            <span>Hak Akses</span>
+                            <span>Hak Akses Role</span>
                         </a>
                     </li>
 

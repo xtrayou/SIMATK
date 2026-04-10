@@ -93,7 +93,7 @@
                                 // Get current stock for the product
                                 $productModel = new \App\Models\ProdukModel();
                                 $product = $productModel->find($item['product_id']);
-                                $currentStock = $product ? (int)$product['current_stock'] : 0;
+                                $currentStock = $product ? (int) ($product['stock_baik'] ?? $product['current_stock']) : 0;
                                 $requestedQty = (int)$item['quantity'];
                                 $isStockSufficient = $currentStock >= $requestedQty;
                                 ?>
@@ -132,7 +132,7 @@
                 foreach (($pinjaman['items'] ?? []) as $item) {
                     $product = $productModel->find($item['product_id']);
                     if ($product) {
-                        $currentStock = (int)$product['current_stock'];
+                        $currentStock = (int) ($product['stock_baik'] ?? $product['current_stock']);
                         $requestedQty = (int)$item['quantity'];
                         if ($currentStock < $requestedQty) {
                             $stockIssues[] = [

@@ -224,14 +224,14 @@
                                 class="form-control"
                                 id="reference_no"
                                 name="reference_no"
-                                placeholder="Contoh: REQ-0001"
+                                placeholder="Contoh: 20260410-120305 atau REQ-0001"
                                 value="<?= old('reference_no') ?>"
                                 required
-                                pattern="^REQ-\d+$">
+                                pattern="^([0-9]{8}-[0-9]{6}|REQ-\d+)$">
                             <i class="bi bi-search"></i>
                         </div>
                         <small class="text-muted d-block mt-2">
-                            Format: REQ-#### (cek di email konfirmasi Anda)
+                            Format: Kode Resi (YYYYMMDD-HHMMSS) atau REQ-####
                         </small>
                     </div>
 

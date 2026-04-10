@@ -26,7 +26,7 @@ class DasborController extends BaseController
             $stats = [
                 'total_products'   => $this->modelProduk->where('is_active', true)->countAllResults(),
                 'total_categories' => $this->modelKategori->where('is_active', true)->countAllResults(),
-                'low_stock_count'  => count($this->modelProduk->getLowStockProducts()),
+                'low_stock_count'  => count($this->modelProduk->getProdukStokRendah()),
             ];
 
             return $this->jsonResponse([

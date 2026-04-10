@@ -4,6 +4,13 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
+/**
+ * PermintaanModel - Model untuk mengelola data permintaan ATK
+ *
+ * Relasi:
+ * - Permintaan terkait Produk (melalui request_items)
+ * - Permintaan terkait Pengguna (borrower)
+ */
 class PermintaanModel extends Model
 {
     protected $table = 'requests';
@@ -27,21 +34,24 @@ class PermintaanModel extends Model
     protected $updatedField  = 'updated_at';
 
     /**
-     * Get request details with its items
+     * Ambil detail permintaan beserta daftar item-nya
+     *
+     * @param int $id ID permintaan
+     * @return array|null Data permintaan lengkap dengan item atau null jika tidak ditemukan
      */
-    public function getRequestWithItems(int $id): ?array
+    public function getPermintaanDenganItem(int $id): ?array
     {
-        $request = $this->find($id);
-        if (!$request) {
+        $permintaan = $this->find($id);
+        if (!$permintaan) {
             return null;
         }
 
         $modelItemPermintaan = new ItemPermintaanModel();
-        $request['items'] = $modelItemPermintaan->select('request_items.*, products.name as product_name, products.sku as product_sku, products.unit')
+        $permintaan['items'] = $modelItemPermintaan->select('request_items.*, products.name as product_name, products.sku as product_sku, products.unit')
             ->join('products', 'products.id = request_items.product_id')
             ->where('request_items.request_id', $id)
             ->findAll();
 
-        return $request;
+        return $permintaan;
     }
 }

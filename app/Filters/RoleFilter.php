@@ -3,6 +3,7 @@
 namespace App\Filters;
 
 use CodeIgniter\Filters\FilterInterface;
+use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -10,7 +11,7 @@ class RoleFilter implements FilterInterface
 {
     /**
      * Cek apakah user memiliki role yang diizinkan
-     * Digunakan di routes: ['filter' => 'role:admin'] atau ['filter' => 'role:admin,staff']
+     * Digunakan di routes: ['filter' => 'role:admin'] atau ['filter' => 'role:superadmin,admin']
      */
     public function before(RequestInterface $request, $arguments = null)
     {
@@ -19,10 +20,10 @@ class RoleFilter implements FilterInterface
         }
 
         if (!empty($arguments)) {
-            $userRole = session()->get('role') ?? '';
+            $userRole = (string) (session()->get('role') ?? '');
 
-            if (!in_array($userRole, $arguments)) {
-                if ($request->isAJAX()) {
+            if (!in_array($userRole, $arguments, true)) {
+                if ($request instanceof IncomingRequest && $request->isAJAX()) {
                     return service('response')
                         ->setStatusCode(403)
                         ->setJSON(['status' => false, 'message' => 'Akses ditolak. Role Anda tidak memiliki izin.']);

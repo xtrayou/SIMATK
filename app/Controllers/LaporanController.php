@@ -90,7 +90,7 @@ class LaporanController extends BaseController
             $categoryBreakdown[$catName]['total_value'] += $product['stock_value'];
         }
 
-        $categories = $this->modelKategori->getActiveCategories();
+        $categories = $this->modelKategori->getKategoriAktif();
 
         $data = [
             'report_mode'        => $reportMode,
@@ -320,8 +320,8 @@ class LaporanController extends BaseController
             'summary'      => $analytics, // Alias for view compatibility
             'top_products' => $this->getTopMovementProducts($movements),
             'daily_trend'  => $this->getDailyMovementTrend($movements, $startDate, $endDate),
-            'categories'   => $this->modelKategori->getActiveCategories(),
-            'products'     => $this->modelProduk->getProductsWithCategory(),
+            'categories'   => $this->modelKategori->getKategoriAktif(),
+            'products'     => $this->modelProduk->getProdukDenganKategori(),
             'filters'      => [
                 'start_date' => $startDate,
                 'end_date'   => $endDate,
@@ -339,7 +339,7 @@ class LaporanController extends BaseController
      */
     public function valuation()
     {
-        $this->setPageData('Valuasi Inventory', 'Analisis nilai inventory dan profitability');
+        $this->setPageData('Nilai Persediaan', 'Analisis nilai inventory dan profitability');
 
         $categoryFilter  = $this->request->getGet('category');
         $valuationMethod = $this->request->getGet('method') ?: 'current';
@@ -347,9 +347,8 @@ class LaporanController extends BaseController
         $builder = $this->modelProduk->select('
                 products.*, 
                 categories.name as category_name,
-                (products.current_stock * products.price) as current_value,
-                (products.current_stock * products.cost_price) as cost_value,
-                (products.current_stock * products.price) - (products.current_stock * products.cost_price) as potential_profit
+                (products.current_stock * products.price) as nilai_stok,
+                (products.current_stock * products.cost_price) as nilai_modal
             ')
             ->join('categories', 'categories.id = products.category_id')
             ->where('products.is_active', true)
@@ -359,10 +358,10 @@ class LaporanController extends BaseController
             $builder->where('products.category_id', $categoryFilter);
         }
 
-        $products = $builder->orderBy('current_value', 'DESC')->findAll();
+        $products = $builder->orderBy('nilai_stok', 'DESC')->findAll();
 
-        $totalCurrentValue = array_sum(array_column($products, 'current_value'));
-        $totalCostValue    = array_sum(array_column($products, 'cost_value'));
+        $totalNilaiStok  = array_sum(array_column($products, 'nilai_stok'));
+        $totalNilaiModal = array_sum(array_column($products, 'nilai_modal'));
 
         $categoryValuation = [];
         foreach ($products as $product) {
@@ -370,32 +369,29 @@ class LaporanController extends BaseController
             if (!isset($categoryValuation[$catName])) {
                 $categoryValuation[$catName] = [
                     'products'         => 0,
-                    'total_quantity'   => 0,
-                    'current_value'    => 0,
-                    'cost_value'       => 0,
-                    'potential_profit' => 0
+                    'jumlah_barang'   => 0,
+                    'nilai_stok'    => 0,
+                    'nilai_modal'       => 0
                 ];
             }
             $categoryValuation[$catName]['products']++;
-            $categoryValuation[$catName]['total_quantity']   += $product['current_stock'];
-            $categoryValuation[$catName]['current_value']    += $product['current_value'];
-            $categoryValuation[$catName]['cost_value']       += $product['cost_value'];
-            $categoryValuation[$catName]['potential_profit'] += $product['potential_profit'];
+            $categoryValuation[$catName]['jumlah_barang'] += $product['current_stock'];
+            $categoryValuation[$catName]['nilai_stok']    += $product['nilai_stok'];
+            $categoryValuation[$catName]['nilai_modal']   += $product['nilai_modal'];
         }
 
         foreach ($categoryValuation as &$catData) {
-            $catData['margin_percentage'] = $catData['current_value'] > 0 ?
-                (($catData['current_value'] - $catData['cost_value']) / $catData['current_value']) * 100 : 0;
+            $catData['margin_percentage'] = $catData['nilai_stok'] > 0 ?
+                (($catData['nilai_stok'] - $catData['nilai_modal']) / $catData['nilai_stok']) * 100 : 0;
         }
 
         $data = [
             'products'   => $products,
-            'categories' => $this->modelKategori->getActiveCategories(),
+            'categories' => $this->modelKategori->getKategoriAktif(),
             'summary'    => [
-                'total_current_value'    => $totalCurrentValue,
-                'total_cost_value'       => $totalCostValue,
-                'total_potential_profit' => array_sum(array_column($products, 'potential_profit')),
-                'average_margin'         => $totalCurrentValue > 0 ? (($totalCurrentValue - $totalCostValue) / $totalCurrentValue) * 100 : 0,
+                'total_nilai_stok'    => $totalNilaiStok,
+                'total_nilai_modal'       => $totalNilaiModal,
+                'average_margin'         => $totalNilaiStok > 0 ? (($totalNilaiStok - $totalNilaiModal) / $totalNilaiStok) * 100 : 0,
                 'total_products'         => count($products)
             ],
             'category_valuation' => $categoryValuation,
@@ -695,18 +691,44 @@ class LaporanController extends BaseController
         $reportMode = strtolower((string) ($this->request->getGet('report_mode') ?? 'stock'));
 
         // Jika ada file stock opname arsip untuk bulan/tahun tersebut,
-        // langsung kirim file itu (tidak generate dari data stok saat ini)
+        // kirim ulang dengan header Nomor/Tanggal dikosongkan.
         if ($reportMode === 'opname') {
             $archivedFile = $this->findArchivedStockOpnameExcel($month, $year);
             if ($archivedFile && is_file($archivedFile)) {
                 $filename = basename($archivedFile);
 
-                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                header('Content-Disposition: attachment;filename="' . $filename . '"');
-                header('Cache-Control: max-age=0');
+                try {
+                    $spreadsheet = IOFactory::load($archivedFile);
+                    $sheet = $spreadsheet->getActiveSheet();
 
-                readfile($archivedFile);
-                exit;
+                    // Kosongkan nomor surat dan tanggal dokumen agar diisi manual.
+                    $sheet->setCellValue('A3', 'Nomor ');
+                    $sheet->setCellValue('B3', ': ');
+                    $sheet->setCellValue('A4', 'Tanggal ');
+                    $sheet->setCellValue('B4', ': ');
+
+                    // Pastikan judul periode/tahun tidak membawa nilai bulan/tahun lama dari arsip.
+                    $sheet->setCellValue('A7', 'UNTUK PERIODE YANG BERAKHIR TANGGAL');
+                    $sheet->setCellValue('A8', 'TAHUN ANGGARAN');
+
+                    $writer = new Xlsx($spreadsheet);
+
+                    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                    header('Content-Disposition: attachment;filename="' . $filename . '"');
+                    header('Cache-Control: max-age=0');
+
+                    $writer->save('php://output');
+                    exit;
+                } catch (\Throwable $e) {
+                    log_message('error', 'Gagal memproses arsip stock opname excel: ' . $e->getMessage());
+
+                    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                    header('Content-Disposition: attachment;filename="' . $filename . '"');
+                    header('Cache-Control: max-age=0');
+
+                    readfile($archivedFile);
+                    exit;
+                }
             }
 
             return redirect()->back()->with('error', 'Data arsip stock opname untuk periode yang dipilih tidak ditemukan.');
@@ -742,10 +764,10 @@ class LaporanController extends BaseController
         $sheet->getStyle('A2')->getFont()->setBold(true)->setSize(11);
 
         $sheet->setCellValue('A3', 'Nomor ');
-        $sheet->setCellValue('B3', ': ........../UN64.7/LK/' . date('Y'));
+        $sheet->setCellValue('B3', ': ');
 
         $sheet->setCellValue('A4', 'Tanggal ');
-        $sheet->setCellValue('B4', ': ' . $this->formatTanggalIndonesia($year . '-' . $month . '-01'));
+        $sheet->setCellValue('B4', ': ');
 
         $sheet->setCellValue('A5', 'Unit');
         $sheet->setCellValue('B5', ': Fakultas Ilmu Komputer');
@@ -755,7 +777,7 @@ class LaporanController extends BaseController
         $sheet->getStyle('A6')->getFont()->setBold(true)->setSize(12);
         $sheet->getStyle('A6')->getAlignment()->setHorizontal($alignment::HORIZONTAL_CENTER);
 
-        $sheet->setCellValue('A7', 'UNTUK PERIODE YANG BERAKHIR TANGGAL  ' . strtoupper($this->formatTanggalIndonesia($year . '-' . $month . '-01')));
+        $sheet->setCellValue('A7', 'UNTUK PERIODE YANG BERAKHIR TANGGAL');
         $sheet->mergeCells('A7:G7');
         $sheet->getStyle('A7')->getAlignment()->setHorizontal($alignment::HORIZONTAL_CENTER);
 
@@ -1285,7 +1307,7 @@ class LaporanController extends BaseController
         $sheet->getStyle('A2')->getFont()->setBold(true)->setSize(11);
 
         $sheet->setCellValue('A3', 'Nomor ');
-        $sheet->setCellValue('B3', ': ........../UN64.7/LK/' . date('Y'));
+        $sheet->setCellValue('B3', ': ');
         $sheet->setCellValue('A4', 'Unit');
         $sheet->setCellValue('B4', ': Fakultas Ilmu Komputer');
 

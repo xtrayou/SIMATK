@@ -239,7 +239,7 @@
                         <i class="bi bi-ticket-perforated me-1"></i> Kode Resi Anda
                     </div>
                     <div class="receipt-value" id="receiptCode">
-                        <?= generateReceiptCode() ?>
+                        <?= esc((string) ($kode_resi ?? '-')) ?>
                     </div>
                     <button class="copy-btn" onclick="copyReceiptCode()" title="Salin kode resi">
                         <i class="bi bi-clipboard me-1"></i> Salin Kode

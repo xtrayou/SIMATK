@@ -12,6 +12,13 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Exception;
 
+/**
+ * ProdukController - Controller untuk mengelola produk/barang
+ *
+ * Relasi:
+ * - Produk memiliki Kategori
+ * - PergerakanStok terkait Produk
+ */
 class ProdukController extends BaseController
 {
     protected ProdukModel $modelProduk;
@@ -28,7 +35,7 @@ class ProdukController extends BaseController
     }
 
     /**
-     * Show product list
+     * Tampilkan daftar produk
      */
     public function index()
     {
@@ -38,13 +45,13 @@ class ProdukController extends BaseController
         $category    = $this->request->getGet('category');
         $stockStatus = $this->request->getGet('stock_status');
 
-        $products = $this->modelProduk->getFilteredProducts([
+        $products = $this->modelProduk->getProdukTerfilter([
             'search'       => $search,
             'category'     => $category,
             'stock_status' => $stockStatus
         ]);
 
-        $categories = $this->modelKategori->getActiveCategories();
+        $categories = $this->modelKategori->getKategoriAktif();
 
         $data = [
             'daftarProduk'   => $products,
@@ -55,13 +62,13 @@ class ProdukController extends BaseController
             'totalItem'      => count($products)
         ];
 
-        return $this->render('products/index', $data);
+        return $this->render('produk/index', $data);
     }
 
     /**
-     * Create product form
+     * Form tambah produk baru
      */
-    public function create()
+    public function tambah()
     {
         $this->setPageData('Tambah Produk', 'Input data barang baru ke sistem');
 
@@ -78,16 +85,16 @@ class ProdukController extends BaseController
                 'unit'          => 'Pcs',
                 'is_active'     => 1
             ],
-            'daftarKategori' => $this->modelKategori->getActiveCategories(),
+            'daftarKategori' => $this->modelKategori->getKategoriAktif(),
         ];
 
-        return $this->render('products/create', $data);
+        return $this->render('produk/create', $data);
     }
 
     /**
-     * Store or update product
+     * Simpan produk baru atau perbarui produk yang sudah ada
      */
-    public function save()
+    public function simpan()
     {
         $productId = $this->request->getPost('id');
         $isUpdate = !empty($productId);
@@ -107,13 +114,12 @@ class ProdukController extends BaseController
         }
 
         if (!$this->validate($rules)) {
-            // This matches the "Tampilkan Pesan Error" flow
             return redirect()->back()->withInput()->with('error', 'Validasi gagal. Mohon periksa kembali data yang Anda masukkan.');
         }
 
         $requestedSku = strtoupper(trim((string) $this->request->getPost('sku')));
         $categoryId = (int) $this->request->getPost('category_id');
-        $resolvedSku = $this->resolveSkuWithFallback($requestedSku, $categoryId);
+        $resolvedSku = $this->tentukanKodeProdukDenganCadangan($requestedSku, $categoryId);
 
         $duplicateSku = $this->modelProduk->where('sku', $resolvedSku)->first();
         if ($duplicateSku && (!$isUpdate || (int) $duplicateSku['id'] !== (int) $productId)) {
@@ -176,7 +182,7 @@ class ProdukController extends BaseController
      * Jika kode barang tidak ditemukan di referensi, gunakan kode "lainnya" (akhiran 999)
      * berdasarkan kategori yang dipilih. Contoh: 8010101000 -> 8010101999.
      */
-    private function resolveSkuWithFallback(string $requestedSku, int $categoryId): string
+    private function tentukanKodeProdukDenganCadangan(string $requestedSku, int $categoryId): string
     {
         $requestedSku = preg_replace('/\D+/', '', $requestedSku) ?? '';
         if ($requestedSku === '') {
@@ -224,11 +230,11 @@ class ProdukController extends BaseController
     }
 
     /**
-     * Product details
+     * Tampilkan detail produk
      */
-    public function show($id)
+    public function detail($id)
     {
-        $product = $this->modelProduk->getProductWithCategory((int)$id);
+        $product = $this->modelProduk->getProdukDenganKategoriById((int)$id);
 
         if (!$product) {
             return redirect()->to('/products')->with('error', 'Produk tidak ditemukan.');
@@ -252,13 +258,13 @@ class ProdukController extends BaseController
             'statistik'   => $stats
         ];
 
-        return $this->render('products/show', $data);
+        return $this->render('produk/show', $data);
     }
 
     /**
-     * Edit product form
+     * Form ubah/edit produk
      */
-    public function edit($id)
+    public function ubah($id)
     {
         $product = $this->modelProduk->find($id);
 
@@ -270,16 +276,16 @@ class ProdukController extends BaseController
 
         $data = [
             'produk'         => $product,
-            'daftarKategori' => $this->modelKategori->getActiveCategories(),
+            'daftarKategori' => $this->modelKategori->getKategoriAktif(),
         ];
 
-        return $this->render('products/edit', $data);
+        return $this->render('produk/edit', $data);
     }
 
     /**
-     * Delete product
+     * Hapus produk
      */
-    public function delete($id)
+    public function hapus($id)
     {
         $isAjax = $this->request->isAJAX();
         $product = $this->modelProduk->find($id);
@@ -296,7 +302,7 @@ class ProdukController extends BaseController
 
         $movementCount = $this->modelMutasiStok->where('product_id', $id)->countAllResults();
 
-        if ($movementCount > 1) { // Allow deletion if only initial stock movement exists
+        if ($movementCount > 1) {
             $message = 'Produk tidak bisa dihapus karena sudah memiliki riwayat transaksi.';
 
             if ($isAjax) {
@@ -333,11 +339,11 @@ class ProdukController extends BaseController
     }
 
     /**
-     * Export to Excel
+     * Ekspor daftar produk ke Excel
      */
     public function exportExcel()
     {
-        $products = $this->modelProduk->getProductsWithCategory();
+        $products = $this->modelProduk->getProdukDenganKategori();
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -374,11 +380,11 @@ class ProdukController extends BaseController
     }
 
     /**
-     * Export to PDF
+     * Ekspor daftar produk ke PDF
      */
     public function exportPdf()
     {
-        $products = $this->modelProduk->getProductsWithCategory();
+        $products = $this->modelProduk->getProdukDenganKategori();
 
         $html = "<h2>Laporan Inventaris Barang</h2>";
         $html .= "<table border='1' width='100%' cellpadding='5' style='border-collapse:collapse;'>
@@ -418,11 +424,11 @@ class ProdukController extends BaseController
     }
 
     /**
-     * Export single product detail as PDF
+     * Ekspor detail satu produk sebagai PDF
      */
     public function exportSingle($id)
     {
-        $product = $this->modelProduk->getProductWithCategory((int) $id);
+        $product = $this->modelProduk->getProdukDenganKategoriById((int) $id);
         if (!$product) {
             return redirect()->to('/products')->with('error', 'Produk tidak ditemukan.');
         }
@@ -448,9 +454,9 @@ class ProdukController extends BaseController
     }
 
     /**
-     * Generate SKU from category and product name via AJAX
+     * Generate kode produk (SKU) dari kategori dan nama produk via AJAX
      */
-    public function generateSKU()
+    public function generateKodeProduk()
     {
         $categoryId  = (int) $this->request->getPost('category_id');
         $productName = trim((string) $this->request->getPost('name'));
@@ -462,7 +468,7 @@ class ProdukController extends BaseController
             ], 422);
         }
 
-        $sku = $this->modelProduk->generateSKU($categoryId, $productName);
+        $sku = $this->modelProduk->generateKodeProduk($categoryId, $productName);
         if ($sku === null) {
             return $this->jsonResponse([
                 'status'  => false,

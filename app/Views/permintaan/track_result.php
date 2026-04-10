@@ -349,8 +349,12 @@
 
             <div class="info-section">
                 <div class="info-row">
-                    <span class="info-label">Nomor Referensi</span>
+                    <span class="info-label">Kode Resi</span>
                     <span class="info-value"><?= $referenceNo ?></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Nomor Permintaan</span>
+                    <span class="info-value">REQ-<?= str_pad((string) ($permintaan['id'] ?? 0), 4, '0', STR_PAD_LEFT) ?></span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Nama Pemohon</span>
@@ -371,7 +375,7 @@
                 <?php if (!empty($permintaan['notes'])): ?>
                     <div class="info-row">
                         <span class="info-label">Catatan</span>
-                        <span class="info-value"><?= nl2br(esc($permintaan['notes'])) ?></span>
+                        <span class="info-value"><?= nl2br(esc((string) ($permintaan['notes'] ?? ''))) ?></span>
                     </div>
                 <?php endif; ?>
             </div>

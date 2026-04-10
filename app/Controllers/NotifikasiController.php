@@ -2,11 +2,20 @@
 
 namespace App\Controllers;
 
+use App\Exceptions\PageForbiddenException;
 use App\Models\NotifikasiModel;
 
 class NotifikasiController extends BaseController
 {
     protected NotifikasiModel $modelNotifikasi;
+
+    private function ensureNotificationsViewPermission(): void
+    {
+        $permissions = session()->get('permissions') ?? [];
+        if (!is_array($permissions) || !in_array('notifications.view', $permissions, true)) {
+            throw PageForbiddenException::forPageForbidden();
+        }
+    }
 
     public function __construct()
     {
@@ -18,9 +27,11 @@ class NotifikasiController extends BaseController
      */
     public function index()
     {
+        $this->ensureNotificationsViewPermission();
+
         $this->setPageData('Notifikasi', 'Daftar semua notifikasi sistem');
 
-        $role = session()->get('role') ?? 'staff';
+        $role = session()->get('role') ?? 'admin';
 
         $notifications = $this->modelNotifikasi->getForRole($role, 20);
         $pager = $this->modelNotifikasi->pager;
@@ -39,10 +50,13 @@ class NotifikasiController extends BaseController
      */
     public function read($id)
     {
-        $role = session()->get('role') ?? 'staff';
+        $this->ensureNotificationsViewPermission();
+
+        $role = session()->get('role') ?? 'admin';
+        $roleScopes = $role === 'superadmin' ? ['superadmin', 'admin', 'all'] : [$role, 'all'];
         $notification = $this->modelNotifikasi
             ->where('id', (int) $id)
-            ->whereIn('for_role', [$role, 'all'])
+            ->whereIn('for_role', $roleScopes)
             ->first();
 
         if (!$notification) {
@@ -65,7 +79,9 @@ class NotifikasiController extends BaseController
      */
     public function markAllRead()
     {
-        $role   = session()->get('role') ?? 'staff';
+        $this->ensureNotificationsViewPermission();
+
+        $role   = session()->get('role') ?? 'admin';
         $userId = session()->get('userId');
 
         $this->modelNotifikasi->markAllAsRead($role, $userId);
@@ -82,10 +98,13 @@ class NotifikasiController extends BaseController
      */
     public function delete($id)
     {
-        $role = session()->get('role') ?? 'staff';
+        $this->ensureNotificationsViewPermission();
+
+        $role = session()->get('role') ?? 'admin';
+        $roleScopes = $role === 'superadmin' ? ['superadmin', 'admin', 'all'] : [$role, 'all'];
         $notification = $this->modelNotifikasi
             ->where('id', (int) $id)
-            ->whereIn('for_role', [$role, 'all'])
+            ->whereIn('for_role', $roleScopes)
             ->first();
 
         if (!$notification) {
@@ -106,6 +125,8 @@ class NotifikasiController extends BaseController
      */
     public function cleanOld()
     {
+        $this->ensureNotificationsViewPermission();
+
         $role = session()->get('role');
         if (!in_array($role, ['admin', 'superadmin'], true)) {
             return $this->jsonResponse(['status' => false, 'message' => 'Akses ditolak.'], 403);

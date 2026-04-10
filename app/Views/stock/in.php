@@ -58,9 +58,14 @@
                                         <small class="text-muted stock-info d-block mt-1">Stok saat ini: -</small>
                                     </td>
                                     <td>
-                                        <div class="input-group">
+                                        <div class="input-group mb-2">
                                             <input type="number" class="form-control quantity-input" name="movements[0][quantity]" min="1" placeholder="0" required>
+                                            <span class="input-group-text small-text">Baik</span>
                                             <span class="input-group-text small-text unit-label">Pcs</span>
+                                        </div>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control damaged-input" name="movements[0][damaged_quantity]" min="0" value="0" placeholder="0">
+                                            <span class="input-group-text small-text">Rusak</span>
                                         </div>
                                     </td>
                                     <td class="text-center">
@@ -301,6 +306,7 @@
             row.find('.product-autofill').val('');
             row.find('.select-produk').attr('name', `movements[${rowIndex}][product_id]`).val('');
             row.find('.quantity-input').attr('name', `movements[${rowIndex}][quantity]`).val('');
+            row.find('.damaged-input').attr('name', `movements[${rowIndex}][damaged_quantity]`).val('0');
             row.find('.unit-label').text('Pcs');
             row.find('.autofill-hint').text('');
             row.find('.stock-info').text('Stok saat ini: -');
@@ -398,7 +404,7 @@
         });
 
         // Hitung Total
-        $(document).on('input', '.quantity-input', function() {
+        $(document).on('input', '.quantity-input, .damaged-input', function() {
             updateTotals();
         });
 
@@ -408,10 +414,11 @@
 
             $('.item-row').each(function() {
                 const qty = parseInt($(this).find('.quantity-input').val()) || 0;
+                const damagedQty = parseInt($(this).find('.damaged-input').val()) || 0;
                 const pid = $(this).find('.select-produk').val();
 
-                if (pid && qty > 0) {
-                    totalQty += qty;
+                if (pid && (qty > 0 || damagedQty > 0)) {
+                    totalQty += qty + damagedQty;
                     count++;
                 }
             });

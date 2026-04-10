@@ -47,9 +47,6 @@ class PenggunaModel extends Model
         $user = $this->find($userId);
         if (!$user) return false;
 
-        // Admin dan superadmin selalu punya semua permission
-        if (in_array((string) $user['role'], ['admin', 'superadmin'], true)) return true;
-
         $modelHakAkses = new HakAksesModel();
         return $modelHakAkses->roleHasPermission($user['role'], $permissionName);
     }

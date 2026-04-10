@@ -42,7 +42,7 @@
                                             <option value="">- Cari Barang -</option>
                                             <?php foreach ($daftarProduk as $p): ?>
                                                 <option value="<?= $p['id'] ?>" data-unit="<?= $p['unit'] ?>" data-stock="<?= $p['current_stock'] ?>"
-                                                        <?= $produkTerpilih == $p['id'] ? 'selected' : '' ?>>
+                                                    <?= $produkTerpilih == $p['id'] ? 'selected' : '' ?>>
                                                     <?= esc($p['name']) ?> (<?= $p['sku'] ?>)
                                                 </option>
                                             <?php endforeach ?>
@@ -96,9 +96,9 @@
                 <h6 class="mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i>10 Pengeluaran Terakhir</h6>
             </div>
             <div class="card-body p-0">
-                <?php if(!empty($riwayatTerakhir)): ?>
+                <?php if (!empty($riwayatTerakhir)): ?>
                     <div class="list-group list-group-flush">
-                        <?php foreach($riwayatTerakhir as $mut): ?>
+                        <?php foreach ($riwayatTerakhir as $mut): ?>
                             <div class="list-group-item p-3 border-0 border-bottom">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <span class="fw-bold text-primary small"><?= esc($mut['product_name']) ?></span>
@@ -123,103 +123,108 @@
 
 <?= $this->section('scripts') ?>
 <script>
-$(document).ready(function() {
-    let rowIndex = 1;
+    $(document).ready(function() {
+        let rowIndex = 1;
 
-    // Tambah Baris
-    $('#btn-add').on('click', function() {
-        const row = $('.item-row').first().clone();
-        row.find('select').attr('name', `movements[${rowIndex}][product_id]`).val('');
-        row.find('input').attr('name', `movements[${rowIndex}][quantity]`).val('');
-        row.find('.unit-label').text('Pcs');
-        row.find('.stock-info').text('-');
-        row.find('.over-stock-msg').addClass('d-none');
-        row.find('.remove-row').removeClass('disabled');
-        
-        $('#rows').append(row);
-        rowIndex++;
-        updateTotals();
-    });
-
-    // Hapus Baris
-    $(document).on('click', '.remove-row', function() {
-        if ($('.item-row').length > 1) {
-            $(this).closest('.item-row').remove();
-            updateTotals();
-        }
-    });
-
-    // Info Stok & Unit
-    $(document).on('change', '.select-produk', function() {
-        const opt = $(this).find('option:selected');
-        const stock = opt.data('stock') || 0;
-        const unit = opt.data('unit') || 'Pcs';
-        
-        const row = $(this).closest('.item-row');
-        row.find('.stock-info').text(stock);
-        row.find('.unit-label').text(unit);
-        row.find('.quantity-input').attr('max', stock);
-        
-        checkStock(row);
-        updateTotals();
-    });
-
-    // Hitung Total & Val Stok
-    $(document).on('input', '.quantity-input', function() {
-        checkStock($(this).closest('.item-row'));
-        updateTotals();
-    });
-
-    function checkStock(row) {
-        const qty = parseInt(row.find('.quantity-input').val()) || 0;
-        const stock = parseInt(row.find('.select-produk option:selected').data('stock')) || 0;
-        
-        if (qty > stock) {
-            row.find('.quantity-input').addClass('is-invalid');
-            row.find('.over-stock-msg').removeClass('d-none');
-        } else {
-            row.find('.quantity-input').removeClass('is-invalid');
+        // Tambah Baris
+        $('#btn-add').on('click', function() {
+            const row = $('.item-row').first().clone();
+            row.find('select').attr('name', `movements[${rowIndex}][product_id]`).val('');
+            row.find('input').attr('name', `movements[${rowIndex}][quantity]`).val('');
+            row.find('.unit-label').text('Pcs');
+            row.find('.stock-info').text('-');
             row.find('.over-stock-msg').addClass('d-none');
-        }
-    }
+            row.find('.remove-row').removeClass('disabled');
 
-    function updateTotals() {
-        let totalQty = 0;
-        let count = 0;
-        
-        $('.item-row').each(function() {
-            const qty = parseInt($(this).find('.quantity-input').val()) || 0;
-            const pid = $(this).find('.select-produk').val();
-            
-            if (pid && qty > 0) {
-                totalQty += qty;
-                count++;
+            $('#rows').append(row);
+            rowIndex++;
+            updateTotals();
+        });
+
+        // Hapus Baris
+        $(document).on('click', '.remove-row', function() {
+            if ($('.item-row').length > 1) {
+                $(this).closest('.item-row').remove();
+                updateTotals();
             }
         });
-        
-        $('#total-qty').text(totalQty.toLocaleString());
-        $('#item-count').text(`${count} item terpilih`);
-    }
 
-    // Submit Loading
-    $('#stockOutForm').on('submit', function(e) {
-        if ($('.is-invalid').length > 0) {
-            e.preventDefault();
-            alert('Ada jumlah barang yang melebihi stok tersedia!');
-            return false;
+        // Info Stok & Unit
+        $(document).on('change', '.select-produk', function() {
+            const opt = $(this).find('option:selected');
+            const stock = opt.data('stock') || 0;
+            const unit = opt.data('unit') || 'Pcs';
+
+            const row = $(this).closest('.item-row');
+            row.find('.stock-info').text(stock);
+            row.find('.unit-label').text(unit);
+            row.find('.quantity-input').attr('max', stock);
+
+            checkStock(row);
+            updateTotals();
+        });
+
+        // Hitung Total & Val Stok
+        $(document).on('input', '.quantity-input', function() {
+            checkStock($(this).closest('.item-row'));
+            updateTotals();
+        });
+
+        function checkStock(row) {
+            const qty = parseInt(row.find('.quantity-input').val()) || 0;
+            const stock = parseInt(row.find('.select-produk option:selected').data('stock')) || 0;
+
+            if (qty > stock) {
+                row.find('.quantity-input').addClass('is-invalid');
+                row.find('.over-stock-msg').removeClass('d-none');
+            } else {
+                row.find('.quantity-input').removeClass('is-invalid');
+                row.find('.over-stock-msg').addClass('d-none');
+            }
         }
-        $('#btn-submit').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Memproses...');
-    });
 
-    // Init
-    $('.select-produk').trigger('change');
-});
+        function updateTotals() {
+            let totalQty = 0;
+            let count = 0;
+
+            $('.item-row').each(function() {
+                const qty = parseInt($(this).find('.quantity-input').val()) || 0;
+                const pid = $(this).find('.select-produk').val();
+
+                if (pid && qty > 0) {
+                    totalQty += qty;
+                    count++;
+                }
+            });
+
+            $('#total-qty').text(totalQty.toLocaleString());
+            $('#item-count').text(`${count} item terpilih`);
+        }
+
+        // Submit Loading
+        $('#stockOutForm').on('submit', function(e) {
+            if ($('.is-invalid').length > 0) {
+                e.preventDefault();
+                alert('Ada jumlah barang yang melebihi stok tersedia!');
+                return false;
+            }
+            $('#btn-submit').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Memproses...');
+        });
+
+        // Init
+        $('.select-produk').trigger('change');
+    });
 </script>
 <?= $this->endSection() ?>
 
 <?= $this->section('styles') ?>
 <style>
-    .small-text { font-size: 0.8rem; }
-    .italic { font-style: italic; }
+    .small-text {
+        font-size: 0.8rem;
+    }
+
+    .italic {
+        font-style: italic;
+    }
 </style>
 <?= $this->endSection() ?>

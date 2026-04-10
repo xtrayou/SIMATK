@@ -4,6 +4,12 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
+/**
+ * KategoriModel - Model untuk mengelola data kategori produk
+ *
+ * Relasi:
+ * - Kategori memiliki banyak Produk (categories.id → products.category_id)
+ */
 class KategoriModel extends Model
 {
     protected $table = 'categories';
@@ -20,9 +26,11 @@ class KategoriModel extends Model
     protected $updatedField  = 'updated_at';
 
     /**
-     * Get active categories
+     * Ambil kategori yang aktif
+     *
+     * @return array Daftar kategori aktif
      */
-    public function getActiveCategories(): array
+    public function getKategoriAktif(): array
     {
         return $this->where('is_active', true)
             ->orderBy('name', 'ASC')
@@ -30,48 +38,60 @@ class KategoriModel extends Model
     }
 
     /**
-     * Get categories with product count
+     * Ambil kategori beserta jumlah produk di setiap kategori
+     *
+     * @param string      $kataKunci Kata kunci pencarian
+     * @param mixed       $status    Filter status aktif/nonaktif
+     * @param string      $kolomUrut Kolom untuk pengurutan
+     * @param string      $arahUrut  Arah urutan (ASC/DESC)
+     * @param int         $batas     Batas jumlah data per halaman
+     * @param int         $offset    Offset data
+     * @return array Daftar kategori dengan jumlah produk
      */
-    public function getCategoriesWithProductCount(
-        string $keyword = '',
+    public function getKategoriDenganJumlahProduk(
+        string $kataKunci = '',
         $status = null,
-        string $orderBy = 'name',
-        string $orderDir = 'ASC',
-        int $limit = 0,
+        string $kolomUrut = 'name',
+        string $arahUrut = 'ASC',
+        int $batas = 0,
         int $offset = 0
     ): array {
         $builder = $this->select('categories.*, COUNT(products.id) as product_count')
             ->join('products', 'products.category_id = categories.id', 'left')
             ->groupBy('categories.id');
 
-        if ($keyword) {
-            $builder->like('categories.name', $keyword)
-                ->orLike('categories.description', $keyword);
+        if ($kataKunci) {
+            $builder->like('categories.name', $kataKunci)
+                ->orLike('categories.description', $kataKunci);
         }
 
         if ($status !== null && $status !== '') {
             $builder->where('categories.is_active', $status);
         }
 
-        $builder->orderBy('categories.' . $orderBy, $orderDir);
+        $builder->orderBy('categories.' . $kolomUrut, $arahUrut);
 
-        if ($limit > 0) {
-            return $builder->findAll($limit, $offset);
+        if ($batas > 0) {
+            return $builder->findAll($batas, $offset);
         }
 
         return $builder->findAll();
     }
 
     /**
-     * Count categories with filters
+     * Hitung jumlah kategori berdasarkan filter
+     *
+     * @param string $kataKunci Kata kunci pencarian
+     * @param mixed  $status    Filter status
+     * @return int Jumlah kategori
      */
-    public function countCategories(string $keyword = '', $status = null): int
+    public function hitungKategori(string $kataKunci = '', $status = null): int
     {
         $builder = $this;
 
-        if ($keyword) {
-            $builder->like('name', $keyword)
-                ->orLike('description', $keyword);
+        if ($kataKunci) {
+            $builder->like('name', $kataKunci)
+                ->orLike('description', $kataKunci);
         }
 
         if ($status !== null && $status !== '') {
@@ -82,13 +102,16 @@ class KategoriModel extends Model
     }
 
     /**
-     * Check if category can be deleted (no related products)
+     * Cek apakah kategori bisa dihapus (tidak punya produk terkait)
+     *
+     * @param int $id ID kategori
+     * @return bool True jika bisa dihapus
      */
-    public function canDelete(int $id): bool
+    public function bisaDihapus(int $id): bool
     {
         $modelProduk = new ProdukModel();
-        $productCount = $modelProduk->where('category_id', $id)->countAllResults();
+        $jumlahProduk = $modelProduk->where('category_id', $id)->countAllResults();
 
-        return $productCount === 0;
+        return $jumlahProduk === 0;
     }
 }

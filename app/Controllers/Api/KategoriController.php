@@ -21,7 +21,7 @@ class KategoriController extends BaseController
     {
         return $this->jsonResponse([
             'status' => true,
-            'data'   => $this->modelKategori->getActiveCategories(),
+            'data'   => $this->modelKategori->getKategoriAktif(),
         ]);
     }
 }

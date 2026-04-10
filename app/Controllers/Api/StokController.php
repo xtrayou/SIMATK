@@ -23,7 +23,7 @@ class StokController extends BaseController
      */
     public function getProductInfo($id)
     {
-        $product = $this->modelProduk->getProductWithCategory((int) $id);
+        $product = $this->modelProduk->getProdukDenganKategoriById((int) $id);
         if (!$product) {
             return $this->jsonResponse([
                 'status'  => false,
@@ -42,8 +42,11 @@ class StokController extends BaseController
      */
     public function getAlertsCount()
     {
-        $outOfStock = $this->modelProduk->where('is_active', true)->where('current_stock', 0)->countAllResults();
-        $lowStock   = count($this->modelProduk->getLowStockProducts());
+        $outOfStock = $this->modelProduk
+            ->where('is_active', true)
+            ->where('IFNULL(stock_baik, current_stock) <= 0', null, false)
+            ->countAllResults();
+        $lowStock   = count($this->modelProduk->getProdukStokRendah());
 
         return $this->jsonResponse([
             'status' => true,
@@ -86,7 +89,7 @@ class StokController extends BaseController
         $db->transStart();
 
         try {
-            $reference = $this->modelMutasiStok->generateReferenceNo($type);
+            $reference = $this->modelMutasiStok->generateNomorReferensi($type);
             $success   = 0;
 
             foreach ($movements as $item) {
@@ -97,7 +100,7 @@ class StokController extends BaseController
                     continue;
                 }
 
-                $this->modelMutasiStok->createMovement([
+                $this->modelMutasiStok->buatMutasi([
                     'product_id'   => $productId,
                     'type'         => $type,
                     'quantity'     => $quantity,

@@ -66,8 +66,8 @@
                                     <select name="product_id[]" class="form-select select-product" required>
                                         <option value="">- Cari Barang -</option>
                                         <?php foreach ($daftarProduk as $p): ?>
-                                            <option value="<?= $p['id'] ?>" data-unit="<?= $p['unit'] ?>" data-stock="<?= $p['current_stock'] ?>">
-                                                <?= esc($p['name']) ?> (Stok: <?= $p['current_stock'] ?> <?= $p['unit'] ?>)
+                                            <option value="<?= $p['id'] ?>" data-unit="<?= $p['unit'] ?>" data-stock="<?= (int) ($p['stock_baik'] ?? $p['current_stock']) ?>">
+                                                <?= esc($p['name']) ?> (Stok: <?= (int) ($p['stock_baik'] ?? $p['current_stock']) ?> <?= $p['unit'] ?>)
                                             </option>
                                         <?php endforeach; ?>
                                     </select>

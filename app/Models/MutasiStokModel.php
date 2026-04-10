@@ -5,6 +5,12 @@ namespace App\Models;
 use CodeIgniter\Model;
 use Exception;
 
+/**
+ * MutasiStokModel - Model untuk mengelola pergerakan stok (mutasi masuk/keluar/penyesuaian)
+ *
+ * Relasi:
+ * - PergerakanStok terkait Produk (stock_movements.product_id → products.id)
+ */
 class MutasiStokModel extends Model
 {
     protected $table = 'stock_movements';
@@ -25,9 +31,13 @@ class MutasiStokModel extends Model
     protected $updatedField  = 'updated_at';
 
     /**
-     * Get movements with product details
+     * Ambil data mutasi stok beserta detail produk
+     *
+     * @param int   $batas  Batas jumlah data (0 = semua)
+     * @param array $filter Filter berupa product_id, type, start_date, end_date
+     * @return array Daftar mutasi stok
      */
-    public function getMovementsWithProduct(int $limit = 10, array $filters = []): array
+    public function getMutasiDenganProduk(int $batas = 10, array $filter = []): array
     {
         $builder = $this->select('stock_movements.*, products.name as product_name, products.sku as product_sku, products.unit')
             ->select('CASE 
@@ -38,117 +48,172 @@ class MutasiStokModel extends Model
             END as current_stock', false)
             ->join('products', 'products.id = stock_movements.product_id');
 
-        if (!empty($filters['product_id'])) {
-            $builder->where('stock_movements.product_id', $filters['product_id']);
+        if (!empty($filter['product_id'])) {
+            $builder->where('stock_movements.product_id', $filter['product_id']);
         }
 
-        if (!empty($filters['type'])) {
-            $builder->where('stock_movements.type', $filters['type']);
+        if (!empty($filter['type'])) {
+            $builder->where('stock_movements.type', $filter['type']);
         }
 
-        if (!empty($filters['start_date'])) {
-            $builder->where('DATE(stock_movements.created_at) >=', $filters['start_date']);
+        if (!empty($filter['start_date'])) {
+            $builder->where('DATE(stock_movements.created_at) >=', $filter['start_date']);
         }
 
-        if (!empty($filters['end_date'])) {
-            $builder->where('DATE(stock_movements.created_at) <=', $filters['end_date']);
+        if (!empty($filter['end_date'])) {
+            $builder->where('DATE(stock_movements.created_at) <=', $filter['end_date']);
         }
 
         $builder->orderBy('stock_movements.created_at', 'DESC');
 
-        if ($limit > 0) {
-            $builder->limit($limit);
+        if ($batas > 0) {
+            $builder->limit($batas);
         }
 
         return $builder->findAll();
     }
 
     /**
-     * Get monthly movements summary for charts
+     * Ambil ringkasan mutasi stok per bulan untuk chart
+     *
+     * @return array Data mutasi bulanan
      */
-    public function getMonthlyMovements(): array
+    public function getMutasiBulanan(): array
     {
-        $sixMonthsAgo = date('Y-m-01', strtotime('-5 months'));
+        $enamBulanLalu = date('Y-m-01', strtotime('-5 months'));
 
         return $this->select("
                 MONTH(created_at) as month,
                 type,
                 SUM(quantity) as total_quantity
             ")
-            ->where('created_at >=', $sixMonthsAgo)
+            ->where('created_at >=', $enamBulanLalu)
             ->groupBy('MONTH(created_at), type')
             ->orderBy('month', 'ASC')
             ->findAll();
     }
 
     /**
-     * Create a stock movement and update product stock
+     * Buat mutasi stok baru dan perbarui stok produk
+     *
+     * @param array $data Data mutasi (product_id, type, quantity, reference_no, notes, created_by)
+     * @return int ID mutasi yang baru dibuat
+     * @throws Exception Jika produk tidak ditemukan atau stok tidak mencukupi
      */
-    public function createMovement(array $data): int
+    public function buatMutasi(array $data): int
     {
         $modelProduk = new ProdukModel();
-        $product = $modelProduk->find($data['product_id']);
+        $produk = $modelProduk->find($data['product_id'] ?? null);
 
-        if (!$product) {
+        if (!$produk) {
             throw new Exception('Produk tidak ditemukan');
         }
 
-        $previousStock = (int) $product['current_stock'];
-        $quantity = (int) $data['quantity'];
+        $stokSebelumnya = max(0, (int) ($produk['current_stock'] ?? 0));
+        $stokBaikSebelumnya = max(0, (int) ($produk['stock_baik'] ?? $stokSebelumnya));
+        $stokRusakSebelumnya = max(0, (int) ($produk['stock_rusak'] ?? 0));
 
-        switch ($data['type']) {
+        // Jika data lama tidak sinkron, fallback ke semua stok dianggap baik.
+        if (($stokBaikSebelumnya + $stokRusakSebelumnya) !== $stokSebelumnya) {
+            $stokBaikSebelumnya = $stokSebelumnya;
+            $stokRusakSebelumnya = 0;
+        }
+
+        $tipe = strtoupper((string) ($data['type'] ?? ''));
+        $jumlah = max(0, (int) ($data['quantity'] ?? 0));
+
+        switch ($tipe) {
             case 'IN':
-                $newStock = $previousStock + $quantity;
+                $jumlahRusakMasuk = max(0, (int) ($data['damaged_quantity'] ?? 0));
+                if ($jumlah <= 0 && $jumlahRusakMasuk <= 0) {
+                    throw new Exception('Jumlah barang masuk harus lebih dari 0');
+                }
+
+                $stokBaikBaru = $stokBaikSebelumnya + $jumlah;
+                $stokRusakBaru = $stokRusakSebelumnya + $jumlahRusakMasuk;
+                $stokBaru = $stokBaikBaru + $stokRusakBaru;
+                $data['quantity'] = $jumlah + $jumlahRusakMasuk;
                 break;
             case 'OUT':
-                if ($previousStock < $quantity) {
-                    throw new Exception('Stok tidak mencukupi untuk ' . ($product['name'] ?? 'produk ini'));
+                if ($jumlah <= 0) {
+                    throw new Exception('Jumlah barang keluar harus lebih dari 0');
                 }
-                $newStock = $previousStock - $quantity;
+                if ($stokBaikSebelumnya < $jumlah) {
+                    throw new Exception('Stok baik tidak mencukupi untuk ' . ($produk['name'] ?? 'produk ini'));
+                }
+
+                $stokBaikBaru = $stokBaikSebelumnya - $jumlah;
+                $stokRusakBaru = $stokRusakSebelumnya;
+                $stokBaru = $stokBaikBaru + $stokRusakBaru;
                 break;
             case 'ADJUSTMENT':
-                $newStock = $quantity; // In adjustment, quantity is the final stock level
+                $punyaSplitStock = array_key_exists('adjusted_good_stock', $data)
+                    || array_key_exists('adjusted_damaged_stock', $data);
+
+                if ($punyaSplitStock) {
+                    $stokBaikBaru = max(0, (int) ($data['adjusted_good_stock'] ?? 0));
+                    $stokRusakBaru = max(0, (int) ($data['adjusted_damaged_stock'] ?? 0));
+                    $stokBaru = $stokBaikBaru + $stokRusakBaru;
+                    $data['quantity'] = $stokBaru;
+                } else {
+                    // Backward-compatible: quantity dianggap stok akhir total.
+                    $stokBaru = $jumlah;
+                    $stokBaikBaru = $stokBaru;
+                    $stokRusakBaru = 0;
+                }
                 break;
             default:
                 throw new Exception('Tipe mutasi tidak valid');
         }
 
-        $data['previous_stock'] = $previousStock;
+        $data['type'] = $tipe;
+        $data['previous_stock'] = $stokSebelumnya;
+        unset($data['damaged_quantity'], $data['adjusted_good_stock'], $data['adjusted_damaged_stock']);
 
-        $movementId = $this->insert($data);
+        $idMutasi = $this->insert($data);
+        if (!$idMutasi) {
+            throw new Exception('Gagal menyimpan mutasi stok');
+        }
 
-        // Update product current stock
-        $modelProduk->update($data['product_id'], ['current_stock' => $newStock]);
+        // Perbarui stok total beserta komposisi baik/rusak.
+        $modelProduk->update($data['product_id'], [
+            'current_stock' => $stokBaru,
+            'stock_baik'    => $stokBaikBaru,
+            'stock_rusak'   => $stokRusakBaru,
+        ]);
 
-        return (int) $movementId;
+        return (int) $idMutasi;
     }
 
     /**
-     * Generate automatic reference number
+     * Generate nomor referensi otomatis
+     *
+     * @param string $tipe Tipe mutasi (IN, OUT, ADJUSTMENT)
+     * @return string Nomor referensi unik
      */
-    public function generateReferenceNo(string $type = 'IN'): string
+    public function generateNomorReferensi(string $tipe = 'IN'): string
     {
-        $prefix = match ($type) {
+        $prefix = match ($tipe) {
             'IN'         => 'SM-IN',
             'OUT'        => 'SM-OUT',
             'ADJUSTMENT' => 'SM-ADJ',
             default      => 'SM',
         };
 
-        $today = date('Ymd');
-        $last = $this->like('reference_no', $prefix . '-' . $today, 'after')
+        $hariIni = date('Ymd');
+        $terakhir = $this->like('reference_no', $prefix . '-' . $hariIni, 'after')
             ->orderBy('id', 'DESC')
             ->first();
 
-        $number = 1;
-        if ($last) {
-            $parts = explode('-', $last['reference_no']);
-            $lastPart = end($parts);
-            if (is_numeric($lastPart)) {
-                $number = (int) $lastPart + 1;
+        $nomor = 1;
+        if ($terakhir) {
+            $bagian = explode('-', $terakhir['reference_no']);
+            $bagianTerakhir = end($bagian);
+            if (is_numeric($bagianTerakhir)) {
+                $nomor = (int) $bagianTerakhir + 1;
             }
         }
 
-        return $prefix . '-' . $today . '-' . str_pad((string)$number, 4, '0', STR_PAD_LEFT);
+        return $prefix . '-' . $hariIni . '-' . str_pad((string)$nomor, 4, '0', STR_PAD_LEFT);
     }
 }

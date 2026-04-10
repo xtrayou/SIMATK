@@ -35,11 +35,31 @@ class NotifikasiModel extends Model
     // ────────────────────────────────────────────────────
 
     /**
+     * Resolusi cakupan role untuk query notifikasi.
+     */
+    private function resolveRoleScopes(string $role): array
+    {
+        $role = strtolower(trim($role));
+
+        if ($role === 'superadmin') {
+            return ['superadmin', 'admin', 'all'];
+        }
+
+        if (in_array($role, ['admin', 'staff', 'user'], true)) {
+            return ['admin', 'all'];
+        }
+
+        return ['all'];
+    }
+
+    /**
      * Ambil notifikasi untuk role tertentu (belum dibaca)
      */
     public function getUnreadForRole(string $role, int $limit = 10): array
     {
-        return $this->whereIn('for_role', [$role, 'all'])
+        $roleScopes = $this->resolveRoleScopes($role);
+
+        return $this->whereIn('for_role', $roleScopes)
             ->where('is_read', 0)
             ->orderBy('created_at', 'DESC')
             ->limit($limit)
@@ -51,7 +71,9 @@ class NotifikasiModel extends Model
      */
     public function countUnreadForRole(string $role): int
     {
-        return $this->whereIn('for_role', [$role, 'all'])
+        $roleScopes = $this->resolveRoleScopes($role);
+
+        return $this->whereIn('for_role', $roleScopes)
             ->where('is_read', 0)
             ->countAllResults();
     }
@@ -61,7 +83,9 @@ class NotifikasiModel extends Model
      */
     public function getForRole(string $role, int $perPage = 20)
     {
-        return $this->whereIn('for_role', [$role, 'all'])
+        $roleScopes = $this->resolveRoleScopes($role);
+
+        return $this->whereIn('for_role', $roleScopes)
             ->orderBy('created_at', 'DESC')
             ->paginate($perPage);
     }
@@ -82,8 +106,10 @@ class NotifikasiModel extends Model
      */
     public function markAllAsRead(string $role, ?int $userId): int
     {
+        $roleScopes = $this->resolveRoleScopes($role);
         $builder = $this->builder();
-        return $builder->whereIn('for_role', [$role, 'all'])
+
+        return $builder->whereIn('for_role', $roleScopes)
             ->where('is_read', 0)
             ->update([
                 'is_read' => 1,

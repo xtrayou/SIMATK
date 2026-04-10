@@ -6,6 +6,9 @@ use App\Controllers\BaseController;
 use App\Models\PenggunaModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
+/**
+ * PenggunaController - Controller untuk mengelola data pengguna sistem
+ */
 class PenggunaController extends BaseController
 {
     protected PenggunaModel $modelPengguna;
@@ -16,7 +19,7 @@ class PenggunaController extends BaseController
     }
 
     /**
-     * List all users
+     * Tampilkan daftar pengguna
      */
     public function index()
     {
@@ -48,9 +51,9 @@ class PenggunaController extends BaseController
     }
 
     /**
-     * Show create user form
+     * Form tambah pengguna baru
      */
-    public function create()
+    public function tambah()
     {
         $this->setPageData('Tambah User', 'Buat pengguna baru');
 
@@ -61,9 +64,9 @@ class PenggunaController extends BaseController
     }
 
     /**
-     * Store new user
+     * Simpan pengguna baru
      */
-    public function store()
+    public function simpan()
     {
         if (!$this->validate([
             'username' => 'required|min_length[3]|max_length[50]|is_unique[users.username]|alpha_numeric',
@@ -92,9 +95,9 @@ class PenggunaController extends BaseController
     }
 
     /**
-     * Show edit user form
+     * Form ubah/edit pengguna
      */
-    public function edit($id)
+    public function ubah($id)
     {
         $user = $this->modelPengguna->find($id);
         if (!$user) {
@@ -110,9 +113,9 @@ class PenggunaController extends BaseController
     }
 
     /**
-     * Update user
+     * Perbarui data pengguna
      */
-    public function update($id)
+    public function perbarui($id)
     {
         $user = $this->modelPengguna->find($id);
         if (!$user) {
@@ -125,7 +128,7 @@ class PenggunaController extends BaseController
             'role'     => 'required|in_list[superadmin,admin]',
         ];
 
-        // Password optional on update
+        // Password opsional saat update
         $password = $this->request->getPost('password');
         if (!empty($password)) {
             $rules['password'] = 'min_length[6]|max_length[255]';
@@ -156,16 +159,16 @@ class PenggunaController extends BaseController
     }
 
     /**
-     * Delete user
+     * Hapus pengguna
      */
-    public function delete($id): RedirectResponse
+    public function hapus($id): RedirectResponse
     {
         $user = $this->modelPengguna->find($id);
         if (!$user) {
             return redirect()->to('/users')->with('error', 'User tidak ditemukan');
         }
 
-        // Prevent deleting own account
+        // Cegah menghapus akun sendiri
         if ((int) $id === (int) session('userId')) {
             return redirect()->to('/users')->with('error', 'Tidak dapat menghapus akun sendiri');
         }
