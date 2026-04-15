@@ -29,4 +29,43 @@ class Services extends BaseService
      *     return new \CodeIgniter\Example();
      * }
      */
+
+    /**
+     * The default instance of the Renderer service.
+     *
+     * @var Renderer|null
+     */
+    protected static $renderer;
+
+    /**
+     * The PermintaanService instance.
+     *
+     * @param boolean $getShared
+     *
+     * @return \App\Services\PermintaanService
+     */
+    public static function permintaan($getShared = true)
+    {
+        if ($getShared) {
+            if (! isset(static::$instances['permintaan'])) {
+                static::$instances['permintaan'] = new \App\Services\PermintaanService(
+                    model(\App\Models\PermintaanModel::class),
+                    model(\App\Models\ItemPermintaanModel::class),
+                    model(\App\Models\BarangModel::class),
+                    model(\App\Models\MutasiStokModel::class),
+                    model(\App\Models\NotifikasiModel::class)
+                );
+            }
+
+            return static::$instances['permintaan'];
+        }
+
+        return new \App\Services\PermintaanService(
+            model(\App\Models\PermintaanModel::class),
+            model(\App\Models\ItemPermintaanModel::class),
+            model(\App\Models\BarangModel::class),
+            model(\App\Models\MutasiStokModel::class),
+            model(\App\Models\NotifikasiModel::class)
+        );
+    }
 }

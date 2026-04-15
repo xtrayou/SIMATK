@@ -100,19 +100,19 @@
                                     <i class="fas fa-filter me-2"></i>Filter
                                 </button>
                                 <?php if (in_array(session()->get('role'), ['admin', 'superadmin'])): ?>
-                                <div class="btn-group">
-                                    <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-download me-2"></i>Export
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="<?= base_url('reports/export/movements?format=excel') ?>">
-                                            <i class="fas fa-file-excel me-2"></i>Excel
-                                        </a></li>
-                                        <li><a class="dropdown-item" href="<?= base_url('reports/export/movements?format=pdf') ?>">
-                                            <i class="fas fa-file-pdf me-2"></i>PDF
-                                        </a></li>
-                                    </ul>
-                                </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            <i class="fas fa-download me-2"></i>Export
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="<?= base_url('reports/export/movements?format=excel') ?>">
+                                                    <i class="fas fa-file-excel me-2"></i>Excel
+                                                </a></li>
+                                            <li><a class="dropdown-item" href="<?= base_url('reports/export/movements?format=pdf') ?>">
+                                                    <i class="fas fa-file-pdf me-2"></i>PDF
+                                                </a></li>
+                                        </ul>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -121,57 +121,57 @@
                         <div class="collapse mt-3" id="filterCollapse">
                             <div class="row g-3">
                                 <?= form_open(current_url(), ['method' => 'get', 'class' => 'row g-3']) ?>
-                                    <div class="col-md-2">
-                                        <label class="form-label">Tipe</label>
-                                        <select class="form-select" name="type">
-                                            <option value="">Semua Tipe</option>
-                                            <option value="IN" <?= ($filters['type'] ?? '') == 'IN' ? 'selected' : '' ?>>Barang Masuk</option>
-                                            <option value="OUT" <?= ($filters['type'] ?? '') == 'OUT' ? 'selected' : '' ?>>Barang Keluar</option>
-                                            <option value="ADJUSTMENT" <?= ($filters['type'] ?? '') == 'ADJUSTMENT' ? 'selected' : '' ?>>Penyesuaian</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="col-md-3">
-                                        <label class="form-label">Produk</label>
-                                        <select class="form-select" name="product">
-                                            <option value="">Semua Produk</option>
-                                            <?php if (isset($products)): ?>
-                                                <?php foreach ($products as $product): ?>
-                                                    <option value="<?= $product['id'] ?>" 
-                                                        <?= ($filters['product'] ?? '') == $product['id'] ? 'selected' : '' ?>>
-                                                        <?= esc($product['name']) ?> (<?= esc($product['sku']) ?>)
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="col-md-2">
-                                        <label class="form-label">Tanggal Mulai</label>
-                                        <input type="date" class="form-control" name="start_date" 
-                                               value="<?= $filters['start_date'] ?? '' ?>">
-                                    </div>
-                                    
-                                    <div class="col-md-2">
-                                        <label class="form-label">Tanggal Akhir</label>
-                                        <input type="date" class="form-control" name="end_date" 
-                                               value="<?= $filters['end_date'] ?? '' ?>">
-                                    </div>
-                                    
-                                    <div class="col-md-2">
-                                        <label class="form-label">Reference</label>
-                                        <input type="text" class="form-control" name="reference" 
-                                               value="<?= $filters['reference'] ?? '' ?>" placeholder="No. Referensi">
-                                    </div>
-                                    
-                                    <div class="col-md-1 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary me-2">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                        <a href="<?= current_url() ?>" class="btn btn-secondary">
-                                            <i class="fas fa-times"></i>
-                                        </a>
-                                    </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Tipe</label>
+                                    <select class="form-select" name="type">
+                                        <option value="">Semua Tipe</option>
+                                        <option value="IN" <?= ($filters['type'] ?? '') == 'IN' ? 'selected' : '' ?>>Barang Masuk</option>
+                                        <option value="OUT" <?= ($filters['type'] ?? '') == 'OUT' ? 'selected' : '' ?>>Barang Keluar</option>
+                                        <option value="ADJUSTMENT" <?= ($filters['type'] ?? '') == 'ADJUSTMENT' ? 'selected' : '' ?>>Penyesuaian</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label">Barang</label>
+                                    <select class="form-select" name="product">
+                                        <option value="">Semua Barang</option>
+                                        <?php if (isset($products)): ?>
+                                            <?php foreach ($products as $barang): ?>
+                                                <option value="<?= $barang['id'] ?>"
+                                                    <?= ($filters['product'] ?? '') == $barang['id'] ? 'selected' : '' ?>>
+                                                    <?= esc($barang['name']) ?> (<?= esc($barang['sku']) ?>)
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label">Tanggal Mulai</label>
+                                    <input type="date" class="form-control" name="start_date"
+                                        value="<?= $filters['start_date'] ?? '' ?>">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label">Tanggal Akhir</label>
+                                    <input type="date" class="form-control" name="end_date"
+                                        value="<?= $filters['end_date'] ?? '' ?>">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label">Reference</label>
+                                    <input type="text" class="form-control" name="reference"
+                                        value="<?= $filters['reference'] ?? '' ?>" placeholder="No. Referensi">
+                                </div>
+
+                                <div class="col-md-1 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary me-2">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <a href="<?= current_url() ?>" class="btn btn-secondary">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </div>
                                 <?= form_close() ?>
                             </div>
                         </div>
@@ -185,7 +185,7 @@
                                         <th>Tanggal</th>
                                         <th>No. Referensi</th>
                                         <th>Tipe</th>
-                                        <th>Produk</th>
+                                        <th>Barang</th>
                                         <th>Kategori</th>
                                         <th>Jumlah</th>
                                         <th>Catatan</th>
@@ -211,9 +211,8 @@
                                                     <span class="badge bg-secondary"><?= esc($movement['reference_no']) ?></span>
                                                 </td>
                                                 <td>
-                                                    <span class="badge bg-<?= 
-                                                        $movement['type'] == 'IN' ? 'success' : 
-                                                        ($movement['type'] == 'OUT' ? 'warning' : 'info') ?>">
+                                                    <span class="badge bg-<?=
+                                                                            $movement['type'] == 'IN' ? 'success' : ($movement['type'] == 'OUT' ? 'warning' : 'info') ?>">
                                                         <?php
                                                         $typeLabels = [
                                                             'IN' => 'Masuk',
@@ -232,9 +231,8 @@
                                                 </td>
                                                 <td><?= esc($movement['category_name'] ?? '-') ?></td>
                                                 <td>
-                                                    <span class="badge bg-<?= 
-                                                        $movement['type'] == 'IN' ? 'success' : 
-                                                        ($movement['type'] == 'OUT' ? 'danger' : 'secondary') ?> fs-6">
+                                                    <span class="badge bg-<?=
+                                                                            $movement['type'] == 'IN' ? 'success' : ($movement['type'] == 'OUT' ? 'danger' : 'secondary') ?> fs-6">
                                                         <?= $movement['type'] == 'IN' ? '+' : ($movement['type'] == 'OUT' ? '-' : '') ?><?= number_format($movement['quantity']) ?>
                                                     </span>
                                                 </td>

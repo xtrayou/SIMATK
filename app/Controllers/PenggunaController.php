@@ -23,9 +23,13 @@ class PenggunaController extends BaseController
      */
     public function index()
     {
-        $this->setPageData('Manajemen User', 'Kelola pengguna sistem');
+        if (session('role') !== 'superadmin') {
+            return redirect()->to('/dashboard')->with('error', 'Akses ditolak');
+        }
 
-        $keyword = trim((string) ($this->request->getGet('q') ?? ''));
+        $this->setPageData('Manajemen Pengguna dan Manajemen Akses', 'Kelola pengguna dan hak akses sistem');
+
+        $keyword = trim($this->request->getGet('q') ?? '');
         $filterRole = $this->request->getGet('role');
 
         $builder = $this->modelPengguna->orderBy('name', 'ASC');
@@ -55,7 +59,11 @@ class PenggunaController extends BaseController
      */
     public function tambah()
     {
-        $this->setPageData('Tambah User', 'Buat pengguna baru');
+        if (session('role') !== 'superadmin') {
+            return redirect()->to('/dashboard')->with('error', 'Akses ditolak');
+        }
+
+        $this->setPageData('Tambah Pengguna', 'Tambah pengguna dan atur hak akses');
 
         return $this->render('users/create', [
             'user'       => ['username' => '', 'name' => '', 'role' => 'admin', 'is_active' => 1],
@@ -68,6 +76,10 @@ class PenggunaController extends BaseController
      */
     public function simpan()
     {
+        if (session('role') !== 'superadmin') {
+            return redirect()->to('/dashboard')->with('error', 'Akses ditolak');
+        }
+
         if (!$this->validate([
             'username' => 'required|min_length[3]|max_length[50]|is_unique[users.username]|alpha_numeric',
             'name'     => 'required|min_length[3]|max_length[100]',
@@ -80,15 +92,15 @@ class PenggunaController extends BaseController
         }
 
         $data = [
-            'username'  => trim($this->request->getPost('username')),
-            'name'      => trim($this->request->getPost('name')),
+            'username'  => trim($this->request->getPost('username') ?? ''),
+            'name'      => trim($this->request->getPost('name') ?? ''),
             'password'  => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
             'role'      => $this->request->getPost('role'),
             'is_active' => $this->request->getPost('is_active') ? 1 : 0,
         ];
 
         if ($this->modelPengguna->insert($data)) {
-            return redirect()->to('/users')->with('success', 'User berhasil ditambahkan');
+            return redirect()->to('/users')->with('success', 'Perubahan telah disimpan');
         }
 
         return redirect()->back()->withInput()->with('error', 'Gagal menambahkan user');
@@ -99,12 +111,16 @@ class PenggunaController extends BaseController
      */
     public function ubah($id)
     {
+        if (session('role') !== 'superadmin') {
+            return redirect()->to('/dashboard')->with('error', 'Akses ditolak');
+        }
+
         $user = $this->modelPengguna->find($id);
         if (!$user) {
             return redirect()->to('/users')->with('error', 'User tidak ditemukan');
         }
 
-        $this->setPageData('Edit User', 'Edit: ' . $user['name']);
+        $this->setPageData('Ubah Pengguna dan Hak Akses', 'Edit: ' . $user['name']);
 
         return $this->render('users/edit', [
             'user'       => $user,
@@ -117,6 +133,10 @@ class PenggunaController extends BaseController
      */
     public function perbarui($id)
     {
+        if (session('role') !== 'superadmin') {
+            return redirect()->to('/dashboard')->with('error', 'Akses ditolak');
+        }
+
         $user = $this->modelPengguna->find($id);
         if (!$user) {
             return redirect()->to('/users')->with('error', 'User tidak ditemukan');
@@ -130,7 +150,7 @@ class PenggunaController extends BaseController
 
         // Password opsional saat update
         $password = $this->request->getPost('password');
-        if (!empty($password)) {
+        if ($password) {
             $rules['password'] = 'min_length[6]|max_length[255]';
         }
 
@@ -141,18 +161,18 @@ class PenggunaController extends BaseController
         }
 
         $data = [
-            'username'  => trim($this->request->getPost('username')),
-            'name'      => trim($this->request->getPost('name')),
+            'username'  => trim($this->request->getPost('username') ?? ''),
+            'name'      => trim($this->request->getPost('name') ?? ''),
             'role'      => $this->request->getPost('role'),
             'is_active' => $this->request->getPost('is_active') ? 1 : 0,
         ];
 
-        if (!empty($password)) {
+        if ($password) {
             $data['password'] = password_hash($password, PASSWORD_DEFAULT);
         }
 
         if ($this->modelPengguna->update($id, $data)) {
-            return redirect()->to('/users')->with('success', 'User berhasil diperbarui');
+            return redirect()->to('/users')->with('success', 'Perubahan telah disimpan');
         }
 
         return redirect()->back()->withInput()->with('error', 'Gagal memperbarui user');
@@ -163,6 +183,10 @@ class PenggunaController extends BaseController
      */
     public function hapus($id): RedirectResponse
     {
+        if (session('role') !== 'superadmin') {
+            return redirect()->to('/dashboard')->with('error', 'Akses ditolak');
+        }
+
         $user = $this->modelPengguna->find($id);
         if (!$user) {
             return redirect()->to('/users')->with('error', 'User tidak ditemukan');

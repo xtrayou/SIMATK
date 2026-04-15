@@ -38,11 +38,11 @@
                             <tbody id="rows">
                                 <tr class="item-row">
                                     <td>
-                                        <select class="form-select select-produk" name="movements[0][product_id]" required>
+                                        <select class="form-select select-barang" name="movements[0][product_id]" required>
                                             <option value="">- Cari Barang -</option>
-                                            <?php foreach ($daftarProduk as $p): ?>
+                                            <?php foreach ($daftarBarang as $p): ?>
                                                 <option value="<?= $p['id'] ?>" data-unit="<?= $p['unit'] ?>" data-stock="<?= $p['current_stock'] ?>"
-                                                    <?= $produkTerpilih == $p['id'] ? 'selected' : '' ?>>
+                                                    <?= $barangTerpilih == $p['id'] ? 'selected' : '' ?>>
                                                     <?= esc($p['name']) ?> (<?= $p['sku'] ?>)
                                                 </option>
                                             <?php endforeach ?>
@@ -150,7 +150,7 @@
         });
 
         // Info Stok & Unit
-        $(document).on('change', '.select-produk', function() {
+        $(document).on('change', '.select-barang', function() {
             const opt = $(this).find('option:selected');
             const stock = opt.data('stock') || 0;
             const unit = opt.data('unit') || 'Pcs';
@@ -172,7 +172,7 @@
 
         function checkStock(row) {
             const qty = parseInt(row.find('.quantity-input').val()) || 0;
-            const stock = parseInt(row.find('.select-produk option:selected').data('stock')) || 0;
+            const stock = parseInt(row.find('.select-barang option:selected').data('stock')) || 0;
 
             if (qty > stock) {
                 row.find('.quantity-input').addClass('is-invalid');
@@ -189,7 +189,7 @@
 
             $('.item-row').each(function() {
                 const qty = parseInt($(this).find('.quantity-input').val()) || 0;
-                const pid = $(this).find('.select-produk').val();
+                const pid = $(this).find('.select-barang').val();
 
                 if (pid && qty > 0) {
                     totalQty += qty;
@@ -212,7 +212,7 @@
         });
 
         // Init
-        $('.select-produk').trigger('change');
+        $('.select-barang').trigger('change');
     });
 </script>
 <?= $this->endSection() ?>

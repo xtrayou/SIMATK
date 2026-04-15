@@ -4,16 +4,16 @@ namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
 use App\Models\KategoriModel;
-use App\Models\ProdukModel;
+use App\Models\BarangModel;
 
 class DasborController extends BaseController
 {
-    protected ProdukModel $modelProduk;
+    protected BarangModel $modelBarang;
     protected KategoriModel $modelKategori;
 
     public function __construct()
     {
-        $this->modelProduk = new ProdukModel();
+        $this->modelBarang = new BarangModel();
         $this->modelKategori = new KategoriModel();
     }
 
@@ -24,9 +24,9 @@ class DasborController extends BaseController
     {
         try {
             $stats = [
-                'total_products'   => $this->modelProduk->where('is_active', true)->countAllResults(),
+                'total_products'   => $this->modelBarang->where('is_active', true)->countAllResults(),
                 'total_categories' => $this->modelKategori->where('is_active', true)->countAllResults(),
-                'low_stock_count'  => count($this->modelProduk->getProdukStokRendah()),
+                'low_stock_count'  => count($this->modelBarang->getBarangStokRendah()),
             ];
 
             return $this->jsonResponse([

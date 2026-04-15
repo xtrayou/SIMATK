@@ -3,7 +3,7 @@
 <?= $this->section('breadcrumb') ?>
 <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="<?= base_url('/dashboard') ?>">Dashboard</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Manajemen User</li>
+    <li class="breadcrumb-item active" aria-current="page">Manajemen Pengguna dan Manajemen Akses</li>
 </ol>
 <?= $this->endSection() ?>
 
@@ -12,23 +12,23 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0"><i class="bi bi-people-fill me-2"></i>Daftar User</h4>
+                <h4 class="mb-0"><i class="bi bi-people-fill me-2"></i>Manajemen Pengguna dan Manajemen Akses</h4>
                 <a href="<?= base_url('/users/create') ?>" class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus-circle"></i> Tambah User
+                    <i class="bi bi-plus-circle"></i> Tambah Pengguna / Ubah Hak Akses
                 </a>
             </div>
 
             <div class="card-body">
-                <?php if (session('sukses')): ?>
+                <?php if ($msg = (session('sukses') ?? session('success'))): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="bi bi-check-circle me-2"></i><?= session('sukses') ?>
+                        <i class="bi bi-check-circle me-2"></i><?= esc($msg) ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
 
-                <?php if (session('galat')): ?>
+                <?php if ($msg = (session('galat') ?? session('error'))): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="bi bi-exclamation-circle me-2"></i><?= session('galat') ?>
+                        <i class="bi bi-exclamation-circle me-2"></i><?= esc($msg) ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
@@ -51,14 +51,14 @@
                     </div>
                     <div class="col-md-3">
                         <select class="form-select" onchange="window.location.href='<?= base_url('/users') ?>?role='+this.value<?= !empty($keyword) ? "+'&q=" . esc($keyword) . "'" : '' ?>">
-                            <option value="">Semua Role</option>
+                            <option value="">Semua Hak Akses</option>
                             <option value="superadmin" <?= ($filterRole === 'superadmin') ? 'selected' : '' ?>>Superadmin</option>
                             <option value="admin" <?= ($filterRole === 'admin') ? 'selected' : '' ?>>Admin</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Users Table -->
+                <!-- Tabel Pengguna -->
                 <div class="table-responsive">
                     <table class="table table-hover table-striped">
                         <thead class="table-light">
@@ -66,7 +66,7 @@
                                 <th width="50">#</th>
                                 <th>Username</th>
                                 <th>Nama</th>
-                                <th>Role</th>
+                                <th>Hak Akses</th>
                                 <th>Status</th>
                                 <th>Dibuat</th>
                                 <th width="150" class="text-center">Aksi</th>
@@ -77,7 +77,7 @@
                                 <tr>
                                     <td colspan="7" class="text-center py-4 text-muted">
                                         <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                                        Tidak ada data user
+                                        Tidak ada data pengguna
                                     </td>
                                 </tr>
                             <?php else: ?>
@@ -106,7 +106,7 @@
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
                                             <?php if ((int) $user['id'] !== (int) session('userId')): ?>
-                                                <form action="<?= base_url('/users/delete/' . $user['id']) ?>" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus user <?= esc($user['name']) ?>?')">
+                                                <form action="<?= base_url('/users/delete/' . $user['id']) ?>" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus pengguna <?= esc($user['name']) ?>?')">
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="_method" value="DELETE">
                                                     <button type="submit" class="btn btn-sm btn-danger" title="Hapus">

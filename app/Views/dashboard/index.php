@@ -15,9 +15,9 @@
                         </div>
                     </div>
                     <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                        <h6 class="text-muted font-semibold">Total Produk</h6>
-                        <h6 class="font-extrabold mb-0" id="totalProduk"><?= number_format($total_products) ?></h6>
-                        <small class="text-muted">Produk aktif</small>
+                        <h6 class="text-muted font-semibold">Total Barang</h6>
+                        <h6 class="font-extrabold mb-0" id="totalBarang"><?= number_format($total_products) ?></h6>
+                        <small class="text-muted">Barang aktif</small>
                     </div>
                 </div>
             </div>
@@ -254,7 +254,7 @@
                             <thead>
                                 <tr>
                                     <th width="25%">Waktu</th>
-                                    <th width="35%">Produk</th>
+                                    <th width="35%">Barang</th>
                                     <th width="20%">Tipe</th>
                                     <th width="20%">Jumlah</th>
                                 </tr>
@@ -296,11 +296,11 @@
         </div>
     </div>
 
-    <!-- Produk Stok Rendah -->
+    <!-- Barang Stok Rendah -->
     <div class="col-12 col-xl-6 mb-4">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5><i class="bi bi-exclamation-triangle-fill text-warning"></i> Produk Stok Rendah</h5>
+                <h5><i class="bi bi-exclamation-triangle-fill text-warning"></i> Barang Stok Rendah</h5>
                 <a href="<?= base_url('/stock/alerts') ?>" class="btn btn-sm btn-outline-warning">
                     Lihat Semua
                 </a>
@@ -311,14 +311,14 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th width="40%">Produk</th>
+                                    <th width="40%">Barang</th>
                                     <th width="20%">Stok</th>
                                     <th width="20%">Min</th>
                                     <th width="20%">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($low_stock_products as $produk): ?>
+                                <?php foreach ($low_stock_products as $barang): ?>
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
@@ -328,21 +328,21 @@
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <strong><?= esc($produk['name']) ?></strong>
-                                                    <small class="d-block text-muted"><?= esc($produk['category_name']) ?></small>
+                                                    <strong><?= esc($barang['name']) ?></strong>
+                                                    <small class="d-block text-muted"><?= esc($barang['category_name']) ?></small>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <strong class="<?= $produk['current_stock'] == 0 ? 'text-danger' : 'text-warning' ?>">
-                                                <?= number_format($produk['current_stock']) ?>
+                                            <strong class="<?= $barang['current_stock'] == 0 ? 'text-danger' : 'text-warning' ?>">
+                                                <?= number_format($barang['current_stock']) ?>
                                             </strong>
                                         </td>
                                         <td>
-                                            <span class="text-muted"><?= number_format($produk['min_stock']) ?></span>
+                                            <span class="text-muted"><?= number_format($barang['min_stock']) ?></span>
                                         </td>
                                         <td>
-                                            <?= format_stock_badge($produk['current_stock'], $produk['min_stock']) ?>
+                                            <?= format_stock_badge($barang['current_stock'], $barang['min_stock']) ?>
                                         </td>
                                     </tr>
                                 <?php endforeach ?>
@@ -353,7 +353,7 @@
                     <div class="mt-3">
                         <div class="alert alert-warning">
                             <i class="bi bi-info-circle me-2"></i>
-                            <strong><?= count($low_stock_products) ?></strong> produk membutuhkan restok segera.
+                            <strong><?= count($low_stock_products) ?></strong> barang membutuhkan restok segera.
                             <a href="<?= base_url('/stock/in') ?>" class="alert-link">Tambah stok sekarang</a>
                         </div>
                     </div>
@@ -361,7 +361,7 @@
                     <div class="text-center py-4">
                         <i class="bi bi-check-circle-fill fs-1 text-success"></i>
                         <h6 class="text-success mt-2">Semua Stok Normal</h6>
-                        <p class="text-muted">Tidak ada produk dengan stok rendah</p>
+                        <p class="text-muted">Tidak ada barang dengan stok rendah</p>
                     </div>
                 <?php endif ?>
             </div>
@@ -370,12 +370,12 @@
 </div>
 
 <?php if ($userRole === 'superadmin'): ?>
-    <!-- Top Produk Berdasarkan Nilai -->
+    <!-- Top Barang Berdasarkan Nilai -->
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5><i class="bi bi-trophy-fill text-warning"></i> Top Produk Berdasarkan Nilai</h5>
+                    <h5><i class="bi bi-trophy-fill text-warning"></i> Top Barang Berdasarkan Nilai</h5>
                     <a href="<?= base_url('/reports/valuation') ?>" class="btn btn-sm btn-outline-primary">
                         Laporan Detail
                     </a>
@@ -383,7 +383,7 @@
                 <div class="card-body">
                     <?php if (!empty($top_products)): ?>
                         <div class="row">
-                            <?php foreach ($top_products as $peringkat => $produkTeratas): ?>
+                            <?php foreach ($top_products as $peringkat => $barangTeratas): ?>
                                 <div class="col-12 col-md-6 col-lg-4 mb-3">
                                     <div class="card border-0 bg-light">
                                         <div class="card-body">
@@ -394,18 +394,18 @@
                                                     </span>
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <h6 class="mb-1"><?= esc($produkTeratas['name']) ?></h6>
-                                                    <small class="text-muted"><?= esc($produkTeratas['category_name']) ?></small>
+                                                    <h6 class="mb-1"><?= esc($barangTeratas['name']) ?></h6>
+                                                    <small class="text-muted"><?= esc($barangTeratas['category_name']) ?></small>
                                                     <div class="mt-2">
                                                         <div class="row">
                                                             <div class="col-6">
                                                                 <small class="text-muted">Stok:</small>
-                                                                <strong class="d-block"><?= number_format($produkTeratas['current_stock']) ?></strong>
+                                                                <strong class="d-block"><?= number_format($barangTeratas['current_stock']) ?></strong>
                                                             </div>
                                                             <div class="col-6">
                                                                 <small class="text-muted">Nilai:</small>
                                                                 <strong class="d-block text-success">
-                                                                    <?= format_currency($produkTeratas['total_value']) ?>
+                                                                    <?= format_currency($barangTeratas['total_value']) ?>
                                                                 </strong>
                                                             </div>
                                                         </div>
@@ -420,7 +420,7 @@
                     <?php else: ?>
                         <div class="text-center py-4">
                             <i class="bi bi-graph-down fs-1 text-muted"></i>
-                            <p class="text-muted">Belum ada data produk dengan nilai tinggi</p>
+                            <p class="text-muted">Belum ada data barang dengan nilai tinggi</p>
                         </div>
                     <?php endif ?>
                 </div>
@@ -514,7 +514,7 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.status) {
-                        document.getElementById('totalProduk').textContent =
+                        document.getElementById('totalBarang').textContent =
                             data.stats.total_products.toLocaleString('id-ID');
                     }
                 })
@@ -548,7 +548,7 @@
                     if (izin === 'granted') {
                         setInterval(() => {
                             new Notification('Peringatan Inventori', {
-                                body: '<?= $low_stock_count ?> produk memiliki stok rendah',
+                                body: '<?= $low_stock_count ?> barang memiliki stok rendah',
                                 icon: '<?= base_url("assets/static/images/logo/favicon.png") ?>'
                             });
                         }, 300000); // tiap 5 menit
@@ -562,6 +562,35 @@
 
 <?= $this->section('styles') ?>
 <style>
+    .inventory-card .card-body>.row>div {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .inventory-card .card-body>.row>div:first-child {
+        display: flex;
+        justify-content: center !important;
+    }
+
+    .inventory-card .card-body>.row>div:last-child {
+        text-align: center;
+    }
+
+    .inventory-card .stats-icon {
+        float: none !important;
+        width: 4.25rem;
+        height: 4.25rem;
+        margin: 0 auto 0.85rem !important;
+    }
+
+    .inventory-card .stats-icon i {
+        font-size: 2rem !important;
+    }
+
+    .inventory-card h6.font-semibold {
+        margin-bottom: 0.25rem;
+    }
+
     .quick-stat h4 {
         font-size: 2rem;
         font-weight: bold;
@@ -640,6 +669,15 @@
     }
 
     @media (max-width: 768px) {
+        .inventory-card .stats-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+        }
+
+        .inventory-card .stats-icon i {
+            font-size: 1.6rem !important;
+        }
+
         .quick-stat h4 {
             font-size: 1.5rem;
         }

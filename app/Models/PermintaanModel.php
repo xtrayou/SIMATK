@@ -8,7 +8,7 @@ use CodeIgniter\Model;
  * PermintaanModel - Model untuk mengelola data permintaan ATK
  *
  * Relasi:
- * - Permintaan terkait Produk (melalui request_items)
+ * - Permintaan terkait Barang (melalui request_items)
  * - Permintaan terkait Pengguna (borrower)
  */
 class PermintaanModel extends Model

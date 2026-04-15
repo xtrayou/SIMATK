@@ -62,10 +62,10 @@
                         <div id="item-container">
                             <div class="row g-2 align-items-end mb-3 item-row">
                                 <div class="col-md-7">
-                                    <label class="form-label small fw-bold">Pilih Produk</label>
+                                    <label class="form-label small fw-bold">Pilih Barang</label>
                                     <select name="product_id[]" class="form-select select-product" required>
                                         <option value="">- Cari Barang -</option>
-                                        <?php foreach ($daftarProduk as $p): ?>
+                                        <?php foreach ($daftarBarang as $p): ?>
                                             <option value="<?= $p['id'] ?>" data-unit="<?= $p['unit'] ?>" data-stock="<?= (int) ($p['stock_baik'] ?? $p['current_stock']) ?>">
                                                 <?= esc($p['name']) ?> (Stok: <?= (int) ($p['stock_baik'] ?? $p['current_stock']) ?> <?= $p['unit'] ?>)
                                             </option>

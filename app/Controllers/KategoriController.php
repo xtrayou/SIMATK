@@ -7,10 +7,10 @@ use App\Models\KategoriModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
 /**
- * KategoriController - Controller untuk mengelola kategori produk
+ * KategoriController - Controller untuk mengelola kategori barang
  *
  * Relasi:
- * - Kategori memiliki banyak Produk
+ * - Kategori memiliki banyak Barang
  */
 class KategoriController extends BaseController
 {
@@ -27,30 +27,30 @@ class KategoriController extends BaseController
     private function getDataForm(): array
     {
         return [
-            'name'        => trim((string) $this->request->getPost('name')),
-            'description' => trim((string) $this->request->getPost('description')),
-            'is_active'   => $this->request->getPost('is_active') ? 1 : 0,
+            'name'        => trim($this->request->getPost('name') ?? ''),
+            'description' => trim($this->request->getPost('description') ?? ''),
+            'is_active'   => (bool) $this->request->getPost('is_active'),
         ];
     }
 
     /**
      * Validasi request dan kembalikan redirect jika gagal
      */
-    private function validasiRequest(array $aturan): ?RedirectResponse
+    private function validasiRequest(array $rules): ?RedirectResponse
     {
-        if ($this->validate($aturan)) {
-            return null;
+        if (!$this->validate($rules)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
         }
 
-        return redirect()->back()
-            ->withInput()
-            ->with('errors', $this->validator->getErrors());
+        return null;
     }
 
     /**
      * Cari kategori berdasarkan ID atau redirect jika tidak ditemukan
      */
-    private function cariKategoriAtauRedirect(int $id)
+    private function findOrRedirect(int $id): array|RedirectResponse
     {
         $kategori = $this->modelKategori->find($id);
 
@@ -63,11 +63,57 @@ class KategoriController extends BaseController
     }
 
     /**
+     * Siapkan data untuk view form create/edit
+     */
+    private function getFormViewData(array $kategori, bool $isEdit): array
+    {
+        $oldInput = session()->getFlashdata('_ci_old_input') ?? [];
+        $hasOldInput = !empty($oldInput);
+
+        $formName = $hasOldInput
+            ? trim((string) ($oldInput['name'] ?? ''))
+            : trim((string) ($kategori['name'] ?? ''));
+        $formDescription = $hasOldInput
+            ? trim((string) ($oldInput['description'] ?? ''))
+            : trim((string) ($kategori['description'] ?? ''));
+
+        $formIsActive = $hasOldInput
+            ? array_key_exists('is_active', $oldInput)
+            : (bool) ($kategori['is_active'] ?? true);
+
+        $previewName = $formName !== '' ? $formName : 'Nama Kategori';
+        $previewDescription = $formDescription !== '' ? $formDescription : null;
+        $previewStatusClass = $formIsActive ? 'bg-success' : 'bg-secondary';
+        $previewStatusIcon = $formIsActive ? 'bi-check-circle' : 'bi-x-circle';
+        $previewStatusText = $formIsActive ? 'Aktif' : 'Nonaktif';
+
+        return [
+            'kategori' => $kategori,
+            'isEdit' => $isEdit,
+            'judulForm' => $isEdit ? 'Edit Kategori' : 'Tambah Kategori Baru',
+            'actionUrl' => $isEdit
+                ? '/categories/update/' . (int) ($kategori['id'] ?? 0)
+                : '/categories/store',
+            'methodSpoof' => $isEdit ? 'PUT' : null,
+            'submitLabel' => $isEdit ? 'Perbarui Kategori' : 'Simpan Kategori',
+            'previewModeLabel' => $isEdit ? 'Sedang diedit' : 'Baru dibuat',
+            'formName' => $formName,
+            'formDescription' => $formDescription,
+            'formIsActive' => $formIsActive,
+            'previewName' => $previewName,
+            'previewDescription' => $previewDescription,
+            'previewStatusClass' => $previewStatusClass,
+            'previewStatusIcon' => $previewStatusIcon,
+            'previewStatusText' => $previewStatusText,
+        ];
+    }
+
+    /**
      * Tampilkan daftar kategori
      */
     public function index()
     {
-        $this->setPageData('Kategori', 'Manajemen Kategori Produk');
+        $this->setPageData('Kategori', 'Manajemen Kategori Barang');
 
         $keyword      = trim((string) ($this->request->getGet('q') ?? ''));
         $filterStatus = $this->request->getGet('status');
@@ -82,8 +128,13 @@ class KategoriController extends BaseController
 
         $totalData  = $this->modelKategori->hitungKategori($keyword, $filterStatus);
         $offset     = ($page - 1) * $perPage;
-        $categories = $this->modelKategori->getKategoriDenganJumlahProduk(
-            $keyword, $filterStatus, $orderBy, $orderDir, $perPage, $offset
+        $categories = $this->modelKategori->getKategoriDenganJumlahBarang(
+            $keyword,
+            $filterStatus,
+            $orderBy,
+            $orderDir,
+            $perPage,
+            $offset
         );
 
         $pager = service('pager');
@@ -107,12 +158,13 @@ class KategoriController extends BaseController
      */
     public function tambah()
     {
-        $this->setPageData('Tambah Kategori', 'Buat kategori produk baru');
+        $this->setPageData('Tambah Kategori', 'Buat kategori barang baru');
 
-        return $this->render('kategori/create', [
-            'kategori'   => ['name' => '', 'description' => '', 'is_active' => true],
-            'validation' => service('validation'),
-        ]);
+        $kategori = ['name' => '', 'description' => '', 'is_active' => true];
+        return $this->render('kategori/form', array_merge(
+            $this->getFormViewData($kategori, false),
+            ['validation' => service('validation')]
+        ));
     }
 
     /**
@@ -124,8 +176,10 @@ class KategoriController extends BaseController
             'name'        => 'required|min_length[3]|max_length[100]|is_unique[categories.name]',
             'description' => 'permit_empty|max_length[500]',
         ]);
-        
-        if ($error) return $error;
+
+        if ($error) {
+            return $error;
+        }
 
         if ($this->modelKategori->insert($this->getDataForm())) {
             return redirect()->to('/categories')->with('success', 'Kategori berhasil ditambahkan');
@@ -139,15 +193,17 @@ class KategoriController extends BaseController
      */
     public function ubah($id)
     {
-        $category = $this->cariKategoriAtauRedirect((int) $id);
-        if ($category instanceof RedirectResponse) return $category;
+        $category = $this->findOrRedirect((int) $id);
+        if ($category instanceof RedirectResponse) {
+            return $category;
+        }
 
         $this->setPageData('Edit Kategori', 'Edit Kategori: ' . $category['name']);
 
-        return $this->render('kategori/edit', [
-            'kategori'   => $category,
-            'validation' => service('validation'),
-        ]);
+        return $this->render('kategori/form', array_merge(
+            $this->getFormViewData($category, true),
+            ['validation' => service('validation')]
+        ));
     }
 
     /**
@@ -155,15 +211,19 @@ class KategoriController extends BaseController
      */
     public function perbarui($id)
     {
-        $category = $this->cariKategoriAtauRedirect((int) $id);
-        if ($category instanceof RedirectResponse) return $category;
+        $category = $this->findOrRedirect((int) $id);
+        if ($category instanceof RedirectResponse) {
+            return $category;
+        }
 
         $error = $this->validasiRequest([
             'name'        => "required|min_length[3]|max_length[100]|is_unique[categories.name,id,{$id}]",
             'description' => 'permit_empty|max_length[500]',
         ]);
-        
-        if ($error) return $error;
+
+        if ($error) {
+            return $error;
+        }
 
         if ($this->modelKategori->update($id, $this->getDataForm())) {
             return redirect()->to('/categories')->with('success', 'Kategori berhasil diperbarui');
@@ -184,7 +244,7 @@ class KategoriController extends BaseController
 
         if ($this->modelKategori->bisaDihapus((int) $id) === false) {
             return redirect()->to('/categories')
-                ->with('error', 'Kategori tidak bisa dihapus karena masih digunakan oleh produk');
+                ->with('error', 'Kategori tidak bisa dihapus karena masih digunakan oleh barang');
         }
 
         if ($this->modelKategori->delete($id)) {

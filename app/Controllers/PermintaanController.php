@@ -4,32 +4,34 @@ namespace App\Controllers;
 
 use App\Models\PermintaanModel;
 use App\Models\ItemPermintaanModel;
-use App\Models\ProdukModel;
-use App\Models\MutasiStokModel;
+use App\Models\BarangModel;
 use App\Models\NotifikasiModel;
+use App\Services\PermintaanService;
 use Exception;
 
 /**
  * PermintaanController - Controller untuk mengelola permintaan ATK
  *
  * Relasi:
- * - Permintaan terkait Produk dan Pengguna
+ * - Permintaan terkait Barang dan Pengguna
  */
 class PermintaanController extends BaseController
 {
     protected PermintaanModel $modelPermintaan;
     protected ItemPermintaanModel $modelItemPermintaan;
-    protected ProdukModel $modelProduk;
-    protected MutasiStokModel $modelMutasiStok;
+    protected BarangModel $modelBarang;
     protected NotifikasiModel $modelNotifikasi;
+    protected PermintaanService $permintaanService;
 
     public function __construct()
     {
         $this->modelPermintaan       = new PermintaanModel();
         $this->modelItemPermintaan   = new ItemPermintaanModel();
-        $this->modelProduk           = new ProdukModel();
-        $this->modelMutasiStok       = new MutasiStokModel();
+        $this->modelBarang           = new BarangModel();
         $this->modelNotifikasi       = new NotifikasiModel();
+
+        // Get the service from the container
+        $this->permintaanService     = service('permintaan');
     }
 
     /**
@@ -47,81 +49,97 @@ class PermintaanController extends BaseController
         return $url . $separator . 'resi=' . rawurlencode($kodeResi) . $fragment;
     }
 
-    /**
-     * Generate kode resi unik berdasarkan timestamp
-     */
-    private function generateKodeResiUnik(): string
+    private function getPermintaanRules(): array
     {
-        do {
-            $kode = date('Ymd-His');
-            $exists = $this->modelPermintaan->where('receipt_code', $kode)->countAllResults() > 0;
-            if ($exists) {
-                sleep(1);
-            }
-        } while ($exists);
-
-        return $kode;
+        return [
+            'borrower_name' => 'required|min_length[3]|max_length[150]',
+            'borrower_unit' => 'required',
+            'email'         => 'required|valid_email',
+            'product_id'    => 'required',
+            'quantity'      => 'required',
+            'request_date'  => 'required|valid_date',
+        ];
     }
 
     /**
-     * Generate kode resi dari timestamp tertentu
+     * Handles the logic for creating a new request from either admin or public form.
      */
-    private function generateKodeResiDariTimestamp(int $timestamp): string
+    private function prosesSimpanPermintaan()
     {
-        return date('Ymd-His', $timestamp);
-    }
+        $rules = $this->getPermintaanRules();
 
-    /**
-     * Pastikan kode resi unik untuk baris tertentu
-     */
-    private function pastikanKodeResiUnik(string $kandidat, int $excludeId, int $baseTimestamp): string
-    {
-        $kode = $kandidat;
-        $ts = $baseTimestamp;
-
-        while (
-            $this->modelPermintaan
-            ->where('receipt_code', $kode)
-            ->where('id !=', $excludeId)
-            ->countAllResults() > 0
-        ) {
-            $ts++;
-            $kode = $this->generateKodeResiDariTimestamp($ts);
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        return $kode;
-    }
+        try {
+            $postData = $this->request->getPost();
+            [$requestId, $kodeResi] = $this->permintaanService->buatPermintaan($postData);
 
-    /**
-     * Isi ulang kode resi yang kosong pada data lama
-     */
-    private function isiKodeResiKosong(): void
-    {
-        $rows = $this->modelPermintaan
-            ->select('id, created_at')
-            ->groupStart()
-            ->where('receipt_code IS NULL', null, false)
-            ->orWhere('receipt_code', '')
-            ->groupEnd()
-            ->findAll();
+            // Handle redirection
+            $redirectUrl = $this->request->getPost('_redirect');
+            $isPublicForm = str_contains((string)$redirectUrl, 'ask');
 
-        if (empty($rows)) {
-            return;
-        }
-
-        foreach ($rows as $row) {
-            $timestamp = !empty($row['created_at']) ? strtotime((string) $row['created_at']) : time();
-            if ($timestamp === false) {
-                $timestamp = time();
+            if ($isPublicForm) {
+                return redirect()->to('/ask/success')
+                    ->with('request_id', $requestId)
+                    ->with('borrower_name', $this->request->getPost('borrower_name'))
+                    ->with('kode_resi', $kodeResi);
             }
 
-            $kandidat = $this->generateKodeResiDariTimestamp($timestamp);
-            $kodeUnik = $this->pastikanKodeResiUnik($kandidat, (int) $row['id'], $timestamp);
+            $redirectUrl = $redirectUrl ?: '/requests';
+            $redirectUrlDenganResi = $this->tambahkanResiKeUrl($redirectUrl, $kodeResi);
 
-            $this->modelPermintaan->update((int) $row['id'], [
-                'receipt_code' => $kodeUnik,
-            ]);
+            return redirect()->to($redirectUrlDenganResi)
+                ->with('success', 'Permintaan berhasil diajukan.')
+                ->with('kode_resi', $kodeResi);
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
+    }
+
+    private function findByReference(string $referenceNo): ?array
+    {
+        if (preg_match('/^REQ-(\d+)$/i', $referenceNo, $matches)) {
+            return $this->modelPermintaan->find((int) $matches[1]);
+        }
+
+        return $this->modelPermintaan->where('receipt_code', $referenceNo)->first();
+    }
+
+    private function getItemDetail(int $requestId): array
+    {
+        $items = $this->modelItemPermintaan->where('request_id', $requestId)->findAll();
+        $itemEnriched = [];
+
+        foreach ($items as $item) {
+            $itemEnriched[] = [
+                'item' => $item,
+                'barang' => $this->modelBarang->find($item['product_id']),
+            ];
+        }
+
+        return $itemEnriched;
+    }
+
+    private function getStatusBadges(): array
+    {
+        return [
+            'requested'   => ['text' => 'Menunggu Persetujuan', 'color' => 'warning', 'icon' => 'hourglass-split'],
+            'approved'    => ['text' => 'Disetujui', 'color' => 'info', 'icon' => 'check-circle'],
+            'distributed' => ['text' => 'Sudah Dikirim', 'color' => 'success', 'icon' => 'check2-all'],
+            'cancelled'   => ['text' => 'Dibatalkan', 'color' => 'danger', 'icon' => 'x-circle'],
+        ];
+    }
+
+    private function getReferenceDisplay(array $dataPermintaan, int $requestId): string
+    {
+        $referenceNoDisplay = (string) ($dataPermintaan['receipt_code'] ?? '');
+        if ($referenceNoDisplay === '') {
+            $referenceNoDisplay = 'REQ-' . str_pad((string) $requestId, 4, '0', STR_PAD_LEFT);
+        }
+
+        return $referenceNoDisplay;
     }
 
     /**
@@ -130,7 +148,7 @@ class PermintaanController extends BaseController
     public function index()
     {
         $this->setPageData('Daftar Permintaan', 'Manajemen permintaan dan distribusi ATK');
-        $this->isiKodeResiKosong();
+        $this->permintaanService->isiKodeResiKosong();
 
         $status = $this->request->getGet('status');
         $filterResi = trim((string) $this->request->getGet('resi'));
@@ -165,10 +183,10 @@ class PermintaanController extends BaseController
     {
         $this->setPageData('Buat Permintaan', 'Formulir permintaan ATK baru');
 
-        $products = $this->modelProduk->where('is_active', true)->orderBy('name', 'ASC')->findAll();
+        $products = $this->modelBarang->where('is_active', true)->orderBy('name', 'ASC')->findAll();
 
         $data = [
-            'daftarProduk' => $products
+            'daftarBarang' => $products
         ];
 
         return $this->render('permintaan/create', $data);
@@ -179,74 +197,28 @@ class PermintaanController extends BaseController
      */
     public function simpan()
     {
-        $rules = [
-            'borrower_name' => 'required|min_length[3]|max_length[150]',
-            'borrower_unit' => 'required',
-            'email'         => 'required|valid_email',
-            'product_id'    => 'required',
-            'quantity'      => 'required',
-            'request_date'  => 'required|valid_date',
-        ];
+        $rules = $this->getPermintaanRules();
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $db = \Config\Database::connect();
-        $db->transStart();
+        $postData = $this->request->getPost();
+        $result = $this->permintaanService->buatPermintaan($postData);
 
-        try {
-            $kodeResi = $this->generateKodeResiUnik();
-            $requestId = $this->modelPermintaan->insert([
-                'borrower_name'       => $this->request->getPost('borrower_name'),
-                'borrower_identifier' => $this->request->getPost('borrower_identifier'),
-                'borrower_unit'       => $this->request->getPost('borrower_unit'),
-                'email'               => $this->request->getPost('email'),
-                'receipt_code'        => $kodeResi,
-                'request_date'        => $this->request->getPost('request_date') ?: date('Y-m-d'),
-                'status'              => 'requested',
-                'notes'               => $this->request->getPost('notes'),
-            ]);
-
-            $productIds = (array) $this->request->getPost('product_id');
-            $quantities = (array) $this->request->getPost('quantity');
-
-            foreach ($productIds as $index => $pid) {
-                if (empty($pid) || empty($quantities[$index])) continue;
-
-                $this->modelItemPermintaan->insert([
-                    'request_id' => $requestId,
-                    'product_id' => $pid,
-                    'quantity'   => $quantities[$index],
-                ]);
-            }
-
-            $db->transComplete();
-
-            if ($db->transStatus() === false) {
-                throw new Exception('Gagal menyimpan data ke database.');
-            }
+        if ($result['success']) {
+            $requestId = $result['data']['request_id'];
+            $kodeResi = $result['data']['receipt_code'];
 
             $redirectUrl = $this->request->getPost('_redirect') ?: '/requests';
             $redirectUrlDenganResi = $this->tambahkanResiKeUrl($redirectUrl, $kodeResi);
 
-            // Kirim notifikasi permintaan baru
-            try {
-                $dataPermintaan = $this->modelPermintaan->find($requestId);
-                if ($dataPermintaan) {
-                    $this->modelNotifikasi->createNewRequestNotification($dataPermintaan);
-                }
-            } catch (\Throwable $e) {
-                log_message('error', 'Gagal kirim notifikasi permintaan baru: ' . $e->getMessage());
-            }
-
             return redirect()->to($redirectUrlDenganResi)
                 ->with('success', 'Permintaan berhasil diajukan.')
                 ->with('kode_resi', $kodeResi);
-        } catch (Exception $e) {
-            $db->transRollback();
-            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
+
+        return redirect()->back()->withInput()->with('error', $result['message']);
     }
 
     /**
@@ -270,20 +242,9 @@ class PermintaanController extends BaseController
      */
     public function setujui($id)
     {
-        $dataPermintaan = $this->modelPermintaan->find($id);
-        if (!$dataPermintaan) return $this->jsonResponse(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
+        $result = $this->permintaanService->setujuiPermintaan((int)$id);
 
-        if ($this->modelPermintaan->update($id, ['status' => 'approved'])) {
-            // Kirim notifikasi disetujui
-            try {
-                $this->modelNotifikasi->createRequestApprovedNotification($dataPermintaan);
-            } catch (\Throwable $e) {
-                log_message('error', 'Gagal kirim notifikasi approve: ' . $e->getMessage());
-            }
-            return $this->jsonResponse(['status' => true, 'message' => 'Permintaan disetujui.']);
-        }
-
-        return $this->jsonResponse(['status' => false, 'message' => 'Gagal memperbarui status.'], 500);
+        return $this->jsonResponse($result, $result['success'] ? 200 : 404);
     }
 
     /**
@@ -291,112 +252,20 @@ class PermintaanController extends BaseController
      */
     public function distribusikan($id)
     {
-        $dataPermintaan = $this->modelPermintaan->find($id);
-        if (!$dataPermintaan) {
-            return $this->jsonResponse(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
-        }
-
-        // Hindari distribusi ganda: jika mutasi REQ-{id} sudah ada, cukup sinkronkan status.
-        $existingDistribution = $this->modelMutasiStok
-            ->where('type', 'OUT')
-            ->where('reference_no', 'REQ-' . $id)
-            ->countAllResults();
-        if ($existingDistribution > 0) {
-            if (($dataPermintaan['status'] ?? '') !== 'distributed') {
-                $this->modelPermintaan->update($id, ['status' => 'distributed']);
-            }
-            return $this->jsonResponse([
-                'status' => true,
-                'message' => 'Permintaan sudah pernah didistribusikan. Status disinkronkan ke didistribusikan.',
-            ]);
-        }
-
-        if ($dataPermintaan['status'] !== 'approved') {
-            return $this->jsonResponse(['status' => false, 'message' => 'Permintaan belum disetujui'], 400);
-        }
-
-        $daftarItem = $this->modelItemPermintaan->where('request_id', $id)->findAll();
-
-        if (empty($daftarItem)) {
-            return $this->jsonResponse(['status' => false, 'message' => 'Tidak ada item untuk didistribusikan'], 400);
-        }
-
-        // Cek stok sebelum distribusi
-        $errorStok = [];
-        foreach ($daftarItem as $item) {
-            $produk = $this->modelProduk->find($item['product_id']);
-            if (!$produk) {
-                $errorStok[] = "Produk ID {$item['product_id']} tidak ditemukan";
-                continue;
-            }
-
-            $stokSekarang = (int) ($produk['stock_baik'] ?? $produk['current_stock']);
-            $jumlahDiminta = (int) $item['quantity'];
-
-            if ($stokSekarang < $jumlahDiminta) {
-                $errorStok[] = "{$produk['name']}: stok baik tersedia {$stokSekarang}, diminta {$jumlahDiminta}";
-            }
-        }
-
-        if (!empty($errorStok)) {
-            return $this->jsonResponse([
-                'status' => false,
-                'message' => 'Stok tidak mencukupi:<br>• ' . implode('<br>• ', $errorStok)
-            ], 400);
-        }
-
-        $db = \Config\Database::connect();
-        $db->transStart();
-
         try {
             $userId = session()->get('userId');
+            $userName = session()->get('name') ?: 'Admin';
+
             if (!$userId || !is_numeric($userId)) {
-                throw new Exception('Session tidak valid. Silakan login ulang.');
+                return $this->jsonResponse(['success' => false, 'message' => 'Session tidak valid. Silakan login ulang.'], 401);
             }
 
-            foreach ($daftarItem as $item) {
-                $this->modelMutasiStok->buatMutasi([
-                    'product_id'   => $item['product_id'],
-                    'type'         => 'OUT',
-                    'quantity'     => $item['quantity'],
-                    'notes'        => 'Distribusi ATK - No. Permintaan: #' . $id . ' oleh ' . (session()->get('name') ?: 'Admin'),
-                    'reference_no' => 'REQ-' . $id,
-                    'created_by'   => (int) $userId
-                ]);
-            }
+            $result = $this->permintaanService->distribusikanPermintaan((int)$id, (int)$userId, $userName);
 
-            $this->modelPermintaan->update($id, ['status' => 'distributed']);
-            $db->transComplete();
-
-            if ($db->transStatus() === false) {
-                throw new Exception('Gagal memproses mutasi stok. Silakan coba lagi.');
-            }
-
-            // Cek stok rendah/habis setelah distribusi
-            try {
-                foreach ($daftarItem as $item) {
-                    $produk = $this->modelProduk->find($item['product_id']);
-                    if (!$produk) continue;
-
-                    $stokBaikSaatIni = (int) ($produk['stock_baik'] ?? $produk['current_stock']);
-                    $produkUntukNotifikasi = $produk;
-                    $produkUntukNotifikasi['current_stock'] = $stokBaikSaatIni;
-
-                    if ($stokBaikSaatIni <= 0) {
-                        $this->modelNotifikasi->createOutOfStockNotification($produkUntukNotifikasi);
-                    } elseif ($stokBaikSaatIni <= (int) ($produk['min_stock'] ?? 0)) {
-                        $this->modelNotifikasi->createLowStockNotification($produkUntukNotifikasi);
-                    }
-                }
-            } catch (\Throwable $e) {
-                log_message('error', 'Gagal kirim notifikasi distribusi: ' . $e->getMessage());
-            }
-
-            return $this->jsonResponse(['status' => true, 'message' => 'Barang berhasil didistribusikan dan stok telah terpotong.']);
+            return $this->jsonResponse($result, $result['success'] ? 200 : 400);
         } catch (Exception $e) {
-            $db->transRollback();
             log_message('error', 'Error saat distribusi: ' . $e->getMessage());
-            return $this->jsonResponse(['status' => false, 'message' => 'Gagal distribusi: ' . $e->getMessage()], 500);
+            return $this->jsonResponse(['success' => false, 'message' => 'Gagal distribusi: ' . $e->getMessage()], 500);
         }
     }
 
@@ -405,24 +274,9 @@ class PermintaanController extends BaseController
      */
     public function batalkan($id)
     {
-        $dataPermintaan = $this->modelPermintaan->find($id);
-        if (!$dataPermintaan) return $this->jsonResponse(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
+        $result = $this->permintaanService->batalkanPermintaan((int)$id);
 
-        if ($dataPermintaan['status'] == 'distributed') {
-            return $this->jsonResponse(['status' => false, 'message' => 'Tidak bisa membatalkan permintaan yang sudah didistribusikan.'], 400);
-        }
-
-        if ($this->modelPermintaan->update($id, ['status' => 'cancelled'])) {
-            // Kirim notifikasi dibatalkan
-            try {
-                $this->modelNotifikasi->createRequestCancelledNotification($dataPermintaan);
-            } catch (\Throwable $e) {
-                log_message('error', 'Gagal kirim notifikasi cancel: ' . $e->getMessage());
-            }
-            return $this->jsonResponse(['status' => true, 'message' => 'Permintaan berhasil dibatalkan.']);
-        }
-
-        return $this->jsonResponse(['status' => false, 'message' => 'Gagal membatalkan permintaan.'], 500);
+        return $this->jsonResponse($result, $result['success'] ? 200 : 400);
     }
 
     /**
@@ -430,7 +284,7 @@ class PermintaanController extends BaseController
      */
     public function askForm()
     {
-        $produk = $this->modelProduk
+        $barang = $this->modelBarang
             ->where('is_active', true)
             ->where('IFNULL(stock_baik, current_stock) >', 0, false)
             ->orderBy('name', 'ASC')
@@ -438,7 +292,7 @@ class PermintaanController extends BaseController
 
         $data = [
             'title'       => 'Ajukan Permintaan ATK | SIMATK',
-            'daftarProduk' => $produk,
+            'daftarBarang' => $barang,
         ];
 
         return view('permintaan/ask', $data);
@@ -449,80 +303,26 @@ class PermintaanController extends BaseController
      */
     public function askStore()
     {
-        $rules = [
-            'borrower_name' => 'required|min_length[3]|max_length[150]',
-            'borrower_unit' => 'required',
-            'email'         => 'required|valid_email',
-            'product_id'    => 'required',
-            'quantity'      => 'required',
-            'request_date'  => 'required|valid_date',
-        ];
+        $rules = $this->getPermintaanRules();
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $db = \Config\Database::connect();
-        $db->transStart();
+        $postData = $this->request->getPost();
+        $result = $this->permintaanService->buatPermintaan($postData);
 
-        try {
-            $kodeResi = $this->generateKodeResiUnik();
-            $requestId = $this->modelPermintaan->insert([
-                'borrower_name'       => $this->request->getPost('borrower_name'),
-                'borrower_identifier' => $this->request->getPost('borrower_identifier'),
-                'borrower_unit'       => $this->request->getPost('borrower_unit'),
-                'email'               => $this->request->getPost('email'),
-                'receipt_code'        => $kodeResi,
-                'request_date'        => $this->request->getPost('request_date') ?: date('Y-m-d'),
-                'status'              => 'requested',
-                'notes'               => $this->request->getPost('notes'),
-            ]);
-
-            $productIds = (array) $this->request->getPost('product_id');
-            $quantities = (array) $this->request->getPost('quantity');
-
-            foreach ($productIds as $index => $pid) {
-                if (empty($pid) || empty($quantities[$index])) continue;
-                $this->modelItemPermintaan->insert([
-                    'request_id' => $requestId,
-                    'product_id' => $pid,
-                    'quantity'   => $quantities[$index],
-                ]);
-            }
-
-            $db->transComplete();
-
-            if ($db->transStatus() === false) {
-                throw new Exception('Gagal menyimpan data ke database.');
-            }
-
-            $redirectUrl = $this->request->getPost('_redirect');
-
-            // Kirim notifikasi ke admin
-            try {
-                $dataPermintaan = $this->modelPermintaan->find($requestId);
-                if ($dataPermintaan) {
-                    $this->modelNotifikasi->createNewRequestNotification($dataPermintaan);
-                }
-            } catch (\Throwable $e) {
-                log_message('error', 'Gagal kirim notifikasi permintaan publik: ' . $e->getMessage());
-            }
-
-            if (!empty($redirectUrl)) {
-                $redirectUrlDenganResi = $this->tambahkanResiKeUrl($redirectUrl, $kodeResi);
-                return redirect()->to($redirectUrlDenganResi)
-                    ->with('success', 'Permintaan berhasil diajukan.')
-                    ->with('kode_resi', $kodeResi);
-            }
+        if ($result['success']) {
+            $requestId = $result['data']['request_id'];
+            $kodeResi = $result['data']['receipt_code'];
 
             return redirect()->to('/ask/success')
                 ->with('request_id', $requestId)
                 ->with('borrower_name', $this->request->getPost('borrower_name'))
                 ->with('kode_resi', $kodeResi);
-        } catch (Exception $e) {
-            $db->transRollback();
-            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
+
+        return redirect()->back()->withInput()->with('error', $result['message']);
     }
 
     /**
@@ -557,63 +357,65 @@ class PermintaanController extends BaseController
      */
     public function lacakStatus()
     {
-        $referenceNo = trim((string) $this->request->getPost('reference_no'));
-        $email = strtolower(trim((string) $this->request->getPost('email')));
+        $referenceNo = trim((string) ($this->request->getPost('reference_no') ?? ''));
+        $emailRaw = trim((string) ($this->request->getPost('email') ?? ''));
+        $email = strtolower($emailRaw);
+        $fromHomeModal = (string) ($this->request->getPost('_from') ?? '') === 'home-modal';
+
+        $kirimError = static function (string $pesan, bool $bukaModal = false) {
+            $response = redirect()->back()->withInput()->with('error', $pesan);
+            if ($bukaModal) {
+                $response = $response->with('_open_track_modal', true);
+            }
+
+            return $response;
+        };
 
         // Validasi input
-        if (empty($referenceNo) || empty($email)) {
-            return redirect()->back()->withInput()->with('error', 'Nomor referensi dan email harus diisi.');
+        if ($referenceNo === '') {
+            return $kirimError('Nomor referensi harus diisi.', $fromHomeModal);
         }
 
-        $dataPermintaan = null;
-
-        // Legacy fallback format: REQ-0001
-        if (preg_match('/^REQ-(\d+)$/i', $referenceNo, $matches)) {
-            $dataPermintaan = $this->modelPermintaan->find((int) $matches[1]);
-        } else {
-            // Format utama: receipt_code (contoh 20260410-120305)
-            $dataPermintaan = $this->modelPermintaan->where('receipt_code', $referenceNo)->first();
+        if ($emailRaw !== '' && !filter_var($emailRaw, FILTER_VALIDATE_EMAIL)) {
+            return $kirimError('Format email tidak valid.', $fromHomeModal);
         }
+
+        $dataPermintaan = $this->findByReference($referenceNo);
 
         if (!$dataPermintaan) {
-            return redirect()->back()->withInput()->with('error', 'Permintaan tidak ditemukan.');
+            return $kirimError('Permintaan tidak ditemukan.', $fromHomeModal);
         }
 
-        // Validasi email
-        if (strtolower((string) ($dataPermintaan['email'] ?? '')) !== $email) {
-            return redirect()->back()->withInput()->with('error', 'Email tidak sesuai dengan data permintaan.');
+        // Email bersifat opsional. Jika diisi, harus cocok dengan data permintaan.
+        if ($email !== '' && strtolower((string) ($dataPermintaan['email'] ?? '')) !== $email) {
+            return $kirimError('Email tidak sesuai dengan data permintaan.', $fromHomeModal);
         }
 
         $requestId = (int) ($dataPermintaan['id'] ?? 0);
         if ($requestId <= 0) {
-            return redirect()->back()->withInput()->with('error', 'Data permintaan tidak valid.');
+            return $kirimError('Data permintaan tidak valid.', $fromHomeModal);
         }
 
-        $referenceNoDisplay = (string) ($dataPermintaan['receipt_code'] ?? '');
-        if ($referenceNoDisplay === '') {
-            $referenceNoDisplay = 'REQ-' . str_pad((string) $requestId, 4, '0', STR_PAD_LEFT);
+        $referenceNoDisplay = $this->getReferenceDisplay($dataPermintaan, $requestId);
+        $itemEnriched = $this->getItemDetail($requestId);
+        $statusBadges = $this->getStatusBadges();
+        $statusSaatIni = (string) ($dataPermintaan['status'] ?? 'requested');
+        $statusMeta = $statusBadges[$statusSaatIni] ?? ['text' => 'Tidak Diketahui', 'color' => 'secondary', 'icon' => 'question-circle'];
+
+        if ($fromHomeModal) {
+            return redirect()->to('/')
+                ->with('_open_track_result_modal', true)
+                ->with('track_result_data', [
+                    'reference_no'   => $referenceNoDisplay,
+                    'request_no'     => 'REQ-' . str_pad((string) $requestId, 4, '0', STR_PAD_LEFT),
+                    'borrower_name'  => (string) ($dataPermintaan['borrower_name'] ?? '-'),
+                    'borrower_unit'  => (string) ($dataPermintaan['borrower_unit'] ?? '-'),
+                    'request_date'   => (string) ($dataPermintaan['request_date'] ?? ''),
+                    'status_text'    => (string) ($statusMeta['text'] ?? 'Tidak Diketahui'),
+                    'status_color'   => (string) ($statusMeta['color'] ?? 'secondary'),
+                    'status_icon'    => (string) ($statusMeta['icon'] ?? 'question-circle'),
+                ]);
         }
-
-        // Ambil detail item permintaan
-        $itemPermintaan = $this->modelItemPermintaan->where('request_id', $requestId)->findAll();
-
-        // Enriched item dengan detail produk
-        $itemEnriched = [];
-        foreach ($itemPermintaan as $item) {
-            $produk = $this->modelProduk->find($item['product_id']);
-            $itemEnriched[] = [
-                'item' => $item,
-                'produk' => $produk
-            ];
-        }
-
-        // Tentukan badge status
-        $statusBadges = [
-            'requested'   => ['text' => 'Menunggu Persetujuan', 'color' => 'warning', 'icon' => 'hourglass-split'],
-            'approved'    => ['text' => 'Disetujui', 'color' => 'info', 'icon' => 'check-circle'],
-            'distributed' => ['text' => 'Sudah Dikirim', 'color' => 'success', 'icon' => 'check2-all'],
-            'cancelled'   => ['text' => 'Dibatalkan', 'color' => 'danger', 'icon' => 'x-circle'],
-        ];
 
         $data = [
             'title'              => 'Lacak Permintaan ATK | SIMATK',

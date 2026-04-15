@@ -26,28 +26,4 @@ class PenggunaModel extends Model
     {
         return $this->where('username', $username)->first();
     }
-
-    /**
-     * Ambil daftar permission untuk user berdasarkan role-nya
-     */
-    public function getUserPermissions(int $userId): array
-    {
-        $user = $this->find($userId);
-        if (!$user) return [];
-
-        $modelHakAkses = new HakAksesModel();
-        return $modelHakAkses->getPermissionNamesByRole($user['role']);
-    }
-
-    /**
-     * Cek apakah user punya permission tertentu
-     */
-    public function hasPermission(int $userId, string $permissionName): bool
-    {
-        $user = $this->find($userId);
-        if (!$user) return false;
-
-        $modelHakAkses = new HakAksesModel();
-        return $modelHakAkses->roleHasPermission($user['role'], $permissionName);
-    }
 }

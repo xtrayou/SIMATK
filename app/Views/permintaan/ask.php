@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Ajukan Permintaan ATK | SIMATK' ?></title>
 
-    <link rel="shortcut icon" href="<?= base_url('assets/static/images/logo/favicon.svg') ?>" type="image/x-icon">
+    <link rel="icon" href="<?= esc(app_favicon_url(), 'attr') ?>">
+    <link rel="shortcut icon" href="<?= esc(app_favicon_url(), 'attr') ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -215,19 +216,19 @@
                                     </button>
                                 </div>
 
-                                <?php if (empty($daftarProduk)): ?>
+                                <?php if (empty($daftarBarang)): ?>
                                     <div class="alert alert-warning border-0 rounded-3">
                                         <i class="bi bi-exclamation-triangle me-2"></i>
-                                        Belum ada produk tersedia. Silakan hubungi petugas.
+                                        Belum ada barang tersedia. Silakan hubungi petugas.
                                     </div>
                                 <?php else: ?>
                                     <div id="item-container">
                                         <div class="item-row row g-2 align-items-end">
                                             <div class="col-md-7">
-                                                <label class="form-label small">Pilih Produk</label>
+                                                <label class="form-label small">Pilih Barang</label>
                                                 <select name="product_id[]" class="form-select select-product" required>
                                                     <option value="">— Pilih Barang —</option>
-                                                    <?php foreach ($daftarProduk as $p): ?>
+                                                    <?php foreach ($daftarBarang as $p): ?>
                                                         <option value="<?= $p['id'] ?>"
                                                             data-unit="<?= esc($p['unit']) ?>"
                                                             data-stock="<?= (int) ($p['stock_baik'] ?? $p['current_stock']) ?>">
@@ -328,7 +329,7 @@
                 });
             }
 
-            // Update label satuan saat produk dipilih
+            // Update label satuan saat barang dipilih
             document.getElementById('item-container')?.addEventListener('change', function(e) {
                 if (e.target.classList.contains('select-product')) {
                     const selected = e.target.options[e.target.selectedIndex];

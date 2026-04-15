@@ -30,9 +30,7 @@ class NotifikasiModel extends Model
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
-    // ────────────────────────────────────────────────────
-    // Query helpers
-    // ────────────────────────────────────────────────────
+    // ===== QUERY =====
 
     /**
      * Resolusi cakupan role untuk query notifikasi.
@@ -50,6 +48,20 @@ class NotifikasiModel extends Model
         }
 
         return ['all'];
+    }
+
+    private function create(array $data): int|false
+    {
+        return $this->insert($data);
+    }
+
+    private function alreadyExists(string $type, string $refType, int $refId): bool
+    {
+        return (bool) $this->where('type', $type)
+            ->where('reference_type', $refType)
+            ->where('reference_id', $refId)
+            ->where('is_read', 0)
+            ->first();
     }
 
     /**
@@ -90,6 +102,8 @@ class NotifikasiModel extends Model
             ->paginate($perPage);
     }
 
+            // ===== ACTION =====
+
     /**
      * Tandai satu notifikasi sebagai dibaca
      */
@@ -126,30 +140,23 @@ class NotifikasiModel extends Model
         return $this->where('created_at <', $cutoff)->delete();
     }
 
-    // ────────────────────────────────────────────────────
-    // Factory: buat notifikasi dari event sistem
-    // ────────────────────────────────────────────────────
+    // ===== FACTORY =====
 
     /**
      * Notifikasi: stok rendah
      */
     public function createLowStockNotification(array $product): int|false
     {
-        // Cek apakah sudah ada notifikasi serupa yang belum dibaca
-        $existing = $this->where('type', 'low_stock')
-            ->where('reference_type', 'product')
-            ->where('reference_id', $product['id'])
-            ->where('is_read', 0)
-            ->first();
-
-        if ($existing) return false; // Sudah ada, skip
-
         $productId   = $product['id'];
-        $productName = $product['name'] ?? 'Produk';
+        if ($this->alreadyExists('low_stock', 'product', (int) $productId)) {
+            return false;
+        }
+
+        $productName = $product['name'] ?? 'Barang';
         $currentStock = $product['current_stock'] ?? 0;
         $minStock     = $product['min_stock'] ?? 0;
 
-        return $this->insert([
+        return $this->create([
             'type'           => 'low_stock',
             'title'          => 'Stok Rendah!',
             'message'        => "Stok {$productName} tinggal {$currentStock} unit (minimum: {$minStock}).",
@@ -167,18 +174,14 @@ class NotifikasiModel extends Model
      */
     public function createOutOfStockNotification(array $product): int|false
     {
-        $existing = $this->where('type', 'out_of_stock')
-            ->where('reference_type', 'product')
-            ->where('reference_id', $product['id'])
-            ->where('is_read', 0)
-            ->first();
-
-        if ($existing) return false;
-
         $productId   = $product['id'];
-        $productName = $product['name'] ?? 'Produk';
+        if ($this->alreadyExists('out_of_stock', 'product', (int) $productId)) {
+            return false;
+        }
 
-        return $this->insert([
+        $productName = $product['name'] ?? 'Barang';
+
+        return $this->create([
             'type'           => 'out_of_stock',
             'title'          => 'Stok Habis!',
             'message'        => "Stok {$productName} telah habis (0 unit).",
@@ -198,7 +201,7 @@ class NotifikasiModel extends Model
     {
         $requestId = $request['id'] ?? 0;
 
-        return $this->insert([
+        return $this->create([
             'type'           => 'new_request',
             'title'          => 'Permintaan ATK Baru',
             'message'        => "Permintaan baru dari {$request['borrower_name']} - Unit {$request['borrower_unit']}.",
@@ -218,7 +221,7 @@ class NotifikasiModel extends Model
     {
         $requestId = $request['id'] ?? 0;
 
-        return $this->insert([
+        return $this->create([
             'type'           => 'request_approved',
             'title'          => 'Permintaan Disetujui',
             'message'        => "Permintaan #{$requestId} dari {$request['borrower_name']} telah disetujui.",
@@ -238,7 +241,7 @@ class NotifikasiModel extends Model
     {
         $requestId = $request['id'] ?? 0;
 
-        return $this->insert([
+        return $this->create([
             'type'           => 'request_cancelled',
             'title'          => 'Permintaan Dibatalkan',
             'message'        => "Permintaan #{$requestId} dari {$request['borrower_name']} telah dibatalkan.",
@@ -256,7 +259,7 @@ class NotifikasiModel extends Model
      */
     public function createStockInNotification(string $productName, int $quantity, string $reference): int|false
     {
-        return $this->insert([
+        return $this->create([
             'type'           => 'stock_in',
             'title'          => 'Barang Masuk',
             'message'        => "{$productName}: +{$quantity} unit masuk (Ref: {$reference}).",
@@ -273,7 +276,7 @@ class NotifikasiModel extends Model
      */
     public function createStockOutNotification(string $productName, int $quantity, string $reference): int|false
     {
-        return $this->insert([
+        return $this->create([
             'type'           => 'stock_out',
             'title'          => 'Barang Keluar',
             'message'        => "{$productName}: -{$quantity} unit keluar (Ref: {$reference}).",

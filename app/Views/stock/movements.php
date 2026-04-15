@@ -108,13 +108,13 @@
                                 <input type="hidden" name="type" value="<?= $current_type ?>">
 
                                 <div class="col-md-3">
-                                    <label class="form-label">Produk</label>
+                                    <label class="form-label">Barang</label>
                                     <select class="form-select" name="product">
-                                        <option value="">Semua Produk</option>
-                                        <?php foreach ($products as $product): ?>
-                                            <option value="<?= $product['id'] ?>"
-                                                <?= $filters['product'] == $product['id'] ? 'selected' : '' ?>>
-                                                <?= esc($product['name']) ?> (<?= esc($product['sku']) ?>)
+                                        <option value="">Semua Barang</option>
+                                        <?php foreach ($products as $barang): ?>
+                                            <option value="<?= $barang['id'] ?>"
+                                                <?= $filters['product'] == $barang['id'] ? 'selected' : '' ?>>
+                                                <?= esc($barang['name']) ?> (<?= esc($barang['sku']) ?>)
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -209,7 +209,7 @@
                                     <tr>
                                         <th>Tanggal</th>
                                         <th>No. Referensi</th>
-                                        <th>Produk</th>
+                                        <th>Barang</th>
                                         <th>Kategori</th>
                                         <th>Jumlah</th>
                                         <th>Catatan</th>
@@ -301,7 +301,7 @@
         const itemHtml = `
         <div class="row mb-3 movement-item" id="item-${itemIndex}">
             <div class="col-md-4">
-                <label class="form-label">Produk</label>
+                <label class="form-label">Barang</label>
                 <input type="text" class="form-control product-search" id="product-search-${itemIndex}" placeholder="Ketik nama/kode barang..." autocomplete="off" oninput="handleSearchInput(${itemIndex}, this.value)">
                 <input type="hidden" name="movements[${itemIndex}][product_id]" id="product-id-${itemIndex}" required>
                 <div class="list-group product-suggestions mt-1 d-none" id="product-suggestions-${itemIndex}"></div>

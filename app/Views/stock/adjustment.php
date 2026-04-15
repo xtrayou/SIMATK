@@ -29,7 +29,7 @@
                         <div class="input-group">
                             <select id="productPicker" class="form-select select2">
                                 <option value="">- Cari Nama Barang -</option>
-                                <?php foreach ($daftarProduk as $p): ?>
+                                <?php foreach ($daftarBarang as $p): ?>
                                     <option value="<?= $p['id'] ?>" data-name="<?= esc($p['name']) ?>" data-sku="<?= $p['sku'] ?>" data-stock="<?= $p['current_stock'] ?>" data-unit="<?= $p['unit'] ?>">
                                         <?= esc($p['name']) ?> (Stok: <?= $p['current_stock'] ?> <?= $p['unit'] ?>)
                                     </option>
@@ -45,7 +45,7 @@
                         <table class="table table-bordered align-middle d-none" id="adjustmentTable">
                             <thead class="bg-light small">
                                 <tr>
-                                    <th>Produk</th>
+                                    <th>Barang</th>
                                     <th width="120" class="text-center">Stok Sistem</th>
                                     <th width="150" class="text-center">Stok Fisik</th>
                                     <th width="120" class="text-center">Selisih</th>
@@ -91,27 +91,27 @@
 
 <?= $this->section('scripts') ?>
 <script>
-$(document).ready(function() {
-    let rowIndex = 0;
+    $(document).ready(function() {
+        let rowIndex = 0;
 
-    $('#btn-add-item').on('click', function() {
-        const picker = $('#productPicker');
-        const opt = picker.find('option:selected');
-        const pid = picker.val();
-        
-        if(!pid) return;
+        $('#btn-add-item').on('click', function() {
+            const picker = $('#productPicker');
+            const opt = picker.find('option:selected');
+            const pid = picker.val();
 
-        if($(`.row-item[data-id="${pid}"]`).length > 0) {
-            alert('Barang sudah ada di daftar.');
-            return;
-        }
+            if (!pid) return;
 
-        const name = opt.data('name');
-        const sku = opt.data('sku');
-        const stock = opt.data('stock');
-        const unit = opt.data('unit');
+            if ($(`.row-item[data-id="${pid}"]`).length > 0) {
+                alert('Barang sudah ada di daftar.');
+                return;
+            }
 
-        const row = `
+            const name = opt.data('name');
+            const sku = opt.data('sku');
+            const stock = opt.data('stock');
+            const unit = opt.data('unit');
+
+            const row = `
             <tr class="row-item" data-id="${pid}">
                 <td>
                     <input type="hidden" name="adjustments[${rowIndex}][product_id]" value="${pid}">
@@ -137,53 +137,56 @@ $(document).ready(function() {
             </tr>
         `;
 
-        $('#rows').append(row);
-        rowIndex++;
-        picker.val('').trigger('change');
-        toggleView();
-    });
+            $('#rows').append(row);
+            rowIndex++;
+            picker.val('').trigger('change');
+            toggleView();
+        });
 
-    $(document).on('click', '.remove-row', function() {
-        $(this).closest('tr').remove();
-        toggleView();
-    });
+        $(document).on('click', '.remove-row', function() {
+            $(this).closest('tr').remove();
+            toggleView();
+        });
 
-    $(document).on('input', '.physical-qty', function() {
-        const row = $(this).closest('tr');
-        const physical = parseInt($(this).val()) || 0;
-        const system = parseInt($('#productPicker').find(`option[value="${row.data('id')}"]`).data('stock')) || 0;
-        const diff = physical - system;
-        
-        const badge = row.find('.diff-badge');
-        badge.text(diff > 0 ? '+' + diff : diff);
-        
-        badge.removeClass('bg-secondary bg-success bg-danger');
-        if(diff == 0) badge.addClass('bg-secondary');
-        else if(diff > 0) badge.addClass('bg-success');
-        else badge.addClass('bg-danger');
-    });
+        $(document).on('input', '.physical-qty', function() {
+            const row = $(this).closest('tr');
+            const physical = parseInt($(this).val()) || 0;
+            const system = parseInt($('#productPicker').find(`option[value="${row.data('id')}"]`).data('stock')) || 0;
+            const diff = physical - system;
 
-    function toggleView() {
-        const count = $('#rows tr').length;
-        if(count > 0) {
-            $('#adjustmentTable, .action-buttons').removeClass('d-none');
-            $('#empty-state').addClass('d-none');
-        } else {
-            $('#adjustmentTable, .action-buttons').addClass('d-none');
-            $('#empty-state').removeClass('d-none');
+            const badge = row.find('.diff-badge');
+            badge.text(diff > 0 ? '+' + diff : diff);
+
+            badge.removeClass('bg-secondary bg-success bg-danger');
+            if (diff == 0) badge.addClass('bg-secondary');
+            else if (diff > 0) badge.addClass('bg-success');
+            else badge.addClass('bg-danger');
+        });
+
+        function toggleView() {
+            const count = $('#rows tr').length;
+            if (count > 0) {
+                $('#adjustmentTable, .action-buttons').removeClass('d-none');
+                $('#empty-state').addClass('d-none');
+            } else {
+                $('#adjustmentTable, .action-buttons').addClass('d-none');
+                $('#empty-state').removeClass('d-none');
+            }
         }
-    }
 
-    $('#adjustmentForm').on('submit', function() {
-        if(!confirm('Apakah Anda yakin ingin menerapkan penyesuaian stok ini? Tindakan ini tidak dapat dibatalkan.')) return false;
-        $('#btn-submit').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Memproses...');
+        $('#adjustmentForm').on('submit', function() {
+            if (!confirm('Apakah Anda yakin ingin menerapkan penyesuaian stok ini? Tindakan ini tidak dapat dibatalkan.')) return false;
+            $('#btn-submit').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Memproses...');
+        });
     });
-});
 </script>
 <?= $this->endSection() ?>
 
 <?= $this->section('styles') ?>
 <style>
-    .bg-light-warning { background-color: rgba(255, 193, 7, 0.05); border-left: 4px solid #ffc107; }
+    .bg-light-warning {
+        background-color: rgba(255, 193, 7, 0.05);
+        border-left: 4px solid #ffc107;
+    }
 </style>
 <?= $this->endSection() ?>

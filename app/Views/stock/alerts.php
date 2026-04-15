@@ -67,7 +67,7 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead class="bg-light small">
                                 <tr>
-                                    <th class="ps-3">Nama Produk</th>
+                                    <th class="ps-3">Nama Barang</th>
                                     <th>Kode Barang</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
@@ -90,7 +90,7 @@
                 <?php else: ?>
                     <div class="text-center py-5 text-muted">
                         <i class="bi bi-check2-circle fs-1 text-success"></i>
-                        <p class="mt-2">Tidak ada produk dengan stok habis.</p>
+                        <p class="mt-2">Tidak ada barang dengan stok habis.</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -109,7 +109,7 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead class="bg-light small">
                                 <tr>
-                                    <th class="ps-3">Nama Produk</th>
+                                    <th class="ps-3">Nama Barang</th>
                                     <th class="text-center">Stok Sisa</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>

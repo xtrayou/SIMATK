@@ -165,14 +165,14 @@
                                 <i class="bi bi-exclamation-triangle text-warning me-1"></i>Batas Stok Rendah <span class="text-danger">*</span>
                             </label>
                             <input type="number" class="form-control" id="low_stock_threshold" name="low_stock_threshold" value="<?= esc($settings['low_stock_threshold']) ?>" min="1">
-                            <div class="form-text">Produk di bawah jumlah ini ditandai <span class="badge bg-warning text-dark">Stok Rendah</span></div>
+                            <div class="form-text">Barang di bawah jumlah ini ditandai <span class="badge bg-warning text-dark">Stok Rendah</span></div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="critical_stock_threshold" class="form-label">
                                 <i class="bi bi-exclamation-octagon text-danger me-1"></i>Batas Stok Kritis <span class="text-danger">*</span>
                             </label>
                             <input type="number" class="form-control" id="critical_stock_threshold" name="critical_stock_threshold" value="<?= esc($settings['critical_stock_threshold']) ?>" min="1">
-                            <div class="form-text">Produk di bawah jumlah ini ditandai <span class="badge bg-danger">Stok Kritis</span></div>
+                            <div class="form-text">Barang di bawah jumlah ini ditandai <span class="badge bg-danger">Stok Kritis</span></div>
                         </div>
                     </div>
 
@@ -402,7 +402,7 @@
                                 <div class="card-body text-center py-4">
                                     <i class="bi bi-exclamation-triangle-fill text-warning fs-1 mb-2 d-block"></i>
                                     <h6>Stok Rendah</h6>
-                                    <p class="text-muted small mb-3">Email saat produk mencapai batas stok rendah</p>
+                                    <p class="text-muted small mb-3">Email saat barang mencapai batas stok rendah</p>
                                     <div class="form-check form-switch d-flex justify-content-center">
                                         <input class="form-check-input" type="checkbox" id="notify_email_low_stock" name="notify_email_low_stock" value="1" <?= $settings['notify_email_low_stock'] ? 'checked' : '' ?>>
                                     </div>

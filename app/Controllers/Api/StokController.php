@@ -4,17 +4,17 @@ namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
 use App\Models\MutasiStokModel;
-use App\Models\ProdukModel;
+use App\Models\BarangModel;
 use Exception;
 
 class StokController extends BaseController
 {
-    protected ProdukModel $modelProduk;
+    protected BarangModel $modelBarang;
     protected MutasiStokModel $modelMutasiStok;
 
     public function __construct()
     {
-        $this->modelProduk = new ProdukModel();
+        $this->modelBarang = new BarangModel();
         $this->modelMutasiStok = new MutasiStokModel();
     }
 
@@ -23,11 +23,11 @@ class StokController extends BaseController
      */
     public function getProductInfo($id)
     {
-        $product = $this->modelProduk->getProdukDenganKategoriById((int) $id);
+        $product = $this->modelBarang->getBarangDenganKategoriById((int) $id);
         if (!$product) {
             return $this->jsonResponse([
                 'status'  => false,
-                'message' => 'Produk tidak ditemukan.',
+                'message' => 'Barang tidak ditemukan.',
             ], 404);
         }
 
@@ -42,11 +42,11 @@ class StokController extends BaseController
      */
     public function getAlertsCount()
     {
-        $outOfStock = $this->modelProduk
+        $outOfStock = $this->modelBarang
             ->where('is_active', true)
             ->where('IFNULL(stock_baik, current_stock) <= 0', null, false)
             ->countAllResults();
-        $lowStock   = count($this->modelProduk->getProdukStokRendah());
+        $lowStock   = count($this->modelBarang->getBarangStokRendah());
 
         return $this->jsonResponse([
             'status' => true,

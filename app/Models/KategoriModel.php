@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Models\BarangModel;
 
 /**
- * KategoriModel - Model untuk mengelola data kategori produk
+ * KategoriModel - Model untuk mengelola data kategori barang
  *
  * Relasi:
- * - Kategori memiliki banyak Produk (categories.id → products.category_id)
+ * - Kategori memiliki banyak Barang (categories.id → products.category_id)
  */
 class KategoriModel extends Model
 {
@@ -25,6 +26,8 @@ class KategoriModel extends Model
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
+    // ===== BASIC =====
+
     /**
      * Ambil kategori yang aktif
      *
@@ -38,7 +41,36 @@ class KategoriModel extends Model
     }
 
     /**
-     * Ambil kategori beserta jumlah produk di setiap kategori
+     * Hitung jumlah kategori aktif.
+     *
+     * @return int
+     */
+    public function countAktif(): int
+    {
+        return $this->where('is_active', true)->countAllResults();
+    }
+
+    // ===== DASHBOARD =====
+
+    /**
+     * Ambil distribusi kategori untuk dashboard.
+     *
+     * @return array
+     */
+    public function getDistribusiUntukDashboard(): array
+    {
+        return $this->select('categories.name, COUNT(products.id) as product_count, SUM(products.current_stock * products.price) as total_value')
+            ->join('products', 'products.category_id = categories.id', 'left')
+            ->where('categories.is_active', true)
+            ->groupBy('categories.id')
+            ->orderBy('product_count', 'DESC')
+            ->findAll();
+    }
+
+    // ===== FILTER =====
+
+    /**
+     * Ambil kategori beserta jumlah barang di setiap kategori
      *
      * @param string      $kataKunci Kata kunci pencarian
      * @param mixed       $status    Filter status aktif/nonaktif
@@ -46,9 +78,9 @@ class KategoriModel extends Model
      * @param string      $arahUrut  Arah urutan (ASC/DESC)
      * @param int         $batas     Batas jumlah data per halaman
      * @param int         $offset    Offset data
-     * @return array Daftar kategori dengan jumlah produk
+     * @return array Daftar kategori dengan jumlah barang
      */
-    public function getKategoriDenganJumlahProduk(
+    public function getKategoriDenganJumlahBarang(
         string $kataKunci = '',
         $status = null,
         string $kolomUrut = 'name',
@@ -56,7 +88,7 @@ class KategoriModel extends Model
         int $batas = 0,
         int $offset = 0
     ): array {
-        $builder = $this->select('categories.*, COUNT(products.id) as product_count')
+        $builder = $this->select('categories.*, COUNT(products.id) as jumlah_barang')
             ->join('products', 'products.category_id = categories.id', 'left')
             ->groupBy('categories.id');
 
@@ -101,17 +133,19 @@ class KategoriModel extends Model
         return $builder->countAllResults();
     }
 
+    // ===== VALIDATION =====
+
     /**
-     * Cek apakah kategori bisa dihapus (tidak punya produk terkait)
+     * Cek apakah kategori bisa dihapus (tidak punya barang terkait)
      *
      * @param int $id ID kategori
      * @return bool True jika bisa dihapus
      */
     public function bisaDihapus(int $id): bool
     {
-        $modelProduk = new ProdukModel();
-        $jumlahProduk = $modelProduk->where('category_id', $id)->countAllResults();
+        $modelBarang = new BarangModel();
+        $jumlahBarang = $modelBarang->where('category_id', $id)->countAllResults();
 
-        return $jumlahProduk === 0;
+        return $jumlahBarang === 0;
     }
 }

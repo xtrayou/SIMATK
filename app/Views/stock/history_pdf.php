@@ -104,7 +104,7 @@
             <tr>
                 <th width="5%" class="text-center">No</th>
                 <th width="15%">Tanggal</th>
-                <th width="25%">Produk</th>
+                <th width="25%">Barang</th>
                 <th width="8%" class="text-center">Tipe</th>
                 <th width="10%" class="text-center">Jumlah</th>
                 <th width="10%" class="text-center">Stok Sisa</th>

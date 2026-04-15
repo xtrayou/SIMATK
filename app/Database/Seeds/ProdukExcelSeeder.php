@@ -4,17 +4,17 @@ namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
 
-class ProdukExcelSeeder extends Seeder
+class BarangExcelSeeder extends Seeder
 {
     public function run()
     {
         // Empty table first
         $this->db->table('products')->emptyTable();
-        
+
         $categories = $this->db->table('categories')->get()->getResultArray();
         $catMap = [];
-        foreach($categories as $c) {
-            if(preg_match('/Kode: ([\d]+)/', $c['description'], $matches)) {
+        foreach ($categories as $c) {
+            if (preg_match('/Kode: ([\d]+)/', $c['description'], $matches)) {
                 $catMap[$matches[1]] = $c['id'];
             }
         }

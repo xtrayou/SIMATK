@@ -5,6 +5,12 @@
 <?php
 // Tentukan mode laporan aktif (stok/opname) lalu siapkan query dasar untuk mempertahankan filter.
 $reportMode = $report_mode ?? 'stock';
+$isOpnameMode = $reportMode === 'opname';
+$reportTitle = $isOpnameMode ? 'Stock Opname' : 'Stok Saat Ini';
+$reportDescription = $isOpnameMode
+    ? 'Data hasil pengecekan fisik stok pada periode tertentu.'
+    : 'Menampilkan jumlah stok barang saat ini.';
+$reportIconClass = $isOpnameMode ? 'bi-clipboard2-check' : 'bi-box-seam';
 
 $baseQuery = [
     'month'       => $filters['month'] ?? date('m'),
@@ -34,11 +40,12 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h4 class="mb-1">
-                            <i class="bi bi-graph-up text-primary"></i>
-                            Laporan Stok Inventory
+                            <i class="bi <?= esc($reportIconClass) ?> text-primary"></i>
+                            <?= esc($reportTitle) ?>
                         </h4>
                         <p class="text-muted mb-0">
-                            Analisis kondisi stok per bulan:
+                            <?= esc($reportDescription) ?>
+                            Periode laporan:
                             <strong><?= $filters['month'] ?? date('m') ?>/<?= $filters['year'] ?? date('Y') ?></strong>
                         </p>
                     </div>
@@ -69,7 +76,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                 <ul class="nav nav-pills" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link <?= $reportMode === 'stock' ? 'active' : '' ?>" href="<?= esc($stockTabUrl) ?>">
-                            <i class="bi bi-graph-up me-2"></i>Laporan Stok
+                            <i class="bi bi-box-seam me-2"></i>Stok Saat Ini
                         </a>
                     </li>
                     <li class="nav-item">
@@ -79,7 +86,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                     </li>
                 </ul>
                 <small class="text-muted">
-                    Mode aktif: <strong><?= $reportMode === 'opname' ? 'Stock Opname' : 'Laporan Stok' ?></strong>
+                    Mode aktif: <strong><?= $reportMode === 'opname' ? 'Stock Opname' : 'Stok Saat Ini' ?></strong>
                 </small>
             </div>
         </div>
@@ -95,7 +102,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                     <i class="bi bi-box-seam"></i>
                 </div>
                 <h4 class="text-primary"><?= number_format($summary['total_products']) ?></h4>
-                <p class="text-muted mb-0">Total Produk</p>
+                <p class="text-muted mb-0">Total Barang</p>
             </div>
         </div>
     </div>
@@ -280,7 +287,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                                     <thead>
                                         <tr>
                                             <th>Kategori</th>
-                                            <th>Produk</th>
+                                            <th>Barang</th>
                                             <th>Nilai</th>
                                         </tr>
                                     </thead>
@@ -311,7 +318,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5>Detail Laporan Stok</h5>
-                    <small class="text-muted">Total: <?= number_format(count($products)) ?> produk</small>
+                    <small class="text-muted">Total: <?= number_format(count($products)) ?> barang</small>
                 </div>
                 <div class="card-body">
                     <?php if (!empty($products)): ?>
@@ -320,7 +327,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                                 <thead>
                                     <tr>
                                         <th width="5%">#</th>
-                                        <th width="25%">Produk</th>
+                                        <th width="25%">Barang</th>
                                         <th width="15%">Kategori</th>
                                         <th width="10%">Kode Barang</th>
                                         <th width="10%">Stok Saat Ini</th>
@@ -330,45 +337,45 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($products as $index => $product): ?>
-                                        <tr class="<?= $product['stock_status'] == 'out_of_stock' ? 'table-danger' : ($product['stock_status'] == 'low_stock' ? 'table-warning' : '') ?>">
+                                    <?php foreach ($products as $index => $barang): ?>
+                                        <tr class="<?= $barang['stock_status'] == 'out_of_stock' ? 'table-danger' : ($barang['stock_status'] == 'low_stock' ? 'table-warning' : '') ?>">
                                             <td><?= $index + 1 ?></td>
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar avatar-sm me-2">
-                                                        <div class="avatar-content bg-<?= $product['stock_status'] == 'out_of_stock' ? 'danger' : ($product['stock_status'] == 'low_stock' ? 'warning' : 'success') ?> text-white">
+                                                        <div class="avatar-content bg-<?= $barang['stock_status'] == 'out_of_stock' ? 'danger' : ($barang['stock_status'] == 'low_stock' ? 'warning' : 'success') ?> text-white">
                                                             <i class="bi bi-box"></i>
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <h6 class="mb-0"><?= esc($product['name']) ?></h6>
-                                                        <small class="text-muted"><?= $product['unit'] ?></small>
+                                                        <h6 class="mb-0"><?= esc($barang['name']) ?></h6>
+                                                        <small class="text-muted"><?= $barang['unit'] ?></small>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="badge bg-info"><?= esc($product['category_name']) ?></span>
+                                                <span class="badge bg-info"><?= esc($barang['category_name']) ?></span>
                                             </td>
                                             <td>
-                                                <code><?= $product['sku'] ?></code>
+                                                <code><?= $barang['sku'] ?></code>
                                             </td>
                                             <td>
-                                                <strong class="<?= $product['stock_status'] == 'out_of_stock' ? 'text-danger' : ($product['stock_status'] == 'low_stock' ? 'text-warning' : 'text-success') ?>">
-                                                    <?= number_format($product['current_stock']) ?>
+                                                <strong class="<?= $barang['stock_status'] == 'out_of_stock' ? 'text-danger' : ($barang['stock_status'] == 'low_stock' ? 'text-warning' : 'text-success') ?>">
+                                                    <?= number_format($barang['current_stock']) ?>
                                                 </strong>
                                             </td>
                                             <td>
-                                                <span class="text-muted"><?= number_format($product['min_stock']) ?></span>
+                                                <span class="text-muted"><?= number_format($barang['min_stock']) ?></span>
                                             </td>
                                             <td>
-                                                <?= format_stock_badge($product['current_stock'], $product['min_stock']) ?>
+                                                <?= format_stock_badge($barang['current_stock'], $barang['min_stock']) ?>
                                             </td>
                                             <td>
                                                 <div>
-                                                    <strong><?= format_currency($product['stock_value']) ?></strong>
-                                                    <?php if ($product['price'] > 0): ?>
+                                                    <strong><?= format_currency($barang['stock_value']) ?></strong>
+                                                    <?php if ($barang['price'] > 0): ?>
                                                         <small class="d-block text-muted">
-                                                            @ <?= format_currency($product['price']) ?>
+                                                            @ <?= format_currency($barang['price']) ?>
                                                         </small>
                                                     <?php endif ?>
                                                 </div>
@@ -401,7 +408,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
 <?php endif; ?>
 
 <?php if ($reportMode === 'opname'): ?>
-    <?php // Section khusus ringkasan hasil stock opname per produk. 
+    <?php // Section khusus ringkasan hasil stock opname per barang. 
     ?>
     <!-- Section Stock Opname -->
     <div class="row mt-4">
@@ -410,9 +417,9 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="mb-0"><i class="bi bi-clipboard2-check text-primary me-2"></i>Section Stock Opname</h5>
-                        <small class="text-muted">Ringkasan hasil opname per produk</small>
+                        <small class="text-muted">Ringkasan hasil opname per barang</small>
                     </div>
-                    <small class="text-muted">Total: <?= number_format(count($products)) ?> produk</small>
+                    <small class="text-muted">Total: <?= number_format(count($products)) ?> barang</small>
                 </div>
                 <div class="card-body">
                     <?php if (!empty($products)): ?>
@@ -421,7 +428,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                                 <thead class="table-light text-uppercase small">
                                     <tr>
                                         <th width="50" class="text-center">#</th>
-                                        <th>Informasi Produk</th>
+                                        <th>Informasi Barang</th>
                                         <th class="text-center">Kategori</th>
                                         <th class="text-center">Baik</th>
                                         <th class="text-center">Rusak</th>
@@ -431,22 +438,22 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($products as $index => $product): ?>
+                                    <?php foreach ($products as $index => $barang): ?>
                                         <?php
-                                        $stokBaik = (int) ($product['stock_baik'] ?? $product['current_stock'] ?? 0);
-                                        $stokRusak = (int) ($product['stock_rusak'] ?? 0);
-                                        $stokTotal = (int) ($product['current_stock'] ?? 0);
-                                        $hargaSatuan = (float) ($product['price'] ?? 0);
-                                        $totalNilai = (float) ($product['stock_value'] ?? ($stokTotal * $hargaSatuan));
+                                        $stokBaik = (int) ($barang['stock_baik'] ?? $barang['current_stock'] ?? 0);
+                                        $stokRusak = (int) ($barang['stock_rusak'] ?? 0);
+                                        $stokTotal = (int) ($barang['current_stock'] ?? 0);
+                                        $hargaSatuan = (float) ($barang['price'] ?? 0);
+                                        $totalNilai = (float) ($barang['stock_value'] ?? ($stokTotal * $hargaSatuan));
                                         ?>
                                         <tr>
                                             <td class="text-center"><?= $index + 1 ?></td>
                                             <td>
-                                                <div class="fw-semibold"><?= esc($product['name']) ?></div>
-                                                <small class="text-muted"><?= esc($product['sku'] ?? '-') ?> | <?= esc($product['unit'] ?? 'Pcs') ?></small>
+                                                <div class="fw-semibold"><?= esc($barang['name']) ?></div>
+                                                <small class="text-muted"><?= esc($barang['sku'] ?? '-') ?> | <?= esc($barang['unit'] ?? 'Pcs') ?></small>
                                             </td>
                                             <td class="text-center">
-                                                <span class="badge bg-light text-dark border"><?= esc($product['category_name'] ?? 'Uncategorized') ?></span>
+                                                <span class="badge bg-light text-dark border"><?= esc($barang['category_name'] ?? 'Uncategorized') ?></span>
                                             </td>
                                             <td class="text-center"><?= number_format($stokBaik) ?></td>
                                             <td class="text-center"><?= number_format($stokRusak) ?></td>

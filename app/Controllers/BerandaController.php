@@ -3,21 +3,21 @@
 namespace App\Controllers;
 
 use App\Models\KategoriModel;
-use App\Models\ProdukModel;
+use App\Models\BarangModel;
 
 class BerandaController extends BaseController
 {
-    protected ProdukModel  $modelProduk;
+    protected BarangModel  $modelBarang;
     protected KategoriModel $modelKategori;
 
     public function __construct()
     {
-        $this->modelProduk   = new ProdukModel();
+        $this->modelBarang   = new BarangModel();
         $this->modelKategori = new KategoriModel();
     }
 
     /**
-     * Landing Page — tampilkan daftar produk & kategori dari DB
+     * Landing Page — tampilkan daftar barang & kategori dari DB
      */
     public function index()
     {
@@ -26,55 +26,54 @@ class BerandaController extends BaseController
         //     return redirect()->to('/dashboard');
         // }
 
-        // Ambil semua produk aktif beserta category_id, unit, dan stok
-        try {
-            $daftarProduk = $this->modelProduk
-                ->select('products.id, products.name, products.category_id, products.current_stock, products.unit')
-                ->where('products.is_active', true)
-                ->orderBy('products.name', 'ASC')
-                ->findAll();
+        $daftarBarang = $this->modelBarang->getBarangAktif();
+        $daftarKategori = $this->modelKategori->getKategoriAktif();
 
-            // Ambil kategori aktif untuk filter dropdown
-            $daftarKategori = $this->modelKategori
-                ->select('id, name')
-                ->where('is_active', true)
-                ->orderBy('name', 'ASC')
-                ->findAll();
-        } catch (\Exception $e) {
-            $daftarProduk   = [];
-            $daftarKategori = [];
+        foreach ($daftarBarang as &$barang) {
+            $stokBarang = (int) ($barang['current_stock'] ?? 0);
+            if ($stokBarang <= 0) {
+                $barang['status_label'] = '🔴 Perlu pengadaan';
+            } elseif ($stokBarang <= 10) {
+                $barang['status_label'] = '🟡 Terbatas';
+            } else {
+                $barang['status_label'] = '🟢 Tersedia';
+            }
+        }
+        unset($barang);
+
+        $oldInput = session()->getFlashdata('_ci_old_input') ?? [];
+        $oldProductId = (string) ($oldInput['product_id'] ?? '');
+        $oldProductName = '';
+        foreach ($daftarBarang as $barang) {
+            if ((string) ($barang['id'] ?? '') === $oldProductId) {
+                $oldProductName = (string) ($barang['name'] ?? '');
+                break;
+            }
         }
 
-        // Daftar unit kerja / prodi
-        $unitKerja = [
+        $kategoriPreview = array_slice($daftarKategori, 0, 12);
+        $kategoriLainnya = array_slice($daftarKategori, 12);
+        $kodeResiPopup = session()->getFlashdata('kode_resi') ?: $this->request->getGet('resi');
+
+        $unitKerja = config('App')->unitKerja ?? [
             'Sistem Informasi',
             'Informatika',
             'TU Fakultas',
             'Lainnya',
         ];
 
-        // Ambil data statistik untuk dashboard publik
-        $totalProduk  = $this->modelProduk->where('is_active', true)->countAllResults();
-        $totalKategori = $this->modelKategori->where('is_active', true)->countAllResults();
-        
-        // Hitung file laporan bulanan di public/laporan bulanan
-        $laporanDir = FCPATH . 'laporan bulanan';
-        $totalLaporan = 0;
-        if (is_dir($laporanDir)) {
-            $files = scandir($laporanDir);
-            $totalLaporan = count(array_filter($files, function($f) {
-                return str_ends_with(strtolower($f), '.xlsx');
-            }));
-        }
-
         return view('home/index', [
-            'daftarProduk'   => $daftarProduk,
+            'daftarBarang'   => $daftarBarang,
             'daftarKategori' => $daftarKategori,
             'unitKerja'      => $unitKerja,
+            'oldProductName' => $oldProductName,
+            'kategoriPreview' => $kategoriPreview,
+            'kategoriLainnya' => $kategoriLainnya,
+            'kodeResiPopup' => $kodeResiPopup,
             'stats'          => [
-                'total_produk'  => $totalProduk,
-                'total_kategori' => $totalKategori,
-                'total_laporan'  => $totalLaporan,
+                'total_barang'   => $this->modelBarang->countAktif(),
+                'total_kategori' => $this->modelKategori->countAktif(),
+                'total_laporan'  => get_total_laporan_bulanan(),
                 'jam_operasi'   => 8 // Tetap hardcoded atau dari config
             ]
         ]);

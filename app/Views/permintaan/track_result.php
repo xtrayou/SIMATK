@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Hasil Lacak Permintaan | SIMATK' ?></title>
 
-    <link rel="shortcut icon" href="<?= base_url('assets/static/images/logo/favicon.svg') ?>" type="image/x-icon">
+    <link rel="icon" href="<?= esc(app_favicon_url(), 'attr') ?>">
+    <link rel="shortcut icon" href="<?= esc(app_favicon_url(), 'attr') ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -395,15 +396,15 @@
                         <div class="item-card">
                             <div class="item-info">
                                 <div class="item-name">
-                                    <?php if ($data['produk']): ?>
-                                        <?= esc($data['produk']['name']) ?>
+                                    <?php if ($data['barang']): ?>
+                                        <?= esc($data['barang']['name']) ?>
                                     <?php else: ?>
-                                        <em class="text-muted">Produk tidak ditemukan</em>
+                                        <em class="text-muted">Barang tidak ditemukan</em>
                                     <?php endif; ?>
                                 </div>
                                 <div class="item-detail">
-                                    <?php if ($data['produk']): ?>
-                                        <span class="badge bg-light text-dark"><?= esc($data['produk']['sku']) ?></span>
+                                    <?php if ($data['barang']): ?>
+                                        <span class="badge bg-light text-dark"><?= esc($data['barang']['sku']) ?></span>
                                     <?php endif; ?>
                                 </div>
                             </div>

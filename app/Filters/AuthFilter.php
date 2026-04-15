@@ -2,23 +2,14 @@
 
 namespace App\Filters;
 
-use App\Models\HakAksesModel;
 use CodeIgniter\Filters\FilterInterface;
-use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class AuthFilter implements FilterInterface
 {
-    protected HakAksesModel $permissionModel;
-
-    public function __construct()
-    {
-        $this->permissionModel = new HakAksesModel();
-    }
-
     /**
-     * Cek apakah user sudah login dan memiliki permission
+     * Cek apakah user sudah login
      */
     public function before(RequestInterface $request, $arguments = null)
     {
@@ -39,40 +30,6 @@ class AuthFilter implements FilterInterface
 
         // Update waktu aktivitas terakhir
         session()->set('last_activity', $currentTime);
-
-        // Refresh permission dengan TTL pendek agar perubahan role/hak akses cepat terpropagasi.
-        $permissions = session()->get('permissions');
-        $lastFetch = (int) (session()->get('perm_last_fetch') ?? 0);
-        $userId = (int) (session()->get('userId') ?? 0);
-
-        if ((!is_array($permissions) || ($currentTime - $lastFetch > 60)) && $userId > 0) {
-            $permissions = $this->permissionModel->getByUser($userId);
-            session()->set('permissions', $permissions);
-            session()->set('perm_last_fetch', $currentTime);
-        }
-        // ----------------------------------------------
-
-        // Cek permission jika ada argument $arguments dari filter
-        if (!empty($arguments)) {
-            $userPermissions = is_array($permissions) ? $permissions : [];
-            $hasPermission = false;
-
-            foreach ($arguments as $permission) {
-                if (in_array($permission, $userPermissions, true)) {
-                    $hasPermission = true;
-                    break;
-                }
-            }
-
-            if (!$hasPermission) {
-                if ($request instanceof IncomingRequest && $request->isAJAX()) {
-                    return service('response')
-                        ->setStatusCode(403)
-                        ->setJSON(['status' => false, 'message' => 'Anda tidak memiliki akses untuk fitur ini.']);
-                }
-                return redirect()->to('/dashboard')->with('galat', 'Anda tidak memiliki akses untuk fitur ini.');
-            }
-        }
     }
 
     /**

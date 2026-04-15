@@ -13,7 +13,7 @@
                 <form method="GET" id="filterForm">
                     <div class="row">
                         <div class="col-md-4 mb-3">
-                            <label for="search" class="form-label fw-bold">Cari Produk</label>
+                            <label for="search" class="form-label fw-bold">Cari Barang</label>
                             <input type="text" class="form-control" id="search" name="search"
                                 value="<?= $filterCari ?>" placeholder="Ketik nama, kode barang, atau deskripsi...">
                         </div>
@@ -55,18 +55,18 @@
     </div>
 </div>
 
-<!-- Tabel Produk -->
+<!-- Tabel Barang -->
 <div class="row">
     <div class="col-12">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
                 <div>
-                    <h4 class="mb-0">Daftar Produk</h4>
+                    <h4 class="mb-0">Daftar Barang</h4>
                     <small class="text-muted">Ditemukan <?= number_format($totalItem) ?> item</small>
                 </div>
                 <div class="d-flex gap-2">
                     <a href="<?= base_url('/products/create') ?>" class="btn btn-success">
-                        <i class="bi bi-plus-lg me-1"></i> Tambah Produk
+                        <i class="bi bi-plus-lg me-1"></i> Tambah Barang
                     </a>
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -89,15 +89,15 @@
                     </div>
                 <?php endif; ?>
 
-                <?php // Jika data produk ada, render tabel; jika kosong, tampilkan empty state. 
+                <?php // Jika data barang ada, render tabel; jika kosong, tampilkan empty state. 
                 ?>
-                <?php if (!empty($daftarProduk)): ?>
+                <?php if (!empty($daftarBarang)): ?>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle" id="productsTable">
                             <thead class="bg-light text-uppercase small fw-bold">
                                 <tr>
                                     <th width="50" class="align-middle border text-center">#</th>
-                                    <th class="align-middle border">Informasi Produk</th>
+                                    <th class="align-middle border">Informasi Barang</th>
                                     <th class="align-middle border text-center">Kategori</th>
                                     <th class="align-middle border text-end">Harga Estimasi</th>
                                     <th class="align-middle border text-center">Stok Minimum</th>
@@ -105,9 +105,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php // Loop semua produk untuk membentuk setiap baris pada tabel. 
+                                <?php // Loop semua barang untuk membentuk setiap baris pada tabel. 
                                 ?>
-                                <?php foreach ($daftarProduk as $idx => $p): ?>
+                                <?php foreach ($daftarBarang as $idx => $p): ?>
                                     <tr>
                                         <td class="text-center border-start border-end"><?= $idx + 1 ?></td>
                                         <td class="border-end">
@@ -136,7 +136,7 @@
                                                         type="submit"
                                                         class="btn btn-sm btn-outline-danger"
                                                         title="Hapus"
-                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus produk ini?')">
+                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus barang ini?')">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
@@ -150,7 +150,7 @@
                 <?php else: ?>
                     <div class="text-center py-5">
                         <img src="<?= base_url('assets/img/empty.svg') ?>" alt="Kosong" style="width: 150px;" class="mb-3 opacity-50">
-                        <h5 class="text-muted">Data produk tidak ditemukan</h5>
+                        <h5 class="text-muted">Data barang tidak ditemukan</h5>
                         <p class="text-muted">Coba ubah kata kunci pencarian atau filter Anda.</p>
                     </div>
                 <?php endif ?>

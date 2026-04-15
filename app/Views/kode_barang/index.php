@@ -1,12 +1,23 @@
 <?= $this->extend('layouts/app') ?>
 
+<?php
+if (!function_exists('rupiah')) {
+    function rupiah($value): string
+    {
+        return number_format((float) $value, 0, ',', '.');
+    }
+}
+
+$no = 1;
+?>
+
 <?= $this->section('content') ?>
 <div class="row mb-4">
     <div class="col-12">
         <div class="card shadow-sm border-0">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">Total: <?= number_format($totalItem, 0, ',', '.') ?> Kode Barang</h5>
+                    <h5 class="mb-0">Total: <?= rupiah($totalItem) ?> Kode Barang</h5>
                 </div>
 
                 <form method="get" action="<?= current_url() ?>" class="row g-2 mb-3" id="searchFormKodeBarang">
@@ -38,17 +49,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (empty($daftarKode)): ?>
-                                <tr>
-                                    <td colspan="3" class="text-center py-4">
-                                        <i class="bi bi-inbox text-muted" style="font-size: 2rem;"></i>
-                                        <p class="mt-2 mb-0">Belum ada data kode barang.</p>
-                                    </td>
-                                </tr>
+                            <?php if (!$daftarKode): ?>
+                                <?= $this->include('kode_barang/partials/empty_state') ?>
                             <?php else: ?>
-                                <?php foreach ($daftarKode as $idx => $kb): ?>
+                                <?php foreach ($daftarKode as $kb): ?>
                                     <tr>
-                                        <td><?= $idx + 1 ?></td>
+                                        <td><?= $no++ ?></td>
                                         <td><span class="badge bg-primary text-white font-monospace"><?= esc($kb['kode']) ?></span></td>
                                         <td class="fw-bold"><?= esc($kb['nama']) ?></td>
                                     </tr>
@@ -64,27 +70,5 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<!-- If DataTables is included in the project, we can initialize it here -->
-<script>
-    $(document).ready(function() {
-        // Realtime filter di tabel tanpa reload halaman
-        const $search = $('#q');
-        const $rows = $('#kodeBarangTable tbody tr');
-
-        $search.on('input', function() {
-            const keyword = $(this).val().toLowerCase().trim();
-
-            $rows.each(function() {
-                const rowText = $(this).text().toLowerCase();
-                const isEmptyState = $(this).find('td[colspan="3"]').length > 0;
-
-                if (isEmptyState) {
-                    return;
-                }
-
-                $(this).toggle(rowText.includes(keyword));
-            });
-        });
-    });
-</script>
+<script src="<?= base_url('js/kode-barang.js') ?>"></script>
 <?= $this->endSection() ?>

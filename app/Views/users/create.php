@@ -3,7 +3,7 @@
 <?= $this->section('breadcrumb') ?>
 <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="<?= base_url('/dashboard') ?>">Dashboard</a></li>
-    <li class="breadcrumb-item"><a href="<?= base_url('/users') ?>">User</a></li>
+    <li class="breadcrumb-item"><a href="<?= base_url('/users') ?>">Manajemen Pengguna dan Manajemen Akses</a></li>
     <li class="breadcrumb-item active" aria-current="page">Tambah</li>
 </ol>
 <?= $this->endSection() ?>
@@ -13,7 +13,7 @@
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Tambah User Baru</h4>
+                <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Tambah Pengguna Baru</h4>
             </div>
             <div class="card-body">
                 <?php if (session('errors')): ?>
@@ -51,11 +51,12 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
+                        <label for="role" class="form-label">Hak Akses <span class="text-danger">*</span></label>
                         <select class="form-select" id="role" name="role" required>
                             <option value="admin" <?= old('role', $user['role'] ?? '') === 'admin' ? 'selected' : '' ?>>Admin</option>
                             <option value="superadmin" <?= old('role', $user['role'] ?? '') === 'superadmin' ? 'selected' : '' ?>>Superadmin</option>
                         </select>
+                        <div class="form-text">Pilih tingkat hak akses untuk pengguna ini</div>
                     </div>
 
                     <div class="mb-3">

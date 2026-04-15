@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMATK | Inventory System - Fakultas Ilmu Komputer</title>
+    <title>SIMATK | Sistem Informasi Manajemen ATK - Fakultas Ilmu Komputer</title>
 
-    <link rel="shortcut icon" href="<?= base_url('assets/static/images/logo/favicon.svg') ?>" type="image/x-icon">
+    <link rel="icon" href="<?= esc(app_favicon_url(), 'attr') ?>">
+    <link rel="shortcut icon" href="<?= esc(app_favicon_url(), 'attr') ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -146,9 +147,9 @@
                                 <?php
                                 $oldProductId = (string) old('product_id');
                                 $oldProductName = '';
-                                foreach ($daftarProduk as $produk) {
-                                    if ((string) $produk['id'] === $oldProductId) {
-                                        $oldProductName = $produk['name'];
+                                foreach ($daftarBarang as $barang) {
+                                    if ((string) $barang['id'] === $oldProductId) {
+                                        $oldProductName = $barang['name'];
                                         break;
                                     }
                                 }
@@ -163,23 +164,23 @@
                                     required>
                                 <input type="hidden" id="barangDimintaId" name="product_id" value="<?= esc($oldProductId) ?>">
                                 <datalist id="daftarBarangAutocomplete">
-                                    <?php foreach ($daftarProduk as $produk): ?>
+                                    <?php foreach ($daftarBarang as $barang): ?>
                                         <?php
-                                        $stokProduk = (int) ($produk['current_stock'] ?? 0);
-                                        if ($stokProduk <= 0) {
+                                        $stokBarang = (int) ($barang['current_stock'] ?? 0);
+                                        if ($stokBarang <= 0) {
                                             $statusStokLabel = '🔴 Perlu pengadaan';
-                                        } elseif ($stokProduk <= 10) {
+                                        } elseif ($stokBarang <= 10) {
                                             $statusStokLabel = '🟡 Terbatas';
                                         } else {
                                             $statusStokLabel = '🟢 Tersedia';
                                         }
                                         ?>
-                                        <option value="<?= esc($produk['name']) ?>"
-                                            data-id="<?= $produk['id'] ?>"
-                                            data-kategori="<?= $produk['category_id'] ?>"
-                                            data-stok="<?= $produk['current_stock'] ?>"
-                                            data-satuan="<?= esc($produk['unit']) ?>"
-                                            data-tersedia="<?= $produk['current_stock'] > 0 ? '1' : '0' ?>"
+                                        <option value="<?= esc($barang['name']) ?>"
+                                            data-id="<?= $barang['id'] ?>"
+                                            data-kategori="<?= $barang['category_id'] ?>"
+                                            data-stok="<?= $barang['current_stock'] ?>"
+                                            data-satuan="<?= esc($barang['unit']) ?>"
+                                            data-tersedia="<?= $barang['current_stock'] > 0 ? '1' : '0' ?>"
                                             label="Status: <?= esc($statusStokLabel) ?>">
                                         </option>
                                     <?php endforeach ?>
@@ -249,9 +250,18 @@
                         <div class="peminjaman-info-item">
                             <i class="bi bi-question-circle"></i>
                             <div>
-                                <h6>Butuh Bantuan?</h6>
+                                <h6>Kontak Admin</h6>
                                 <p>Hubungi Admin di <a href="https://wa.me/6287896314494" target="_blank" class="text-decoration-none fw-bold" style="color:var(--primary-color);">+62 878-9631-4494</a></p>
                                 <p class="mt-1 small text-muted">Akses layanan student services di <a href="https://unsika.link/layananfasilkom" target="_blank">Layanan Fasilkom</a></p>
+                            </div>
+                        </div>
+                        <div class="card border-0 shadow-sm mt-4">
+                            <div class="card-body text-center">
+                                <h6 class="mb-2"><i class="bi bi-search me-2"></i>Cek Status Permintaan</h6>
+                                <p class="small text-muted mb-3">Lacak status cukup dengan kode resi, langsung dari beranda.</p>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalCekStatus">
+                                    <i class="bi bi-search me-1"></i>Buka Cek Status
+                                </button>
                             </div>
                         </div>
                         <hr style="opacity:0.2;">
@@ -291,7 +301,7 @@
         <div class="container">
             <div class="row" data-aos="fade-up">
                 <div class="col-md-4 col-6">
-                    <div class="stat-item"><span class="stat-number" data-count="<?= $stats['total_produk'] ?? 0 ?>">0</span><span class="stat-label">Jenis Barang</span></div>
+                    <div class="stat-item"><span class="stat-number" data-count="<?= $stats['total_barang'] ?? 0 ?>">0</span><span class="stat-label">Jenis Barang</span></div>
                 </div>
                 <div class="col-md-4 col-6">
                     <div class="stat-item"><span class="stat-number" data-count="<?= $stats['total_kategori'] ?? 0 ?>">0</span><span class="stat-label">Kategori</span></div>
@@ -389,6 +399,110 @@
         </div>
     </div>
 
+    <?php
+    $bukaModalCekStatus = (bool) session('_open_track_modal');
+    $pesanModalCekStatus = $bukaModalCekStatus ? session('error') : null;
+    $bukaModalHasilTrack = (bool) session('_open_track_result_modal');
+    $dataHasilTrack = $bukaModalHasilTrack ? (session('track_result_data') ?? []) : [];
+    $dataHasilTrack = is_array($dataHasilTrack) ? $dataHasilTrack : [];
+    $warnaStatusTrack = (string) ($dataHasilTrack['status_color'] ?? 'secondary');
+    if (!in_array($warnaStatusTrack, ['warning', 'info', 'success', 'danger', 'secondary'], true)) {
+        $warnaStatusTrack = 'secondary';
+    }
+    ?>
+
+    <!-- Modal Cek Status -->
+    <div class="modal fade" id="modalCekStatus" tabindex="-1" aria-labelledby="judulModalCekStatus" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="judulModalCekStatus">
+                        <i class="bi bi-search me-2" style="color:var(--primary-color);"></i>Cek Status Permintaan
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">Masukkan kode resi untuk melihat status permintaan Anda.</p>
+
+                    <?php if (!empty($pesanModalCekStatus)): ?>
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-circle me-1"></i><?= esc($pesanModalCekStatus) ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form action="<?= base_url('track-status') ?>" method="POST" id="formCekStatusBeranda">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="_from" value="home-modal">
+                        <div class="mb-3">
+                            <label class="form-label" for="kodeResiTrackBeranda">Kode Resi</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="kodeResiTrackBeranda"
+                                name="reference_no"
+                                value="<?= esc(old('reference_no', '')) ?>"
+                                placeholder="Contoh: 20260414-102530"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" id="btnCekStatusBeranda">
+                            <i class="bi bi-search me-1"></i>Cek Status
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Hasil Cek Status -->
+    <div class="modal fade" id="modalHasilCekStatus" tabindex="-1" aria-labelledby="judulModalHasilCekStatus" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="judulModalHasilCekStatus">
+                        <i class="bi bi-clipboard-data me-2" style="color:var(--primary-color);"></i>Hasil Cek Status
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">Kode Resi</span>
+                                <strong><?= esc((string) ($dataHasilTrack['reference_no'] ?? '-')) ?></strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">Nomor Permintaan</span>
+                                <strong><?= esc((string) ($dataHasilTrack['request_no'] ?? '-')) ?></strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">Pemohon</span>
+                                <strong><?= esc((string) ($dataHasilTrack['borrower_name'] ?? '-')) ?></strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">Unit</span>
+                                <strong><?= esc((string) ($dataHasilTrack['borrower_unit'] ?? '-')) ?></strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">Tanggal Permintaan</span>
+                                <strong><?= esc((string) ($dataHasilTrack['request_date'] ?? '-')) ?></strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">Status</span>
+                                <span class="badge bg-<?= esc($warnaStatusTrack) ?>">
+                                    <i class="bi bi-<?= esc((string) ($dataHasilTrack['status_icon'] ?? 'question-circle')) ?> me-1"></i>
+                                    <?= esc((string) ($dataHasilTrack['status_text'] ?? 'Tidak Diketahui')) ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary w-100 mt-3" data-bs-dismiss="modal">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Login -->
     <div class="modal fade" id="modalMasuk" tabindex="-1" aria-labelledby="judulModalMasuk" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -468,6 +582,8 @@
         // ── Navbar scroll ────────────────────────────────────────────
         <?php $kodeResiPopup = session()->getFlashdata('kode_resi') ?: service('request')->getGet('resi'); ?>
         const kodeResiBaru = <?= json_encode($kodeResiPopup) ?>;
+        const bukaModalCekStatus = <?= json_encode($bukaModalCekStatus) ?>;
+        const bukaModalHasilTrack = <?= json_encode($bukaModalHasilTrack) ?>;
         if (kodeResiBaru) {
             setTimeout(() => {
                 const modalResiEl = document.getElementById('modalKodeResi');
@@ -503,6 +619,22 @@
                     history.replaceState({}, document.title, url.toString());
                 }
             }, 250);
+        }
+
+        if (bukaModalCekStatus) {
+            const modalCekStatusEl = document.getElementById('modalCekStatus');
+            if (modalCekStatusEl) {
+                const modalCekStatus = new bootstrap.Modal(modalCekStatusEl);
+                modalCekStatus.show();
+            }
+        }
+
+        if (bukaModalHasilTrack) {
+            const modalHasilCekStatusEl = document.getElementById('modalHasilCekStatus');
+            if (modalHasilCekStatusEl) {
+                const modalHasilCekStatus = new bootstrap.Modal(modalHasilCekStatusEl);
+                modalHasilCekStatus.show();
+            }
         }
 
         const navbar = document.getElementById('navbarUtama');

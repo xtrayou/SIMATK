@@ -186,3 +186,49 @@ if (!function_exists('generateReceiptCode')) {
         return "RES-{$dd}-{$mm}-{$yy}-{$hh}-{$mi}-{$ss}";
     }
 }
+
+/* =========================
+ * 7) URL Favicon Aplikasi
+ * ========================= */
+if (!function_exists('app_favicon_url')) {
+    /**
+     * Gunakan favicon ikon inventory (bi-box-seam-fill).
+     */
+    function app_favicon_url(): string
+    {
+        $iconPath = FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'static' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . 'favicon-inventory.svg';
+        $version = is_file($iconPath) ? (string) filemtime($iconPath) : (string) time();
+
+        return base_url('assets/static/images/logo/favicon-inventory.svg') . '?v=' . $version;
+    }
+}
+
+/* =========================
+ * 8) Hitung Laporan Bulanan
+ * ========================= */
+if (!function_exists('get_total_laporan_bulanan')) {
+    /**
+     * Hitung jumlah file laporan bulanan (xlsx) pada folder tertentu di public.
+     */
+    function get_total_laporan_bulanan(string $dirName = 'laporan bulanan'): int
+    {
+        $laporanDir = FCPATH . $dirName;
+        if (!is_dir($laporanDir)) {
+            return 0;
+        }
+
+        $files = scandir($laporanDir);
+        if ($files === false) {
+            return 0;
+        }
+
+        $count = 0;
+        foreach ($files as $file) {
+            if (str_ends_with(strtolower($file), '.xlsx')) {
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+}

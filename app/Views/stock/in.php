@@ -44,11 +44,11 @@
                             <tbody id="rows">
                                 <tr class="item-row">
                                     <td>
-                                        <select class="form-select select-produk" name="movements[0][product_id]" required>
+                                        <select class="form-select select-barang" name="movements[0][product_id]" required>
                                             <option value="">- Cari Barang -</option>
-                                            <?php foreach ($daftarProduk as $p): ?>
+                                            <?php foreach ($daftarBarang as $p): ?>
                                                 <option value="<?= $p['id'] ?>" data-unit="<?= $p['unit'] ?>" data-stock="<?= $p['current_stock'] ?>"
-                                                    <?= $produkTerpilih == $p['id'] ? 'selected' : '' ?>>
+                                                    <?= $barangTerpilih == $p['id'] ? 'selected' : '' ?>>
                                                     <?= esc($p['name']) ?> (<?= $p['sku'] ?>)
                                                 </option>
                                             <?php endforeach ?>
@@ -163,7 +163,7 @@
         }
 
         function applyProductData($row, data) {
-            const $select = $row.find('.select-produk');
+            const $select = $row.find('.select-barang');
             let $opt = $select.find(`option[value="${data.id}"]`);
 
             if ($opt.length === 0) {
@@ -304,7 +304,7 @@
         $('#btn-add').on('click', function() {
             const row = $('.item-row').first().clone();
             row.find('.product-autofill').val('');
-            row.find('.select-produk').attr('name', `movements[${rowIndex}][product_id]`).val('');
+            row.find('.select-barang').attr('name', `movements[${rowIndex}][product_id]`).val('');
             row.find('.quantity-input').attr('name', `movements[${rowIndex}][quantity]`).val('');
             row.find('.damaged-input').attr('name', `movements[${rowIndex}][damaged_quantity]`).val('0');
             row.find('.unit-label').text('Pcs');
@@ -327,7 +327,7 @@
         });
 
         // Info Stok & Unit
-        $(document).on('change', '.select-produk', function() {
+        $(document).on('change', '.select-barang', function() {
             const opt = $(this).find('option:selected');
             const stock = opt.data('stock') || 0;
             const unit = opt.data('unit') || 'Pcs';
@@ -415,7 +415,7 @@
             $('.item-row').each(function() {
                 const qty = parseInt($(this).find('.quantity-input').val()) || 0;
                 const damagedQty = parseInt($(this).find('.damaged-input').val()) || 0;
-                const pid = $(this).find('.select-produk').val();
+                const pid = $(this).find('.select-barang').val();
 
                 if (pid && (qty > 0 || damagedQty > 0)) {
                     totalQty += qty + damagedQty;
@@ -433,7 +433,7 @@
         });
 
         // Init
-        $('.select-produk').trigger('change');
+        $('.select-barang').trigger('change');
     });
 </script>
 <?= $this->endSection() ?>

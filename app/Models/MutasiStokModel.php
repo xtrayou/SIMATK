@@ -4,12 +4,13 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use Exception;
+use App\Models\BarangModel;
 
 /**
  * MutasiStokModel - Model untuk mengelola pergerakan stok (mutasi masuk/keluar/penyesuaian)
  *
  * Relasi:
- * - PergerakanStok terkait Produk (stock_movements.product_id → products.id)
+ * - PergerakanStok terkait Barang (stock_movements.product_id → products.id)
  */
 class MutasiStokModel extends Model
 {
@@ -30,14 +31,102 @@ class MutasiStokModel extends Model
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
+    private function getSnapshotStok(array $barang): array
+    {
+        $stokSebelumnya = max(0, (int) ($barang['current_stock'] ?? 0));
+        $stokBaikSebelumnya = max(0, (int) ($barang['stock_baik'] ?? $stokSebelumnya));
+        $stokRusakSebelumnya = max(0, (int) ($barang['stock_rusak'] ?? 0));
+
+        // Jika data lama tidak sinkron, fallback ke semua stok dianggap baik.
+        if (($stokBaikSebelumnya + $stokRusakSebelumnya) !== $stokSebelumnya) {
+            $stokBaikSebelumnya = $stokSebelumnya;
+            $stokRusakSebelumnya = 0;
+        }
+
+        return [
+            'total' => $stokSebelumnya,
+            'baik'  => $stokBaikSebelumnya,
+            'rusak' => $stokRusakSebelumnya,
+        ];
+    }
+
+    private function handleStockIn(array $snapshot, array $data): array
+    {
+        $qty = max(0, (int) ($data['quantity'] ?? 0));
+        $rusak = max(0, (int) ($data['damaged_quantity'] ?? 0));
+
+        if ($qty <= 0 && $rusak <= 0) {
+            throw new Exception('Jumlah barang masuk harus lebih dari 0');
+        }
+
+        $stokBaikBaru = $snapshot['baik'] + $qty;
+        $stokRusakBaru = $snapshot['rusak'] + $rusak;
+
+        return [
+            'quantity' => $qty + $rusak,
+            'baik'     => $stokBaikBaru,
+            'rusak'    => $stokRusakBaru,
+            'total'    => $stokBaikBaru + $stokRusakBaru,
+        ];
+    }
+
+    private function handleStockOut(array $snapshot, array $barang, int $qty): array
+    {
+        if ($qty <= 0) {
+            throw new Exception('Jumlah barang keluar harus lebih dari 0');
+        }
+
+        if ($snapshot['baik'] < $qty) {
+            throw new Exception('Stok baik tidak mencukupi untuk ' . ($barang['name'] ?? 'barang ini'));
+        }
+
+        $stokBaikBaru = $snapshot['baik'] - $qty;
+
+        return [
+            'quantity' => $qty,
+            'baik'     => $stokBaikBaru,
+            'rusak'    => $snapshot['rusak'],
+            'total'    => $stokBaikBaru + $snapshot['rusak'],
+        ];
+    }
+
+    private function handleStockAdjustment(array $data, int $qty): array
+    {
+        $punyaSplitStock = array_key_exists('adjusted_good_stock', $data)
+            || array_key_exists('adjusted_damaged_stock', $data);
+
+        if ($punyaSplitStock) {
+            $stokBaikBaru = max(0, (int) ($data['adjusted_good_stock'] ?? 0));
+            $stokRusakBaru = max(0, (int) ($data['adjusted_damaged_stock'] ?? 0));
+            $stokBaru = $stokBaikBaru + $stokRusakBaru;
+
+            return [
+                'quantity' => $stokBaru,
+                'baik'     => $stokBaikBaru,
+                'rusak'    => $stokRusakBaru,
+                'total'    => $stokBaru,
+            ];
+        }
+
+        // Backward-compatible: quantity dianggap stok akhir total.
+        $stokBaru = $qty;
+
+        return [
+            'quantity' => $stokBaru,
+            'baik'     => $stokBaru,
+            'rusak'    => 0,
+            'total'    => $stokBaru,
+        ];
+    }
+
     /**
-     * Ambil data mutasi stok beserta detail produk
+     * Ambil data mutasi stok beserta detail barang
      *
      * @param int   $batas  Batas jumlah data (0 = semua)
      * @param array $filter Filter berupa product_id, type, start_date, end_date
      * @return array Daftar mutasi stok
      */
-    public function getMutasiDenganProduk(int $batas = 10, array $filter = []): array
+    public function getMutasiDenganBarang(int $batas = 10, array $filter = []): array
     {
         $builder = $this->select('stock_movements.*, products.name as product_name, products.sku as product_sku, products.unit')
             ->select('CASE 
@@ -94,92 +183,76 @@ class MutasiStokModel extends Model
     }
 
     /**
-     * Buat mutasi stok baru dan perbarui stok produk
+     * Hitung total kuantitas mutasi berdasarkan tipe sejak tanggal tertentu.
+     */
+    public function getTotalQuantityByTypeSince(string $type, string $startDate): int
+    {
+        $result = $this->where('type', $type)
+            ->where('created_at >=', $startDate)
+            ->selectSum('quantity', 'total')
+            ->first();
+
+        return (int) ($result['total'] ?? 0);
+    }
+
+    /**
+     * Hitung total mutasi pada tanggal tertentu.
+     */
+    public function countMutasiByDate(string $date): int
+    {
+        return $this->where('DATE(created_at)', $date, false)
+            ->countAllResults();
+    }
+
+    /**
+     * Buat mutasi stok baru dan perbarui stok barang
      *
      * @param array $data Data mutasi (product_id, type, quantity, reference_no, notes, created_by)
      * @return int ID mutasi yang baru dibuat
-     * @throws Exception Jika produk tidak ditemukan atau stok tidak mencukupi
+     * @throws Exception Jika barang tidak ditemukan atau stok tidak mencukupi
      */
     public function buatMutasi(array $data): int
     {
-        $modelProduk = new ProdukModel();
-        $produk = $modelProduk->find($data['product_id'] ?? null);
+        // 1. Ambil barang
+        $modelBarang = new BarangModel();
+        $barang = $modelBarang->find($data['product_id'] ?? null);
 
-        if (!$produk) {
-            throw new Exception('Produk tidak ditemukan');
+        if (!$barang) {
+            throw new Exception('Barang tidak ditemukan');
         }
 
-        $stokSebelumnya = max(0, (int) ($produk['current_stock'] ?? 0));
-        $stokBaikSebelumnya = max(0, (int) ($produk['stock_baik'] ?? $stokSebelumnya));
-        $stokRusakSebelumnya = max(0, (int) ($produk['stock_rusak'] ?? 0));
+        $snapshot = $this->getSnapshotStok($barang);
 
-        // Jika data lama tidak sinkron, fallback ke semua stok dianggap baik.
-        if (($stokBaikSebelumnya + $stokRusakSebelumnya) !== $stokSebelumnya) {
-            $stokBaikSebelumnya = $stokSebelumnya;
-            $stokRusakSebelumnya = 0;
-        }
-
+        // 2. Hitung stok baru
         $tipe = strtoupper((string) ($data['type'] ?? ''));
         $jumlah = max(0, (int) ($data['quantity'] ?? 0));
 
-        switch ($tipe) {
-            case 'IN':
-                $jumlahRusakMasuk = max(0, (int) ($data['damaged_quantity'] ?? 0));
-                if ($jumlah <= 0 && $jumlahRusakMasuk <= 0) {
-                    throw new Exception('Jumlah barang masuk harus lebih dari 0');
-                }
-
-                $stokBaikBaru = $stokBaikSebelumnya + $jumlah;
-                $stokRusakBaru = $stokRusakSebelumnya + $jumlahRusakMasuk;
-                $stokBaru = $stokBaikBaru + $stokRusakBaru;
-                $data['quantity'] = $jumlah + $jumlahRusakMasuk;
-                break;
-            case 'OUT':
-                if ($jumlah <= 0) {
-                    throw new Exception('Jumlah barang keluar harus lebih dari 0');
-                }
-                if ($stokBaikSebelumnya < $jumlah) {
-                    throw new Exception('Stok baik tidak mencukupi untuk ' . ($produk['name'] ?? 'produk ini'));
-                }
-
-                $stokBaikBaru = $stokBaikSebelumnya - $jumlah;
-                $stokRusakBaru = $stokRusakSebelumnya;
-                $stokBaru = $stokBaikBaru + $stokRusakBaru;
-                break;
-            case 'ADJUSTMENT':
-                $punyaSplitStock = array_key_exists('adjusted_good_stock', $data)
-                    || array_key_exists('adjusted_damaged_stock', $data);
-
-                if ($punyaSplitStock) {
-                    $stokBaikBaru = max(0, (int) ($data['adjusted_good_stock'] ?? 0));
-                    $stokRusakBaru = max(0, (int) ($data['adjusted_damaged_stock'] ?? 0));
-                    $stokBaru = $stokBaikBaru + $stokRusakBaru;
-                    $data['quantity'] = $stokBaru;
-                } else {
-                    // Backward-compatible: quantity dianggap stok akhir total.
-                    $stokBaru = $jumlah;
-                    $stokBaikBaru = $stokBaru;
-                    $stokRusakBaru = 0;
-                }
-                break;
-            default:
-                throw new Exception('Tipe mutasi tidak valid');
+        if ($tipe === 'IN') {
+            $hasilStok = $this->handleStockIn($snapshot, $data);
+        } elseif ($tipe === 'OUT') {
+            $hasilStok = $this->handleStockOut($snapshot, $barang, $jumlah);
+        } elseif ($tipe === 'ADJUSTMENT') {
+            $hasilStok = $this->handleStockAdjustment($data, $jumlah);
+        } else {
+            throw new Exception('Tipe mutasi tidak valid');
         }
 
         $data['type'] = $tipe;
-        $data['previous_stock'] = $stokSebelumnya;
+        $data['quantity'] = $hasilStok['quantity'];
+        $data['previous_stock'] = $snapshot['total'];
         unset($data['damaged_quantity'], $data['adjusted_good_stock'], $data['adjusted_damaged_stock']);
 
+        // 3. Simpan mutasi
         $idMutasi = $this->insert($data);
         if (!$idMutasi) {
             throw new Exception('Gagal menyimpan mutasi stok');
         }
 
-        // Perbarui stok total beserta komposisi baik/rusak.
-        $modelProduk->update($data['product_id'], [
-            'current_stock' => $stokBaru,
-            'stock_baik'    => $stokBaikBaru,
-            'stock_rusak'   => $stokRusakBaru,
+        // 4. Update stok barang
+        $modelBarang->update($data['product_id'], [
+            'current_stock' => $hasilStok['total'],
+            'stock_baik'    => $hasilStok['baik'],
+            'stock_rusak'   => $hasilStok['rusak'],
         ]);
 
         return (int) $idMutasi;

@@ -80,7 +80,7 @@
                     <table class="table table-bordered align-middle">
                         <thead class="bg-light">
                             <tr>
-                                <th class="ps-3">Nama Produk</th>
+                                <th class="ps-3">Nama Barang</th>
                                 <th width="120" class="text-center">Kode Barang</th>
                                 <th width="100" class="text-center">Diminta</th>
                                 <th width="100" class="text-center">Stok</th>
@@ -91,8 +91,8 @@
                             <?php foreach (($pinjaman['items'] ?? []) as $item): ?>
                                 <?php
                                 // Get current stock for the product
-                                $productModel = new \App\Models\ProdukModel();
-                                $product = $productModel->find($item['product_id']);
+                                $barangModel = new \App\Models\BarangModel();
+                                $product = $barangModel->find($item['product_id']);
                                 $currentStock = $product ? (int) ($product['stock_baik'] ?? $product['current_stock']) : 0;
                                 $requestedQty = (int)$item['quantity'];
                                 $isStockSufficient = $currentStock >= $requestedQty;
@@ -127,10 +127,10 @@
                 $currentStatus = $pinjaman['status'] ?? 'requested';
 
                 // Check stock availability
-                $productModel = new \App\Models\ProdukModel();
+                $barangModel = new \App\Models\BarangModel();
                 $stockIssues = [];
                 foreach (($pinjaman['items'] ?? []) as $item) {
-                    $product = $productModel->find($item['product_id']);
+                    $product = $barangModel->find($item['product_id']);
                     if ($product) {
                         $currentStock = (int) ($product['stock_baik'] ?? $product['current_stock']);
                         $requestedQty = (int)$item['quantity'];
@@ -146,7 +146,7 @@
                 }
                 ?>
 
-                <?php if (!empty($stockIssues)): ?>
+                <?php if (!empty($stockIssues) && ($currentStatus == 'requested' || $currentStatus == 'approved' || empty($currentStatus))): ?>
                     <div class="alert alert-danger border-0 mb-4">
                         <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle me-2"></i>Stok Tidak Mencukupi!</h6>
                         <ul class="mb-0 small">

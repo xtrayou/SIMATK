@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Models\PenggunaModel;
-use App\Models\HakAksesModel;
 
 class AuthController extends BaseController
 {
@@ -74,16 +73,7 @@ class AuthController extends BaseController
                 'role'       => $role,
                 'isLoggedIn'    => true,
                 'last_activity' => time(),
-                'perm_last_fetch' => time(),
             ];
-
-            // Load permissions for user's role
-            try {
-                $modelHakAkses = new HakAksesModel();
-                $sessionData['permissions'] = $modelHakAkses->getByUser((int) $user['id']);
-            } catch (\Exception $e) {
-                $sessionData['permissions'] = [];
-            }
 
             session()->set($sessionData);
 
@@ -99,6 +89,6 @@ class AuthController extends BaseController
     public function logout()
     {
         session()->destroy();
-        return redirect()->to('/');
+        return redirect()->to('/login')->with('success', 'Anda telah berhasil logout.');
     }
 }

@@ -15,7 +15,13 @@
         <div class="sidebar-menu">
             <ul class="menu">
 
-                <?php $role = session()->get('role'); ?>
+                <?php
+                $role = session()->get('role');
+                $currentUri = uri_string();
+                $currentReportMode = strtolower((string) (service('request')->getGet('report_mode') ?? 'stock'));
+                $isReportStockNow = $currentUri === 'reports/stock' && $currentReportMode !== 'opname';
+                $isReportOpname = $currentUri === 'reports/stock' && $currentReportMode === 'opname';
+                ?>
 
                 <!-- DASHBOARD -->
                 <li class="sidebar-title">Dashboard</li>
@@ -61,13 +67,6 @@
                         </a>
                     </li>
 
-                    <li class="sidebar-item <?= uri_string() == 'stock/history' ? 'active' : '' ?>">
-                        <a href="<?= base_url('/stock/history') ?>" class="sidebar-link">
-                            <i class="bi bi-clock"></i>
-                            <span>Riwayat Stok</span>
-                        </a>
-                    </li>
-
                     <li class="sidebar-title">Permintaan</li>
 
                     <li class="sidebar-item <?= strpos(uri_string(), 'requests') !== false ? 'active' : '' ?>">
@@ -79,17 +78,31 @@
 
                     <li class="sidebar-title">Laporan</li>
 
-                    <li class="sidebar-item <?= uri_string() == 'reports/stock' ? 'active' : '' ?>">
-                        <a href="<?= base_url('/reports/stock') ?>" class="sidebar-link">
-                            <i class="bi bi-box"></i>
-                            <span>Laporan Stok</span>
+                    <li class="sidebar-item <?= $currentUri === 'stock/history' ? 'active' : '' ?>">
+                        <a href="<?= base_url('/stock/history') ?>" class="sidebar-link">
+                            <i class="bi bi-clock-history"></i>
+                            <span>Riwayat Stok</span>
                         </a>
                     </li>
 
-                    <li class="sidebar-item <?= uri_string() == 'reports/movements' ? 'active' : '' ?>">
+                    <li class="sidebar-item <?= $currentUri == 'reports/movements' ? 'active' : '' ?>">
                         <a href="<?= base_url('/reports/movements') ?>" class="sidebar-link">
                             <i class="bi bi-arrow-repeat"></i>
-                            <span>Pergerakan Barang</span>
+                            <span>Pergerakan</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item <?= $isReportStockNow ? 'active' : '' ?>">
+                        <a href="<?= base_url('/reports/stock') . '?report_mode=stock' ?>" class="sidebar-link">
+                            <i class="bi bi-box-seam"></i>
+                            <span>Stok Saat Ini</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item <?= $isReportOpname ? 'active' : '' ?>">
+                        <a href="<?= base_url('/reports/stock') . '?report_mode=opname' ?>" class="sidebar-link">
+                            <i class="bi bi-clipboard2-check"></i>
+                            <span>Stock Opname</span>
                         </a>
                     </li>
 
@@ -103,30 +116,37 @@
                     <li class="sidebar-item <?= strpos(uri_string(), 'users') === 0 ? 'active' : '' ?>">
                         <a href="<?= base_url('/users') ?>" class="sidebar-link">
                             <i class="bi bi-people"></i>
-                            <span>Manajemen User</span>
-                        </a>
-                    </li>
-
-                    <li class="sidebar-item <?= strpos(uri_string(), 'permissions') === 0 ? 'active' : '' ?>">
-                        <a href="<?= base_url('/permissions') ?>" class="sidebar-link">
-                            <i class="bi bi-shield-lock"></i>
-                            <span>Hak Akses Role</span>
+                            <span>Manajemen Pengguna dan Hak Akses</span>
                         </a>
                     </li>
 
                     <li class="sidebar-title">Laporan</li>
 
-                    <li class="sidebar-item <?= uri_string() == 'reports/stock' ? 'active' : '' ?>">
-                        <a href="<?= base_url('/reports/stock') ?>" class="sidebar-link">
-                            <i class="bi bi-box"></i>
-                            <span>Laporan Stok</span>
+                    <li class="sidebar-item <?= $currentUri === 'stock/history' ? 'active' : '' ?>">
+                        <a href="<?= base_url('/stock/history') ?>" class="sidebar-link">
+                            <i class="bi bi-clock-history"></i>
+                            <span>Riwayat Stok</span>
                         </a>
                     </li>
 
-                    <li class="sidebar-item <?= uri_string() == 'reports/movements' ? 'active' : '' ?>">
+                    <li class="sidebar-item <?= $currentUri == 'reports/movements' ? 'active' : '' ?>">
                         <a href="<?= base_url('/reports/movements') ?>" class="sidebar-link">
                             <i class="bi bi-arrow-repeat"></i>
-                            <span>Pergerakan Barang</span>
+                            <span>Pergerakan</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item <?= $isReportStockNow ? 'active' : '' ?>">
+                        <a href="<?= base_url('/reports/stock') . '?report_mode=stock' ?>" class="sidebar-link">
+                            <i class="bi bi-box-seam"></i>
+                            <span>Stok Saat Ini</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item <?= $isReportOpname ? 'active' : '' ?>">
+                        <a href="<?= base_url('/reports/stock') . '?report_mode=opname' ?>" class="sidebar-link">
+                            <i class="bi bi-clipboard2-check"></i>
+                            <span>Stock Opname</span>
                         </a>
                     </li>
 

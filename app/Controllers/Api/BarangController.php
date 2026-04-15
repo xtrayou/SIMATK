@@ -3,15 +3,15 @@
 namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
-use App\Models\ProdukModel;
+use App\Models\BarangModel;
 
-class ProdukController extends BaseController
+class BarangController extends BaseController
 {
-    protected ProdukModel $modelProduk;
+    protected BarangModel $modelBarang;
 
     public function __construct()
     {
-        $this->modelProduk = new ProdukModel();
+        $this->modelBarang = new BarangModel();
     }
 
     /**
@@ -23,7 +23,7 @@ class ProdukController extends BaseController
         $limit   = (int) ($this->request->getGet('limit') ?? 10);
         $limit   = $limit > 0 ? min($limit, 50) : 10;
 
-        $builder = $this->modelProduk
+        $builder = $this->modelBarang
             ->select('id, name, sku, current_stock, unit, min_stock')
             ->where('is_active', true);
 
@@ -57,7 +57,7 @@ class ProdukController extends BaseController
             ], 400);
         }
 
-        $query = $this->modelProduk
+        $query = $this->modelBarang
             ->select('id, sku, name, unit, price, current_stock, min_stock')
             ->where('is_active', true);
 
@@ -73,7 +73,7 @@ class ProdukController extends BaseController
                 ->where('sku', $kode)
                 ->orLike('sku', $kode, 'after')
                 ->groupEnd()
-                ->orderBy('CASE WHEN sku = ' . $this->modelProduk->escape($kode) . ' THEN 0 ELSE 1 END', '', false)
+                ->orderBy('CASE WHEN sku = ' . $this->modelBarang->escape($kode) . ' THEN 0 ELSE 1 END', '', false)
                 ->orderBy('sku', 'ASC');
         }
 
@@ -89,7 +89,7 @@ class ProdukController extends BaseController
                 ->where('name', $nama)
                 ->orLike('name', $nama)
                 ->groupEnd()
-                ->orderBy('CASE WHEN name = ' . $this->modelProduk->escape($nama) . ' THEN 0 ELSE 1 END', '', false)
+                ->orderBy('CASE WHEN name = ' . $this->modelBarang->escape($nama) . ' THEN 0 ELSE 1 END', '', false)
                 ->orderBy('name', 'ASC');
         }
 
@@ -121,11 +121,11 @@ class ProdukController extends BaseController
      */
     public function getStockStatus($id)
     {
-        $product = $this->modelProduk->find((int) $id);
+        $product = $this->modelBarang->find((int) $id);
         if (!$product) {
             return $this->jsonResponse([
                 'status'  => false,
-                'message' => 'Produk tidak ditemukan.',
+                'message' => 'Barang tidak ditemukan.',
             ], 404);
         }
 
@@ -155,7 +155,7 @@ class ProdukController extends BaseController
      */
     public function getByCategory($categoryId)
     {
-        $products = $this->modelProduk
+        $products = $this->modelBarang
             ->select('id, name, sku, current_stock, unit')
             ->where('is_active', true)
             ->where('category_id', (int) $categoryId)

@@ -62,6 +62,55 @@ class PengaturanController extends BaseController
         return array_merge($defaults, $saved);
     }
 
+    private function getToggleFields(): array
+    {
+        return [
+            'auto_update_stock',
+            'notify_low_stock',
+            'request_require_approval',
+            'request_allow_extend',
+            'enable_multi_role',
+            'enable_audit_log',
+            'notify_email_low_stock',
+            'notify_email_new_request',
+            'notify_email_overdue',
+            'notify_dashboard',
+        ];
+    }
+
+    private function applySettings(array $current, array $fields): array
+    {
+        foreach ($fields as $field) {
+            if (in_array($field, $this->getToggleFields(), true)) {
+                $current[$field] = $this->request->getPost($field) ? 1 : 0;
+            } else {
+                $val = $this->request->getPost($field);
+                if ($val !== null) {
+                    $current[$field] = trim($val);
+                }
+            }
+        }
+
+        return $current;
+    }
+
+    private function handleLogoUpload(array $current, string $tab): array
+    {
+        if ($tab !== 'general') {
+            return $current;
+        }
+
+        $logo = $this->request->getFile('logo');
+
+        if ($logo && $logo->isValid() && !$logo->hasMoved()) {
+            $newName = 'logo_' . time() . '.' . $logo->getExtension();
+            $logo->move(FCPATH . 'img', $newName);
+            $current['logo'] = $newName;
+        }
+
+        return $current;
+    }
+
     /**
      * Show settings page
      */
@@ -80,7 +129,6 @@ class PengaturanController extends BaseController
     public function update()
     {
         $tab = $this->request->getPost('_tab') ?? 'general';
-
         $rules = $this->getRulesForTab($tab);
 
         if (!$this->validate($rules)) {
@@ -90,46 +138,12 @@ class PengaturanController extends BaseController
                 ->with('active_tab', $tab);
         }
 
-        // Merge with existing settings
         $current = $this->loadSettings();
         $fields = array_keys($rules);
 
-        // Handle checkboxes / toggles (not sent if unchecked)
-        $toggleFields = [
-            'auto_update_stock',
-            'notify_low_stock',
-            'request_require_approval',
-            'request_allow_extend',
-            'enable_multi_role',
-            'enable_audit_log',
-            'notify_email_low_stock',
-            'notify_email_new_request',
-            'notify_email_overdue',
-            'notify_dashboard',
-        ];
+        $current = $this->applySettings($current, $fields);
+        $current = $this->handleLogoUpload($current, $tab);
 
-        foreach ($fields as $field) {
-            if (in_array($field, $toggleFields)) {
-                $current[$field] = $this->request->getPost($field) ? 1 : 0;
-            } else {
-                $val = $this->request->getPost($field);
-                if ($val !== null) {
-                    $current[$field] = trim($val);
-                }
-            }
-        }
-
-        // Handle logo upload
-        if ($tab === 'general') {
-            $logo = $this->request->getFile('logo');
-            if ($logo && $logo->isValid() && !$logo->hasMoved()) {
-                $newName = 'logo_' . time() . '.' . $logo->getExtension();
-                $logo->move(FCPATH . 'img', $newName);
-                $current['logo'] = $newName;
-            }
-        }
-
-        // Save to session (in production, save to DB)
         session()->set('app_settings', $current);
 
         return redirect()->to('/settings')

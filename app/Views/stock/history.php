@@ -15,8 +15,8 @@
                         <label class="form-label small fw-bold text-muted">Barang</label>
                         <select name="product" class="form-select select2">
                             <option value="">Semua Barang</option>
-                            <?php foreach ($daftarProduk as $p): ?>
-                                <option value="<?= $p['id'] ?>" <?= $filterProduk == $p['id'] ? 'selected' : '' ?>>
+                            <?php foreach ($daftarBarang as $p): ?>
+                                <option value="<?= $p['id'] ?>" <?= $filterBarang == $p['id'] ? 'selected' : '' ?>>
                                     <?= esc($p['name']) ?> (<?= $p['sku'] ?>)
                                 </option>
                             <?php endforeach ?>
@@ -85,7 +85,7 @@
                             <thead class="bg-light small">
                                 <tr>
                                     <th class="ps-4">Tgl & Waktu</th>
-                                    <th>Produk</th>
+                                    <th>Barang</th>
                                     <th class="text-center">Tipe</th>
                                     <th class="text-center">Jumlah</th>
                                     <th class="text-center">Stok Sisa</th>
@@ -94,35 +94,35 @@
                             </thead>
                             <tbody class="small">
                                 <?php foreach ($daftarMutasi as $mut): ?>
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="fw-bold"><?= date('d/m/Y', strtotime($mut['created_at'])) ?></div>
-                                        <div class="text-muted" style="font-size: 0.75rem"><?= date('H:i', strtotime($mut['created_at'])) ?></div>
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold"><?= esc($mut['product_name']) ?></div>
-                                        <code class="text-muted"><?= $mut['product_sku'] ?></code>
-                                    </td>
-                                    <td class="text-center">
-                                        <?php if ($mut['type'] == 'IN'): ?>
-                                            <span class="badge bg-success-light text-success border-success px-2 py-1">MASUK</span>
-                                        <?php elseif ($mut['type'] == 'OUT'): ?>
-                                            <span class="badge bg-danger-light text-danger border-danger px-2 py-1">KELUAR</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-info-light text-info border-info px-2 py-1">ADJ</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="text-center fw-bold <?= $mut['type'] == 'IN' ? 'text-success' : ($mut['type'] == 'OUT' ? 'text-danger' : 'text-info') ?>">
-                                        <?= $mut['type'] == 'IN' ? '+' : ($mut['type'] == 'OUT' ? '-' : '±') ?><?= number_format($mut['quantity']) ?>
-                                    </td>
-                                    <td class="text-center fw-bold"><?= number_format($mut['current_stock']) ?> <small class="text-muted fw-normal"><?= $mut['unit'] ?></small></td>
-                                    <td>
-                                        <?php if ($mut['reference_no']): ?>
-                                            <div class="badge bg-light text-dark border fw-normal mb-1">Ref: <?= $mut['reference_no'] ?></div>
-                                        <?php endif; ?>
-                                        <div class="text-muted italic"><?= esc($mut['notes']) ?: '-' ?></div>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="fw-bold"><?= date('d/m/Y', strtotime($mut['created_at'])) ?></div>
+                                            <div class="text-muted" style="font-size: 0.75rem"><?= date('H:i', strtotime($mut['created_at'])) ?></div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold"><?= esc($mut['product_name']) ?></div>
+                                            <code class="text-muted"><?= $mut['product_sku'] ?></code>
+                                        </td>
+                                        <td class="text-center">
+                                            <?php if ($mut['type'] == 'IN'): ?>
+                                                <span class="badge bg-success-light text-success border-success px-2 py-1">MASUK</span>
+                                            <?php elseif ($mut['type'] == 'OUT'): ?>
+                                                <span class="badge bg-danger-light text-danger border-danger px-2 py-1">KELUAR</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-info-light text-info border-info px-2 py-1">ADJ</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-center fw-bold <?= $mut['type'] == 'IN' ? 'text-success' : ($mut['type'] == 'OUT' ? 'text-danger' : 'text-info') ?>">
+                                            <?= $mut['type'] == 'IN' ? '+' : ($mut['type'] == 'OUT' ? '-' : '±') ?><?= number_format($mut['quantity']) ?>
+                                        </td>
+                                        <td class="text-center fw-bold"><?= number_format($mut['current_stock']) ?> <small class="text-muted fw-normal"><?= $mut['unit'] ?></small></td>
+                                        <td>
+                                            <?php if ($mut['reference_no']): ?>
+                                                <div class="badge bg-light text-dark border fw-normal mb-1">Ref: <?= $mut['reference_no'] ?></div>
+                                            <?php endif; ?>
+                                            <div class="text-muted italic"><?= esc($mut['notes']) ?: '-' ?></div>
+                                        </td>
+                                    </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
@@ -142,22 +142,35 @@
 
 <?= $this->section('scripts') ?>
 <script>
-$(document).ready(function() {
-    $('#historyTable').DataTable({
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
-        },
-        order: [[0, 'desc']]
+    $(document).ready(function() {
+        $('#historyTable').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+            },
+            order: [
+                [0, 'desc']
+            ]
+        });
     });
-});
 </script>
 <?= $this->endSection() ?>
 
 <?= $this->section('styles') ?>
 <style>
-    .bg-success-light { background-color: rgba(25, 135, 84, 0.1); }
-    .bg-danger-light { background-color: rgba(220, 53, 69, 0.1); }
-    .bg-info-light { background-color: rgba(13, 202, 240, 0.1); }
-    .italic { font-style: italic; }
+    .bg-success-light {
+        background-color: rgba(25, 135, 84, 0.1);
+    }
+
+    .bg-danger-light {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+
+    .bg-info-light {
+        background-color: rgba(13, 202, 240, 0.1);
+    }
+
+    .italic {
+        font-style: italic;
+    }
 </style>
 <?= $this->endSection() ?>

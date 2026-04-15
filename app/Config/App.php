@@ -199,4 +199,16 @@ class App extends BaseConfig
      * @see http://www.w3.org/TR/CSP/
      */
     public bool $CSPEnabled = false;
+
+    /**
+     * Daftar unit kerja/prodi default.
+     *
+     * @var list<string>
+     */
+    public array $unitKerja = [
+        'Sistem Informasi',
+        'Informatika',
+        'TU Fakultas',
+        'Lainnya',
+    ];
 }
