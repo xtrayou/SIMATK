@@ -17,8 +17,9 @@ class PermintaanModel extends Model
     protected $primaryKey = 'id';
 
     protected $allowedFields = [
+        'user_id',
         'borrower_name',
-        'borrower_identifier',
+        'borrower_id_number',
         'borrower_unit',
         'email',
         'receipt_code',
@@ -47,8 +48,8 @@ class PermintaanModel extends Model
         }
 
         $modelItemPermintaan = new ItemPermintaanModel();
-        $permintaan['items'] = $modelItemPermintaan->select('request_items.*, products.name as product_name, products.sku as product_sku, products.unit')
-            ->join('products', 'products.id = request_items.product_id')
+        $permintaan['items'] = $modelItemPermintaan->select('request_items.*, barang.name as product_name, barang.sku as product_sku, barang.unit')
+            ->join('barang', 'barang.id = request_items.product_id')
             ->where('request_items.request_id', $id)
             ->findAll();
 

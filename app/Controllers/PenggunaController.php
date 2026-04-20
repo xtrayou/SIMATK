@@ -32,7 +32,9 @@ class PenggunaController extends BaseController
         $keyword = trim($this->request->getGet('q') ?? '');
         $filterRole = $this->request->getGet('role');
 
-        $builder = $this->modelPengguna->orderBy('name', 'ASC');
+        $builder = $this->modelPengguna->select('users.*, roles.name as role')
+                                       ->join('roles', 'roles.id = users.role_id', 'left')
+                                       ->orderBy('users.name', 'ASC');
 
         if ($keyword !== '') {
             $builder->groupStart()
@@ -42,7 +44,7 @@ class PenggunaController extends BaseController
         }
 
         if ($filterRole && in_array($filterRole, ['superadmin', 'admin'], true)) {
-            $builder->where('role', $filterRole);
+            $builder->where('roles.name', $filterRole);
         }
 
         $users = $builder->findAll();
@@ -91,11 +93,12 @@ class PenggunaController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        $role = $this->request->getPost('role');
         $data = [
             'username'  => trim($this->request->getPost('username') ?? ''),
             'name'      => trim($this->request->getPost('name') ?? ''),
             'password'  => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-            'role'      => $this->request->getPost('role'),
+            'role_id'   => $this->resolveRoleId($role),
             'is_active' => $this->request->getPost('is_active') ? 1 : 0,
         ];
 
@@ -115,7 +118,9 @@ class PenggunaController extends BaseController
             return redirect()->to('/dashboard')->with('error', 'Akses ditolak');
         }
 
-        $user = $this->modelPengguna->find($id);
+        $user = $this->modelPengguna->select('users.*, roles.name as role')
+                                    ->join('roles', 'roles.id = users.role_id', 'left')
+                                    ->find($id);
         if (!$user) {
             return redirect()->to('/users')->with('error', 'User tidak ditemukan');
         }
@@ -137,7 +142,9 @@ class PenggunaController extends BaseController
             return redirect()->to('/dashboard')->with('error', 'Akses ditolak');
         }
 
-        $user = $this->modelPengguna->find($id);
+        $user = $this->modelPengguna->select('users.*, roles.name as role')
+                                    ->join('roles', 'roles.id = users.role_id', 'left')
+                                    ->find($id);
         if (!$user) {
             return redirect()->to('/users')->with('error', 'User tidak ditemukan');
         }
@@ -160,10 +167,11 @@ class PenggunaController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        $role = $this->request->getPost('role');
         $data = [
             'username'  => trim($this->request->getPost('username') ?? ''),
             'name'      => trim($this->request->getPost('name') ?? ''),
-            'role'      => $this->request->getPost('role'),
+            'role_id'   => $this->resolveRoleId($role),
             'is_active' => $this->request->getPost('is_active') ? 1 : 0,
         ];
 
@@ -202,5 +210,15 @@ class PenggunaController extends BaseController
         }
 
         return redirect()->to('/users')->with('error', 'Gagal menghapus user');
+    }
+
+    /**
+     * Resolve role name ke role_id dari tabel roles
+     */
+    private function resolveRoleId(string $roleName): ?int
+    {
+        $db = \Config\Database::connect();
+        $role = $db->table('roles')->where('name', $roleName)->get()->getRowArray();
+        return $role ? (int) $role['id'] : null;
     }
 }

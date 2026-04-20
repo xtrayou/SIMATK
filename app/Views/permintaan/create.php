@@ -32,8 +32,8 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">NIM / NIP</label>
-                                <input type="text" name="borrower_identifier" class="form-control"
-                                    placeholder="Opsional" value="<?= old('borrower_identifier') ?>">
+                                <input type="text" name="borrower_id_number" class="form-control"
+                                    placeholder="Opsional" value="<?= old('borrower_id_number') ?>">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Email <span class="text-danger">*</span></label>

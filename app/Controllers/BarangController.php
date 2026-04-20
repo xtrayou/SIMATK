@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Models\BarangModel;
 use App\Models\KategoriModel;
-use App\Models\KodeBarangModel;
+
 use App\Models\MutasiStokModel;
 use App\Services\BarangExportService;
 
@@ -19,7 +19,7 @@ class BarangController extends BaseController
 {
     protected BarangModel $modelBarang;
     protected KategoriModel $modelKategori;
-    protected KodeBarangModel $modelKodeBarang;
+
     protected MutasiStokModel $modelMutasiStok;
     protected BarangExportService $exportService;
 
@@ -27,7 +27,7 @@ class BarangController extends BaseController
     {
         $this->modelBarang = new BarangModel();
         $this->modelKategori = new KategoriModel();
-        $this->modelKodeBarang = new KodeBarangModel();
+
         $this->modelMutasiStok = new MutasiStokModel();
         $this->exportService = new BarangExportService();
     }

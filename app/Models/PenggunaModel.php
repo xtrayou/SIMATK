@@ -12,7 +12,7 @@ class PenggunaModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['username', 'password', 'name', 'role', 'is_active'];
+    protected $allowedFields    = ['username', 'password', 'name', 'role_id', 'is_active'];
 
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
@@ -24,6 +24,9 @@ class PenggunaModel extends Model
      */
     public function findByUsername(string $username): ?array
     {
-        return $this->where('username', $username)->first();
+        return $this->select('users.*, roles.name as role')
+                    ->join('roles', 'roles.id = users.role_id', 'left')
+                    ->where('username', $username)
+                    ->first();
     }
 }

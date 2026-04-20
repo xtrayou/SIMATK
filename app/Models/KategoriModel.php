@@ -59,8 +59,8 @@ class KategoriModel extends Model
      */
     public function getDistribusiUntukDashboard(): array
     {
-        return $this->select('categories.name, COUNT(products.id) as product_count, SUM(products.current_stock * products.price) as total_value')
-            ->join('products', 'products.category_id = categories.id', 'left')
+        return $this->select('categories.name, COUNT(barang.id) as product_count, SUM(barang.current_stock * barang.price) as total_value')
+            ->join('barang', 'barang.category_id = categories.id', 'left')
             ->where('categories.is_active', true)
             ->groupBy('categories.id')
             ->orderBy('product_count', 'DESC')
@@ -88,8 +88,8 @@ class KategoriModel extends Model
         int $batas = 0,
         int $offset = 0
     ): array {
-        $builder = $this->select('categories.*, COUNT(products.id) as jumlah_barang')
-            ->join('products', 'products.category_id = categories.id', 'left')
+        $builder = $this->select('categories.*, COUNT(barang.id) as jumlah_barang')
+            ->join('barang', 'barang.category_id = categories.id', 'left')
             ->groupBy('categories.id');
 
         if ($kataKunci) {

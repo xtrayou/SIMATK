@@ -8,7 +8,7 @@ use App\Models\KodeBarangModel;
 class KodeBarangController extends ResourceController
 {
     /**
-     * Get all item codes
+     * Get all item codes (reads from products table after refactor)
      */
     public function index()
     {

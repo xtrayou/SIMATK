@@ -51,7 +51,7 @@
                         </div>
                         <div class="mb-0">
                             <label class="text-muted small d-block">NIM / NIP</label>
-                            <code><?= esc($pinjaman['borrower_identifier'] ?: '-') ?></code>
+                            <code><?= esc($pinjaman['borrower_id_number'] ?: '-') ?></code>
                         </div>
                     </div>
                     <div class="col-md-6 ps-md-4">

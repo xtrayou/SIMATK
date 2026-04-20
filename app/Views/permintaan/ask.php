@@ -8,9 +8,9 @@
 
     <link rel="icon" href="<?= esc(app_favicon_url(), 'attr') ?>">
     <link rel="shortcut icon" href="<?= esc(app_favicon_url(), 'attr') ?>">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="<?= base_url('assets/libs/bootstrap/css/bootstrap.min.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/libs/bootstrap-icons/font/bootstrap-icons.min.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/libs/sweetalert2/sweetalert2.min.css') ?>">
 
     <style>
         body {
@@ -183,10 +183,10 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">NIM / NIP <span class="text-muted fw-normal">(opsional)</span></label>
-                                        <input type="text" name="borrower_identifier"
+                                        <input type="text" name="borrower_id_number"
                                             class="form-control"
                                             placeholder="Nomor induk"
-                                            value="<?= old('borrower_identifier') ?>">
+                                            value="<?= old('borrower_id_number') ?>">
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Email <span class="text-danger">*</span></label>
@@ -286,8 +286,8 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="<?= base_url('assets/libs/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
+    <script src="<?= base_url('assets/libs/sweetalert2/sweetalert2.all.min.js') ?>"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 

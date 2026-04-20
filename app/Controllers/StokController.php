@@ -211,8 +211,8 @@ class StokController extends BaseController
         $products   = $this->modelBarang->getBarangDenganKategori();
         $categories = $this->modelKategori->getKategoriAktif();
 
-        $recentHistory = $this->modelMutasiStok->select('stock_movements.*, products.name as product_name, products.sku as product_sku')
-            ->join('products', 'products.id = stock_movements.product_id')
+        $recentHistory = $this->modelMutasiStok->select('stock_movements.*, barang.name as product_name, barang.sku as product_sku')
+            ->join('barang', 'barang.id = stock_movements.product_id')
             ->where('stock_movements.type', 'IN')
             ->orderBy('stock_movements.created_at', 'DESC')
             ->limit(10)
@@ -286,8 +286,8 @@ class StokController extends BaseController
             ->findAll();
         $categories = $this->modelKategori->getKategoriAktif();
 
-        $recentHistory = $this->modelMutasiStok->select('stock_movements.*, products.name as product_name, products.sku as product_sku')
-            ->join('products', 'products.id = stock_movements.product_id')
+        $recentHistory = $this->modelMutasiStok->select('stock_movements.*, barang.name as product_name, barang.sku as product_sku')
+            ->join('barang', 'barang.id = stock_movements.product_id')
             ->where('stock_movements.type', 'OUT')
             ->orderBy('stock_movements.created_at', 'DESC')
             ->limit(10)
@@ -368,16 +368,16 @@ class StokController extends BaseController
         ];
 
         $builder = $this->modelMutasiStok
-            ->select('stock_movements.*, products.name as product_name, products.sku as product_sku, categories.name as category_name')
-            ->join('products', 'products.id = stock_movements.product_id')
-            ->join('categories', 'categories.id = products.category_id', 'left')
+            ->select('stock_movements.*, barang.name as product_name, barang.sku as product_sku, categories.name as category_name')
+            ->join('barang', 'barang.id = stock_movements.product_id')
+            ->join('categories', 'categories.id = barang.category_id', 'left')
             ->where('stock_movements.type', $currentType);
 
         if (!empty($filters['product'])) {
             $builder->where('stock_movements.product_id', $filters['product']);
         }
         if (!empty($filters['category'])) {
-            $builder->where('products.category_id', $filters['category']);
+            $builder->where('barang.category_id', $filters['category']);
         }
         if (!empty($filters['start_date'])) {
             $builder->where('DATE(stock_movements.created_at) >=', $filters['start_date']);

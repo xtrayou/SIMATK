@@ -135,7 +135,7 @@ class MutasiStokModel extends Model
                 WHEN stock_movements.type = "ADJUSTMENT" THEN stock_movements.quantity
                 ELSE stock_movements.previous_stock
             END as current_stock', false)
-            ->join('products', 'products.id = stock_movements.product_id');
+            ->join('barang', 'barang.id = stock_movements.product_id');
 
         if (!empty($filter['product_id'])) {
             $builder->where('stock_movements.product_id', $filter['product_id']);

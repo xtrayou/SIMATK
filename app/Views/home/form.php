@@ -50,8 +50,8 @@ $oldProductId = (string) old('product_id');
                     <label for="nimNipPemohon" class="form-label">
                         <i class="bi bi-card-text me-1"></i>NIM / NIP
                     </label>
-                    <input type="text" class="form-control" id="nimNipPemohon" name="borrower_identifier"
-                        value="<?= old('borrower_identifier') ?>"
+                    <input type="text" class="form-control" id="nimNipPemohon" name="borrower_id_number"
+                        value="<?= old('borrower_id_number') ?>"
                         placeholder="Opsional">
                 </div>
             </div>

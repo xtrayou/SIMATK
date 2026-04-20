@@ -13,7 +13,7 @@ use CodeIgniter\Model;
  */
 class BarangModel extends Model
 {
-    protected $table = 'products';
+    protected $table = 'barang';
     protected $primaryKey = 'id';
 
     protected $allowedFields = [
@@ -32,8 +32,8 @@ class BarangModel extends Model
     ];
 
     protected $useTimestamps = true;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    protected $createdField = 'created_at';
+    protected $updatedField = 'updated_at';
 
     // ===== BASIC QUERY =====
 
@@ -99,10 +99,10 @@ class BarangModel extends Model
      */
     public function getTopProductsByValue(int $limit = 5): array
     {
-        return $this->select('products.*, categories.name as category_name, (products.current_stock * products.price) as total_value')
-            ->join('categories', 'categories.id = products.category_id')
-            ->where('products.is_active', true)
-            ->where('products.current_stock >', 0)
+        return $this->select('barang.*, categories.name as category_name, (barang.current_stock * barang.price) as total_value')
+            ->join('categories', 'categories.id = barang.category_id')
+            ->where('barang.is_active', true)
+            ->where('barang.current_stock >', 0)
             ->orderBy('total_value', 'DESC')
             ->limit($limit)
             ->findAll();
@@ -112,66 +112,19 @@ class BarangModel extends Model
 
     /**
      * Menentukan kode barang (SKU) yang valid.
-     * Jika kode yang diminta tidak ada di referensi, gunakan kode "lainnya" (akhiran 999)
-     * dari kategori yang dipilih.
+     * Mengembalikan SKU yang sudah disanitasi.
      *
      * @param string $requestedSku SKU yang diminta
-     * @param int    $categoryId   ID Kategori
+     * @param int    $categoryId   ID Kategori (untuk referensi)
      * @return string SKU yang telah divalidasi
      */
     public function resolveSku(string $requestedSku, int $categoryId): string
     {
-        $modelKodeBarang = new KodeBarangModel();
-        $modelKategori = new KategoriModel();
-
-        $requestedSku = preg_replace('/\D+/', '', $requestedSku) ?? '';
+        $requestedSku = trim($requestedSku);
         if ($requestedSku === '') {
             return '';
         }
 
-        // Cek apakah SKU yang diminta ada persis di tabel referensi
-        $exactKode = $modelKodeBarang->where('kode', $requestedSku)->first();
-        if ($exactKode) {
-            return $requestedSku;
-        }
-
-        // Jika tidak ada, coba cari kode cadangan berdasarkan kategori
-        if ($categoryId <= 0) {
-            return $requestedSku; // Tidak bisa lanjut tanpa kategori
-        }
-
-        $category = $modelKategori->find($categoryId);
-        if (!$category || empty($category['name'])) {
-            return $requestedSku; // Kategori tidak valid
-        }
-
-        $categoryName = trim((string) $category['name']);
-        if ($categoryName === '') {
-            return $requestedSku;
-        }
-
-        // Cari kode yang cocok dengan nama kategori
-        $categoryKode = $modelKodeBarang
-            ->where('LOWER(nama)', strtolower($categoryName))
-            ->first();
-
-        // Jika tidak ketemu persis, cari yang mirip
-        if (!$categoryKode) {
-            $categoryKode = $modelKodeBarang
-                ->like('nama', $categoryName)
-                ->orderBy('kode', 'ASC')
-                ->first();
-        }
-
-        $baseCode = (string) ($categoryKode['kode'] ?? '');
-        $baseCode = preg_replace('/\D+/', '', $baseCode) ?? '';
-
-        // Jika kode dasar ditemukan, gunakan format kode cadangan (xxx999)
-        if (strlen($baseCode) >= 10) {
-            return substr($baseCode, 0, 7) . '999';
-        }
-
-        // Jika semua gagal, kembalikan SKU asli yang diminta
         return $requestedSku;
     }
 
@@ -186,57 +139,57 @@ class BarangModel extends Model
     public function getBarangTerfilter(array $filter = []): array
     {
         $builder = $this->select("
-                    products.id, 
-                    products.name, 
-                    products.sku, 
-                    products.category_id, 
-                    products.description, 
-                    products.price, 
-                    products.cost_price, 
-                    products.min_stock, 
-                    products.current_stock, 
-                    products.stock_baik,
-                    products.stock_rusak,
-                    products.unit, 
-                    products.is_active,
+                    barang.id, 
+                    barang.name, 
+                    barang.sku, 
+                    barang.category_id, 
+                    barang.description, 
+                    barang.price, 
+                    barang.cost_price, 
+                    barang.min_stock, 
+                    barang.current_stock, 
+                    barang.stock_baik,
+                    barang.stock_rusak,
+                    barang.unit, 
+                    barang.is_active,
                     categories.name as category_name,
                     CASE 
-                        WHEN products.current_stock = 0 THEN 'habis'
-                        WHEN products.current_stock <= products.min_stock THEN 'rendah'
+                        WHEN barang.current_stock = 0 THEN 'habis'
+                        WHEN barang.current_stock <= barang.min_stock THEN 'rendah'
                         ELSE 'normal'
                     END as stock_status
                 ")
-            ->join('categories', 'categories.id = products.category_id')
-            ->where('products.is_active', true);
+            ->join('categories', 'categories.id = barang.category_id')
+            ->where('barang.is_active', true);
 
         if (!empty($filter['search'])) {
             $builder->groupStart()
-                ->like('products.name', $filter['search'])
-                ->orLike('products.sku', $filter['search'])
-                ->orLike('products.description', $filter['search'])
+                ->like('barang.name', $filter['search'])
+                ->orLike('barang.sku', $filter['search'])
+                ->orLike('barang.description', $filter['search'])
                 ->groupEnd();
         }
 
         if (!empty($filter['category'])) {
-            $builder->where('products.category_id', $filter['category']);
+            $builder->where('barang.category_id', $filter['category']);
         }
 
         if (!empty($filter['stock_status'])) {
             switch ($filter['stock_status']) {
                 case 'habis':
-                    $builder->where('products.current_stock', 0);
+                    $builder->where('barang.current_stock', 0);
                     break;
                 case 'rendah':
-                    $builder->where('products.current_stock <= products.min_stock', null, false)
-                        ->where('products.current_stock >', 0);
+                    $builder->where('barang.current_stock <= barang.min_stock', null, false)
+                        ->where('barang.current_stock >', 0);
                     break;
                 case 'normal':
-                    $builder->where('products.current_stock > products.min_stock', null, false);
+                    $builder->where('barang.current_stock > barang.min_stock', null, false);
                     break;
             }
         }
 
-        return $builder->orderBy('products.name', 'ASC')->findAll();
+        return $builder->orderBy('barang.name', 'ASC')->findAll();
     }
 
     /**
@@ -246,10 +199,10 @@ class BarangModel extends Model
      */
     public function getBarangDenganKategori(): array
     {
-        return $this->select('products.id, products.name, products.sku, products.category_id, products.current_stock, products.unit, categories.name as category_name')
-            ->join('categories', 'categories.id = products.category_id')
-            ->where('products.is_active', true)
-            ->orderBy('products.name', 'ASC')
+        return $this->select('barang.id, barang.name, barang.sku, barang.category_id, barang.current_stock, barang.unit, categories.name as category_name')
+            ->join('categories', 'categories.id = barang.category_id')
+            ->where('barang.is_active', true)
+            ->orderBy('barang.name', 'ASC')
             ->findAll();
     }
 
@@ -261,9 +214,9 @@ class BarangModel extends Model
      */
     public function getBarangDenganKategoriById(int $id): ?array
     {
-        return $this->select('products.id, products.name, products.sku, products.category_id, products.description, products.price, products.cost_price, products.min_stock, products.current_stock, products.stock_baik, products.stock_rusak, products.unit, products.is_active, categories.name as category_name')
-            ->join('categories', 'categories.id = products.category_id')
-            ->where('products.id', $id)
+        return $this->select('barang.id, barang.name, barang.sku, barang.category_id, barang.description, barang.price, barang.cost_price, barang.min_stock, barang.current_stock, barang.stock_baik, barang.stock_rusak, barang.unit, barang.is_active, categories.name as category_name')
+            ->join('categories', 'categories.id = barang.category_id')
+            ->where('barang.id', $id)
             ->first();
     }
 
@@ -289,12 +242,12 @@ class BarangModel extends Model
      */
     public function getBarangStokRendah(int $limit = 0): array
     {
-        $builder = $this->select('products.id, products.name, products.sku, products.current_stock, products.stock_baik, products.min_stock, products.unit, categories.name as category_name, IFNULL(products.stock_baik, products.current_stock) as available_stock', false)
-            ->join('categories', 'categories.id = products.category_id')
-            ->where('IFNULL(products.stock_baik, products.current_stock) <= products.min_stock', null, false)
-            ->where('IFNULL(products.stock_baik, products.current_stock) > 0', null, false)
-            ->where('products.is_active', true)
-            ->orderBy('IFNULL(products.stock_baik, products.current_stock)', 'ASC', false);
+        $builder = $this->select('barang.id, barang.name, barang.sku, barang.current_stock, barang.stock_baik, barang.min_stock, barang.unit, categories.name as category_name, IFNULL(barang.stock_baik, barang.current_stock) as available_stock', false)
+            ->join('categories', 'categories.id = barang.category_id')
+            ->where('IFNULL(barang.stock_baik, barang.current_stock) <= barang.min_stock', null, false)
+            ->where('IFNULL(barang.stock_baik, barang.current_stock) > 0', null, false)
+            ->where('barang.is_active', true)
+            ->orderBy('IFNULL(barang.stock_baik, barang.current_stock)', 'ASC', false);
 
         if ($limit > 0) {
             $builder->limit($limit);
@@ -333,6 +286,6 @@ class BarangModel extends Model
             $number = $lastNumber + 1;
         }
 
-        return $prefix . $namePart . str_pad((string)$number, 4, '0', STR_PAD_LEFT);
+        return $prefix . $namePart . str_pad((string) $number, 4, '0', STR_PAD_LEFT);
     }
 }

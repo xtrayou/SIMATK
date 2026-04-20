@@ -8,12 +8,9 @@
 
     <link rel="icon" href="<?= esc(app_favicon_url(), 'attr') ?>">
     <link rel="shortcut icon" href="<?= esc(app_favicon_url(), 'attr') ?>">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="<?= base_url('assets/libs/bootstrap/css/bootstrap.min.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/libs/bootstrap-icons/font/bootstrap-icons.min.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/libs/aos/aos.css') ?>">
     <link rel="stylesheet" href="<?= base_url('css/home.css') ?>">
 </head>
 
@@ -122,8 +119,8 @@
                                     <label for="nimNipPemohon" class="form-label">
                                         <i class="bi bi-card-text me-1"></i>NIM / NIP
                                     </label>
-                                    <input type="text" class="form-control" id="nimNipPemohon" name="borrower_identifier"
-                                        value="<?= old('borrower_identifier') ?>"
+                                    <input type="text" class="form-control" id="nimNipPemohon" name="borrower_id_number"
+                                        value="<?= old('borrower_id_number') ?>"
                                         placeholder="Opsional">
                                 </div>
                             </div>
@@ -570,8 +567,8 @@
         <i class="bi bi-rocket-takeoff"></i>
     </button>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="<?= base_url('assets/libs/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
+    <script src="<?= base_url('assets/libs/aos/aos.js') ?>"></script>
     <script>
         // ── Init AOS ────────────────────────────────────────────────
         AOS.init({

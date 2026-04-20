@@ -143,13 +143,13 @@ class LaporanService
                 stock_opname_archives.unit_price as price,
                 stock_opname_archives.total_value as stock_value,
                 "archived" as stock_status,
-                COALESCE(products.min_stock, 0) as min_stock,
+                COALESCE(barang.min_stock, 0) as min_stock,
                 COALESCE(categories.name, "Uncategorized") as category_name,
-                COALESCE(products.unit, "Pcs") as unit,
-                COALESCE(products.sku, "-") as sku
+                COALESCE(barang.unit, "Pcs") as unit,
+                COALESCE(barang.sku, "-") as sku
             ')
-            ->join('products', 'products.id = stock_opname_archives.product_id', 'left')
-            ->join('categories', 'categories.id = products.category_id', 'left')
+            ->join('barang', 'barang.id = stock_opname_archives.product_id', 'left')
+            ->join('categories', 'categories.id = barang.category_id', 'left')
             ->where('stock_opname_archives.period_month', $month)
             ->where('stock_opname_archives.period_year', $year);
 
@@ -232,37 +232,37 @@ class LaporanService
         }
 
         $builder = $this->modelBarang->select("
-                products.*, 
+                barang.*, 
                 categories.name as category_name,
-                (products.current_stock * products.price) as stock_value,
+                (barang.current_stock * barang.price) as stock_value,
                 CASE 
-                    WHEN products.current_stock = 0 THEN 'out_of_stock'
-                    WHEN products.current_stock <= products.min_stock THEN 'low_stock'
+                    WHEN barang.current_stock = 0 THEN 'out_of_stock'
+                    WHEN barang.current_stock <= barang.min_stock THEN 'low_stock'
                     ELSE 'normal'
                 END as stock_status
             ")
-            ->join('categories', 'categories.id = products.category_id')
-            ->where('products.is_active', true)
-            ->whereIn('products.id', $movedProductIds);
+            ->join('categories', 'categories.id = barang.category_id')
+            ->where('barang.is_active', true)
+            ->whereIn('barang.id', $movedProductIds);
 
         if ($categoryFilter) {
-            $builder->where('products.category_id', $categoryFilter);
+            $builder->where('barang.category_id', $categoryFilter);
         }
 
         if ($stockStatus) {
             switch ($stockStatus) {
                 case 'out_of_stock':
-                    $builder->where('products.current_stock', 0);
+                    $builder->where('barang.current_stock', 0);
                     break;
                 case 'low_stock':
-                    $builder->where('products.current_stock <= products.min_stock', null, false)
-                        ->where('products.current_stock >', 0);
+                    $builder->where('barang.current_stock <= barang.min_stock', null, false)
+                        ->where('barang.current_stock >', 0);
                     break;
                 case 'normal':
-                    $builder->where('products.current_stock > products.min_stock', null, false);
+                    $builder->where('barang.current_stock > barang.min_stock', null, false);
                     break;
                 case 'overstocked':
-                    $builder->where('products.current_stock > (products.min_stock * 3)', null, false);
+                    $builder->where('barang.current_stock > (barang.min_stock * 3)', null, false);
                     break;
             }
         }
@@ -287,13 +287,13 @@ class LaporanService
 
         $builder = $this->modelMutasiStok->select('
                 stock_movements.*, 
-                products.name as product_name,
-                products.sku as product_sku,
-                products.price as product_price,
+                barang.name as product_name,
+                barang.sku as product_sku,
+                barang.price as product_price,
                 categories.name as category_name
             ')
-            ->join('products', 'products.id = stock_movements.product_id')
-            ->join('categories', 'categories.id = products.category_id')
+            ->join('barang', 'barang.id = stock_movements.product_id')
+            ->join('categories', 'categories.id = barang.category_id')
             ->where('DATE(stock_movements.created_at) >=', $startDate)
             ->where('DATE(stock_movements.created_at) <=', $endDate);
 
@@ -302,7 +302,7 @@ class LaporanService
         }
 
         if ($productFilter) {
-            $builder->where('products.id', $productFilter);
+            $builder->where('barang.id', $productFilter);
         }
 
         if ($movementType) {
@@ -344,17 +344,17 @@ class LaporanService
         $valuationMethod = $this->request->getGet('method') ?: 'current';
 
         $builder = $this->modelBarang->select('
-                products.*, 
+                barang.*, 
                 categories.name as category_name,
-                (products.current_stock * products.price) as nilai_stok,
-                (products.current_stock * products.cost_price) as nilai_modal
+                (barang.current_stock * barang.price) as nilai_stok,
+                (barang.current_stock * barang.cost_price) as nilai_modal
             ')
-            ->join('categories', 'categories.id = products.category_id')
-            ->where('products.is_active', true)
-            ->where('products.current_stock >', 0);
+            ->join('categories', 'categories.id = barang.category_id')
+            ->where('barang.is_active', true)
+            ->where('barang.current_stock >', 0);
 
         if ($categoryFilter) {
-            $builder->where('products.category_id', $categoryFilter);
+            $builder->where('barang.category_id', $categoryFilter);
         }
 
         $products = $builder->orderBy('nilai_stok', 'DESC')->findAll();
@@ -586,7 +586,7 @@ class LaporanService
 
     private function calculateABCAnalysis()
     {
-        $products = $this->modelBarang->select('products.*, (products.current_stock * products.price) as stock_value')
+        $products = $this->modelBarang->select('barang.*, (barang.current_stock * barang.price) as stock_value')
             ->where('is_active', true)->where('current_stock >', 0)
             ->orderBy('stock_value', 'DESC')->findAll();
 
@@ -637,11 +637,11 @@ class LaporanService
 
     private function getReorderSuggestions()
     {
-        $products = $this->modelBarang->select('products.*, categories.name as category_name')
-            ->join('categories', 'categories.id = products.category_id')
-            ->where('products.is_active', true)
-            ->where('products.current_stock <= (products.min_stock * 1.5)', null, false)
-            ->orderBy('(products.current_stock / products.min_stock)', 'ASC')->findAll();
+        $products = $this->modelBarang->select('barang.*, categories.name as category_name')
+            ->join('categories', 'categories.id = barang.category_id')
+            ->where('barang.is_active', true)
+            ->where('barang.current_stock <= (barang.min_stock * 1.5)', null, false)
+            ->orderBy('(barang.current_stock / barang.min_stock)', 'ASC')->findAll();
 
         $suggestions = [];
         foreach ($products as $p) {

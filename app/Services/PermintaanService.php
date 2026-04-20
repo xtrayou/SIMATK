@@ -49,8 +49,9 @@ class PermintaanService
             $kodeResi = $this->generateKodeResiUnik();
 
             $requestData = [
+                'user_id'             => session('userId') ?: null,
                 'borrower_name'       => $data['borrower_name'],
-                'borrower_identifier' => $data['borrower_identifier'] ?? null,
+                'borrower_id_number' => $data['borrower_id_number'] ?? null,
                 'borrower_unit'       => $data['borrower_unit'],
                 'email'               => $data['email'],
                 'receipt_code'        => $kodeResi,

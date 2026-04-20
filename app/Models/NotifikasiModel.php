@@ -18,8 +18,9 @@ class NotifikasiModel extends Model
         'icon',
         'color',
         'url',
-        'reference_type',
-        'reference_id',
+        'product_id',
+        'request_id',
+        'stock_movement_id',
         'for_role',
         'is_read',
         'read_by',
@@ -55,11 +56,10 @@ class NotifikasiModel extends Model
         return $this->insert($data);
     }
 
-    private function alreadyExists(string $type, string $refType, int $refId): bool
+    private function alreadyExists(string $type, string $refColumn, int $refId): bool
     {
         return (bool) $this->where('type', $type)
-            ->where('reference_type', $refType)
-            ->where('reference_id', $refId)
+            ->where($refColumn, $refId)
             ->where('is_read', 0)
             ->first();
     }
@@ -148,7 +148,7 @@ class NotifikasiModel extends Model
     public function createLowStockNotification(array $product): int|false
     {
         $productId   = $product['id'];
-        if ($this->alreadyExists('low_stock', 'product', (int) $productId)) {
+        if ($this->alreadyExists('low_stock', 'product_id', (int) $productId)) {
             return false;
         }
 
@@ -163,8 +163,7 @@ class NotifikasiModel extends Model
             'icon'           => 'bi-exclamation-triangle-fill',
             'color'          => 'warning',
             'url'            => "/products/show/{$productId}",
-            'reference_type' => 'product',
-            'reference_id'   => $productId,
+            'product_id'     => $productId,
             'for_role'       => 'all',
         ]);
     }
@@ -175,7 +174,7 @@ class NotifikasiModel extends Model
     public function createOutOfStockNotification(array $product): int|false
     {
         $productId   = $product['id'];
-        if ($this->alreadyExists('out_of_stock', 'product', (int) $productId)) {
+        if ($this->alreadyExists('out_of_stock', 'product_id', (int) $productId)) {
             return false;
         }
 
@@ -188,8 +187,7 @@ class NotifikasiModel extends Model
             'icon'           => 'bi-x-circle-fill',
             'color'          => 'danger',
             'url'            => "/products/show/{$productId}",
-            'reference_type' => 'product',
-            'reference_id'   => $productId,
+            'product_id'     => $productId,
             'for_role'       => 'all',
         ]);
     }
@@ -208,8 +206,7 @@ class NotifikasiModel extends Model
             'icon'           => 'bi-journal-arrow-down',
             'color'          => 'info',
             'url'            => "/requests/show/{$requestId}",
-            'reference_type' => 'request',
-            'reference_id'   => $requestId,
+            'request_id'     => $requestId,
             'for_role'       => 'admin',
         ]);
     }
@@ -228,8 +225,7 @@ class NotifikasiModel extends Model
             'icon'           => 'bi-check-circle-fill',
             'color'          => 'success',
             'url'            => "/requests/show/{$requestId}",
-            'reference_type' => 'request',
-            'reference_id'   => $requestId,
+            'request_id'     => $requestId,
             'for_role'       => 'all',
         ]);
     }
@@ -248,8 +244,7 @@ class NotifikasiModel extends Model
             'icon'           => 'bi-x-circle',
             'color'          => 'secondary',
             'url'            => "/requests/show/{$requestId}",
-            'reference_type' => 'request',
-            'reference_id'   => $requestId,
+            'request_id'     => $requestId,
             'for_role'       => 'all',
         ]);
     }
@@ -266,7 +261,6 @@ class NotifikasiModel extends Model
             'icon'           => 'bi-arrow-down-circle-fill',
             'color'          => 'success',
             'url'            => '/stock/history',
-            'reference_type' => 'stock_movement',
             'for_role'       => 'admin',
         ]);
     }
@@ -283,7 +277,6 @@ class NotifikasiModel extends Model
             'icon'           => 'bi-arrow-up-circle-fill',
             'color'          => 'danger',
             'url'            => '/stock/history',
-            'reference_type' => 'stock_movement',
             'for_role'       => 'admin',
         ]);
     }

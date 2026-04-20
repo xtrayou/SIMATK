@@ -8,21 +8,13 @@ class KodeBarangController extends BaseController
 {
     public function index()
     {
-        $this->setPageData('Daftar Kode Barang', 'Referensi standar kode barang berdasar Peraturan Bupati');
+        $this->setPageData('Daftar Kode Barang', 'Referensi kode barang berdasarkan data produk');
 
         $model = new KodeBarangModel();
 
         $keyword = trim((string) ($this->request->getGet('q') ?? ''));
 
-        $builder = $model->orderBy('kode', 'ASC');
-        if ($keyword !== '') {
-            $builder->groupStart()
-                ->like('kode', $keyword)
-                ->orLike('nama', $keyword)
-                ->groupEnd();
-        }
-
-        $kode_barang = $builder->findAll();
+        $kode_barang = $model->cariKodeBarang($keyword);
 
         $data = [
             'daftarKode' => $kode_barang,
