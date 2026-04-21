@@ -148,51 +148,6 @@ $routes->get('ask/success', 'PermintaanController::askSuccess');
 $routes->get('track', 'PermintaanController::trackForm');
 $routes->post('track-status', 'PermintaanController::lacakStatus');
 
-// ── Maintenance Routes (Role Based) ───────────────────────────────────
-$routes->match(['post'], 'admin/fix-request-status', function () {
-    $db = \Config\Database::connect();
-    $sql = "UPDATE requests SET status = 'requested' WHERE status IS NULL OR status = '' OR status = 'pending'";
-    $db->query($sql);
-    $affected = $db->affectedRows();
-
-    $stats = $db->query("SELECT status, COUNT(*) as total FROM requests GROUP BY status")->getResultArray();
-
-    $output = "<h2>✅ Status Diperbaiki</h2>";
-    $output .= "<p><strong>{$affected}</strong> data telah diperbaiki.</p>";
-    $output .= "<h3>Statistik:</h3><ul>";
-    foreach ($stats as $row) {
-        $status = $row['status'] ?: '(kosong)';
-        $output .= "<li><strong>{$status}</strong>: {$row['total']}</li>";
-    }
-    $output .= "</ul>";
-    $output .= '<p><a href="' . base_url('requests') . '">← Kembali ke Daftar Permintaan</a></p>';
-
-    return $output;
-}, ['filter' => 'role:superadmin']);
-
-// Fix Session - Regenerate userId in session
-$routes->match(['post'], 'admin/fix-session', function () {
-    $username = session()->get('username');
-
-    if (!$username) {
-        return redirect()->to('/login')->with('error', 'Session tidak valid. Silakan login.');
-    }
-
-    $db = \Config\Database::connect();
-    $user = $db->table('users')->where('username', $username)->get()->getRowArray();
-
-    if (!$user) {
-        session()->destroy();
-        return redirect()->to('/login')->with('error', 'User tidak ditemukan. Silakan login ulang.');
-    }
-
-    session()->set('userId', $user['id']);
-
-    $output = "<h2>✅ Session Diperbaiki</h2>";
-    $output .= "<p>Session telah diperbarui dengan userId: <strong>{$user['id']}</strong></p>";
-    $output .= "<p>User: <strong>{$user['name']}</strong> ({$user['username']})</p>";
-    $output .= '<hr>';
-    $output .= '<p><a href="' . base_url('dashboard') . '">← Kembali ke Dashboard</a></p>';
-
-    return $output;
-}, ['filter' => 'role:superadmin']);
+// ── Maintenance Routes ────────────────────────────────────────────────
+// Route maintenance (fix-request-status, fix-session) telah dihapus.
+// Jika diperlukan kembali, buat controller MaintenanceController yang proper.

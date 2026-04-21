@@ -128,7 +128,7 @@ class MutasiStokModel extends Model
      */
     public function getMutasiDenganBarang(int $batas = 10, array $filter = []): array
     {
-        $builder = $this->select('stock_movements.*, products.name as product_name, products.sku as product_sku, products.unit')
+        $builder = $this->select('stock_movements.*, barang.name as product_name, barang.sku as product_sku, barang.unit')
             ->select('CASE 
                 WHEN stock_movements.type = "IN" THEN stock_movements.previous_stock + stock_movements.quantity
                 WHEN stock_movements.type = "OUT" THEN stock_movements.previous_stock - stock_movements.quantity

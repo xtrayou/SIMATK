@@ -7,7 +7,7 @@ use App\Models\BarangModel;
 
 class BerandaController extends BaseController
 {
-    protected BarangModel  $modelBarang;
+    protected BarangModel   $modelBarang;
     protected KategoriModel $modelKategori;
 
     public function __construct()
@@ -17,32 +17,26 @@ class BerandaController extends BaseController
     }
 
     /**
-     * Landing Page — tampilkan daftar barang & kategori dari DB
+     * Landing Page – tampilkan form permintaan, daftar barang & kategori.
      */
     public function index()
     {
-        // Jika sudah login, langsung ke dashboard
-        // if (session()->get('isLoggedIn')) {
-        //     return redirect()->to('/dashboard');
-        // }
-
-        $daftarBarang = $this->modelBarang->getBarangAktif();
+        $daftarBarang   = $this->modelBarang->getBarangAktif();
         $daftarKategori = $this->modelKategori->getKategoriAktif();
 
+        // Tambahkan label status stok ke setiap barang
         foreach ($daftarBarang as &$barang) {
-            $stokBarang = (int) ($barang['current_stock'] ?? 0);
-            if ($stokBarang <= 0) {
-                $barang['status_label'] = '🔴 Perlu pengadaan';
-            } elseif ($stokBarang <= 10) {
-                $barang['status_label'] = '🟡 Terbatas';
-            } else {
-                $barang['status_label'] = '🟢 Tersedia';
-            }
+            $stok = (int) ($barang['current_stock'] ?? 0);
+            $barang['status_label'] = match (true) {
+                $stok <= 0  => '🔴 Perlu pengadaan',
+                $stok <= 10 => '🟡 Terbatas',
+                default     => '🟢 Tersedia',
+            };
         }
         unset($barang);
 
-        $oldInput = session()->getFlashdata('_ci_old_input') ?? [];
-        $oldProductId = (string) ($oldInput['product_id'] ?? '');
+        // Cari nama produk dari old input (setelah validasi gagal)
+        $oldProductId   = (string) (old('product_id') ?? '');
         $oldProductName = '';
         foreach ($daftarBarang as $barang) {
             if ((string) ($barang['id'] ?? '') === $oldProductId) {
@@ -51,31 +45,18 @@ class BerandaController extends BaseController
             }
         }
 
-        $kategoriPreview = array_slice($daftarKategori, 0, 12);
-        $kategoriLainnya = array_slice($daftarKategori, 12);
-        $kodeResiPopup = session()->getFlashdata('kode_resi') ?: $this->request->getGet('resi');
-
-        $unitKerja = config('App')->unitKerja ?? [
-            'Sistem Informasi',
-            'Informatika',
-            'TU Fakultas',
-            'Lainnya',
-        ];
-
         return view('home/index', [
-            'daftarBarang'   => $daftarBarang,
-            'daftarKategori' => $daftarKategori,
-            'unitKerja'      => $unitKerja,
-            'oldProductName' => $oldProductName,
-            'kategoriPreview' => $kategoriPreview,
-            'kategoriLainnya' => $kategoriLainnya,
-            'kodeResiPopup' => $kodeResiPopup,
-            'stats'          => [
+            'daftarBarang'    => $daftarBarang,
+            'daftarKategori'  => $daftarKategori,
+            'unitKerja'       => config('App')->unitKerja ?? ['Sistem Informasi', 'Informatika', 'TU Fakultas', 'Lainnya'],
+            'oldProductName'  => $oldProductName,
+            'kategoriPreview' => array_slice($daftarKategori, 0, 12),
+            'kategoriLainnya' => array_slice($daftarKategori, 12),
+            'stats'           => [
                 'total_barang'   => $this->modelBarang->countAktif(),
                 'total_kategori' => $this->modelKategori->countAktif(),
-                'total_laporan'  => get_total_laporan_bulanan(),
-                'jam_operasi'   => 8 // Tetap hardcoded atau dari config
-            ]
+                'jam_operasi'    => 8,
+            ],
         ]);
     }
 }

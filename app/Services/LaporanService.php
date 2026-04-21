@@ -1275,17 +1275,17 @@ class LaporanService
         // Get movements data
         $builder = $this->modelMutasiStok->select('
                 stock_movements.*, 
-                products.name as product_name,
-                products.sku as product_sku,
+                barang.name as product_name,
+                barang.sku as product_sku,
                 categories.name as category_name
             ')
-            ->join('products', 'products.id = stock_movements.product_id')
-            ->join('categories', 'categories.id = products.category_id')
+            ->join('barang', 'barang.id = stock_movements.product_id')
+            ->join('categories', 'categories.id = barang.category_id')
             ->where('DATE(stock_movements.created_at) >=', $startDate)
             ->where('DATE(stock_movements.created_at) <=', $endDate);
 
         if ($categoryFilter) $builder->where('categories.id', $categoryFilter);
-        if ($productFilter)  $builder->where('products.id', $productFilter);
+        if ($productFilter)  $builder->where('barang.id', $productFilter);
         if ($movementType)   $builder->where('stock_movements.type', $movementType);
 
         $movements = $builder->orderBy('stock_movements.created_at', 'DESC')->findAll();
@@ -1417,17 +1417,17 @@ class LaporanService
         // Get movements data
         $builder = $this->modelMutasiStok->select('
                 stock_movements.*, 
-                products.name as product_name,
-                products.sku as product_sku,
+                barang.name as product_name,
+                barang.sku as product_sku,
                 categories.name as category_name
             ')
-            ->join('products', 'products.id = stock_movements.product_id')
-            ->join('categories', 'categories.id = products.category_id')
+            ->join('barang', 'barang.id = stock_movements.product_id')
+            ->join('categories', 'categories.id = barang.category_id')
             ->where('DATE(stock_movements.created_at) >=', $startDate)
             ->where('DATE(stock_movements.created_at) <=', $endDate);
 
         if ($categoryFilter) $builder->where('categories.id', $categoryFilter);
-        if ($productFilter)  $builder->where('products.id', $productFilter);
+        if ($productFilter)  $builder->where('barang.id', $productFilter);
         if ($movementType)   $builder->where('stock_movements.type', $movementType);
 
         $movements = $builder->orderBy('stock_movements.created_at', 'DESC')->findAll();
