@@ -4,10 +4,22 @@
         <!-- HEADER -->
         <div class="sidebar-header">
             <a href="<?= base_url('dashboard') ?>" class="text-decoration-none">
-                <h5 class="mb-0">
-                    <i class="bi bi-box-seam-fill"></i> SIMATK
+                <?php
+                $sidebarLogo = app_setting('logo', '');
+                $sidebarAppName = app_setting('app_name', 'SIMATK');
+                $sidebarLogoName = app_setting('logo_name', 'Sistem Inventaris ATK');
+                ?>
+                <?php if (!empty($sidebarLogo) && file_exists(FCPATH . 'img/' . $sidebarLogo)): ?>
+                <h5 class="mb-0 d-flex align-items-center gap-2">
+                    <img src="<?= base_url('img/' . esc($sidebarLogo)) ?>" alt="Logo" style="height:28px;width:28px;object-fit:contain;">
+                    <?= esc($sidebarAppName) ?>
                 </h5>
-                <small class="text-muted">Sistem Inventaris ATK</small>
+                <?php else: ?>
+                <h5 class="mb-0">
+                    <i class="bi bi-box-seam-fill"></i> <?= esc($sidebarAppName) ?>
+                </h5>
+                <?php endif; ?>
+                <small class="text-muted"><?= esc($sidebarLogoName) ?></small>
             </a>
         </div>
 
@@ -60,7 +72,8 @@
 
                     <li class="sidebar-title">Stok</li>
 
-                    <li class="sidebar-item <?= strpos(uri_string(), 'stock') !== false && uri_string() != 'stock/history' ? 'active' : '' ?>">
+                    <li
+                        class="sidebar-item <?= strpos(uri_string(), 'stock') !== false && uri_string() != 'stock/history' ? 'active' : '' ?>">
                         <a href="<?= base_url('/stock') ?>" class="sidebar-link">
                             <i class="bi bi-arrow-left-right"></i>
                             <span>Manajemen Stok</span>
@@ -72,7 +85,7 @@
                     <li class="sidebar-item <?= strpos(uri_string(), 'requests') !== false ? 'active' : '' ?>">
                         <a href="<?= base_url('/requests') ?>" class="sidebar-link">
                             <i class="bi bi-check2-square"></i>
-                            <span>Permintaan ATK</span>
+                            <span>Kelola Permintaan</span>
                         </a>
                     </li>
 
@@ -99,12 +112,6 @@
                         </a>
                     </li>
 
-                    <li class="sidebar-item <?= $isReportOpname ? 'active' : '' ?>">
-                        <a href="<?= base_url('/reports/stock') . '?report_mode=opname' ?>" class="sidebar-link">
-                            <i class="bi bi-clipboard2-check"></i>
-                            <span>Stock Opname</span>
-                        </a>
-                    </li>
 
                 <?php endif; ?>
 
@@ -143,12 +150,6 @@
                         </a>
                     </li>
 
-                    <li class="sidebar-item <?= $isReportOpname ? 'active' : '' ?>">
-                        <a href="<?= base_url('/reports/stock') . '?report_mode=opname' ?>" class="sidebar-link">
-                            <i class="bi bi-clipboard2-check"></i>
-                            <span>Stock Opname</span>
-                        </a>
-                    </li>
 
                 <?php endif; ?>
 

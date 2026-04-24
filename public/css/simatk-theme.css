@@ -248,3 +248,176 @@ body.sidebar-hidden #main {
         width: min(360px, 92vw);
     }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   FLOATING APPEARANCE BUTTON (Superadmin Only)
+══════════════════════════════════════════════════════════════ */
+.float-appearance-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 1099;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: #fff;
+    background: linear-gradient(135deg, #6c3ee8 0%, #4f46e5 50%, #3b5bdb 100%);
+    box-shadow: 0 6px 24px rgba(79, 70, 229, 0.45), 0 2px 8px rgba(0,0,0,0.15);
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s ease;
+    outline: none;
+}
+
+.float-appearance-btn:hover {
+    transform: scale(1.12) rotate(-10deg);
+    box-shadow: 0 10px 32px rgba(79, 70, 229, 0.6), 0 4px 12px rgba(0,0,0,0.18);
+}
+
+.float-appearance-btn:active {
+    transform: scale(0.96);
+}
+
+.float-appearance-btn::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #a78bfa, #818cf8, #6366f1);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.float-appearance-btn:hover::before {
+    opacity: 0.35;
+}
+
+/* Tooltip label */
+.float-appearance-btn::after {
+    content: 'Pengaturan Tampilan';
+    position: absolute;
+    right: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(30, 27, 75, 0.92);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    backdrop-filter: blur(8px);
+}
+
+.float-appearance-btn:hover::after {
+    opacity: 1;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   APPEARANCE OFFCANVAS PANEL
+══════════════════════════════════════════════════════════════ */
+.appearance-panel {
+    border-left: none !important;
+    box-shadow: -12px 0 48px rgba(59, 91, 219, 0.15), -4px 0 16px rgba(0,0,0,0.08) !important;
+}
+
+.appearance-panel-header {
+    background: linear-gradient(135deg, #4f46e5 0%, #6c3ee8 50%, #3b5bdb 100%) !important;
+    color: #fff !important;
+    border-bottom: none !important;
+    padding: 1.1rem 1.25rem !important;
+}
+
+.appearance-panel-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.appearance-section {
+    border-bottom: 1px solid var(--simatk-border);
+}
+
+.appearance-section-title {
+    padding: 0.75rem 1.25rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #4f46e5;
+    background: #f5f3ff;
+    border-bottom: 1px solid #ede9fe;
+}
+
+.appearance-section-body {
+    padding: 1rem 1.25rem;
+}
+
+.appearance-section-body .form-label {
+    font-size: 0.87rem;
+    margin-bottom: 0.35rem;
+}
+
+.appearance-section-body .form-control {
+    font-size: 0.9rem;
+    border-radius: 8px;
+    border-color: #dbeafe;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.appearance-section-body .form-control:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.appearance-section-body .form-text {
+    font-size: 0.76rem;
+    color: var(--simatk-muted);
+    margin-top: 0.3rem;
+}
+
+.appearance-footer {
+    padding: 1rem 1.25rem;
+    background: #fafbff;
+    border-top: 1px solid var(--simatk-border);
+    position: sticky;
+    bottom: 0;
+}
+
+.btn-appearance-save {
+    background: linear-gradient(135deg, #4f46e5, #6c3ee8);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+    transition: filter 0.18s ease, box-shadow 0.18s ease, transform 0.1s ease;
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
+}
+
+.btn-appearance-save:hover {
+    filter: brightness(1.06);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-appearance-save:active {
+    transform: translateY(0);
+}

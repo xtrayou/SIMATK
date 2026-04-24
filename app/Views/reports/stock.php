@@ -3,33 +3,9 @@
 <?= $this->section('content'); ?>
 
 <?php
-// Tentukan mode laporan aktif (stok/opname) lalu siapkan query dasar untuk mempertahankan filter.
-$reportMode = $report_mode ?? 'stock';
-$isOpnameMode = $reportMode === 'opname';
-$reportTitle = $isOpnameMode ? 'Stock Opname' : 'Stok Saat Ini';
-$reportDescription = $isOpnameMode
-    ? 'Data hasil pengecekan fisik stok pada periode tertentu.'
-    : 'Menampilkan jumlah stok barang saat ini.';
-$reportIconClass = $isOpnameMode ? 'bi-clipboard2-check' : 'bi-box-seam';
-
-$baseQuery = [
-    'month'       => $filters['month'] ?? date('m'),
-    'year'        => $filters['year'] ?? date('Y'),
-    'category'    => $filters['category'] ?? '',
-    'stock_status' => $filters['stock_status'] ?? '',
-    'sort_by'     => $filters['sort_by'] ?? 'name',
-    'sort_order'  => $filters['sort_order'] ?? 'ASC',
-];
-
-$stockQuery = $baseQuery;
-$stockQuery['report_mode'] = 'stock';
-
-$opnameQuery = $baseQuery;
-unset($opnameQuery['stock_status']);
-$opnameQuery['report_mode'] = 'opname';
-
-$stockTabUrl = current_url() . '?' . http_build_query(array_filter($stockQuery, static fn($value) => $value !== '' && $value !== null));
-$opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery, static fn($value) => $value !== '' && $value !== null));
+$reportTitle = 'Stok Saat Ini';
+$reportDescription = 'Menampilkan jumlah stok barang saat ini.';
+$reportIconClass = 'bi-box-seam';
 ?>
 
 <!-- Report Header -->
@@ -68,30 +44,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
     </div>
 </div>
 
-<!-- Report Mode Tabs -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <ul class="nav nav-pills" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link <?= $reportMode === 'stock' ? 'active' : '' ?>" href="<?= esc($stockTabUrl) ?>">
-                            <i class="bi bi-box-seam me-2"></i>Stok Saat Ini
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $reportMode === 'opname' ? 'active' : '' ?>" href="<?= esc($opnameTabUrl) ?>">
-                            <i class="bi bi-clipboard2-check me-2"></i>Stock Opname
-                        </a>
-                    </li>
-                </ul>
-                <small class="text-muted">
-                    Mode aktif: <strong><?= $reportMode === 'opname' ? 'Stock Opname' : 'Stok Saat Ini' ?></strong>
-                </small>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Summary Statistics -->
 <div class="row mb-4">
@@ -172,8 +125,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
             </div>
             <div class="card-body">
                 <form method="GET" id="filterForm">
-                    <input type="hidden" name="report_mode" value="<?= esc($reportMode) ?>">
-                    <div class="row">
+                                        <div class="row">
                         <div class="col-md-2 mb-3">
                             <label for="month" class="form-label">Bulan</label>
                             <select class="form-select" id="month" name="month">
@@ -200,8 +152,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                                 <?php endforeach ?>
                             </select>
                         </div>
-                        <?php if ($reportMode === 'stock'): ?>
-                            <div class="col-md-3 mb-3">
+                                                    <div class="col-md-3 mb-3">
                                 <label for="stock_status" class="form-label">Status Stok</label>
                                 <select class="form-select" id="stock_status" name="stock_status">
                                     <option value="">Semua Status</option>
@@ -219,7 +170,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                                     </option>
                                 </select>
                             </div>
-                        <?php endif; ?>
+
                         <div class="col-md-2 mb-3">
                             <label for="sort_by" class="form-label">Urutkan</label>
                             <select class="form-select" id="sort_by" name="sort_by">
@@ -260,13 +211,13 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
         <div class="col-12">
             <div class="alert alert-warning mb-0">
                 <i class="bi bi-exclamation-triangle me-2"></i>
-                Data arsip <?= $reportMode === 'opname' ? 'stock opname' : 'laporan stok' ?> untuk periode <strong><?= esc(($filters['month'] ?? date('m')) . '/' . ($filters['year'] ?? date('Y'))) ?></strong> tidak ditemukan.
+                Data arsip laporan stok untuk periode <strong><?= esc(($filters['month'] ?? date('m')) . '/' . ($filters['year'] ?? date('Y'))) ?></strong> tidak ditemukan.
                 Laporan periode ini tidak bisa dianggap valid sampai arsip bulan tersebut tersedia.
             </div>
         </div>
     </div>
 <?php endif; ?>
-<?php if ($reportMode === 'stock' && !empty($category_breakdown)): ?>
+<?php if (!empty($category_breakdown)): ?>
     <?php // Tampilkan visualisasi komposisi nilai stok per kategori saat mode laporan stok aktif. 
     ?>
     <!-- Category Breakdown Chart -->
@@ -279,7 +230,9 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-8">
-                            <canvas id="categoryChart" height="300"></canvas>
+                            <div style="position:relative; height:300px;">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <div class="table-responsive">
@@ -309,9 +262,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
         </div>
     </div>
 <?php endif ?>
-<?php if ($reportMode === 'stock'): ?>
-    <?php // Tabel detail stok hanya ditampilkan pada mode laporan stok. 
-    ?>
+
     <!-- Detailed Stock Report -->
     <div class="row">
         <div class="col-12">
@@ -360,9 +311,19 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
                                                 <code><?= $barang['sku'] ?></code>
                                             </td>
                                             <td>
-                                                <strong class="<?= $barang['stock_status'] == 'out_of_stock' ? 'text-danger' : ($barang['stock_status'] == 'low_stock' ? 'text-warning' : 'text-success') ?>">
-                                                    <?= number_format($barang['current_stock']) ?>
-                                                </strong>
+                                                <div class="d-flex flex-column">
+                                                    <strong class="<?= $barang['stock_status'] == 'out_of_stock' ? 'text-danger' : ($barang['stock_status'] == 'low_stock' ? 'text-warning' : 'text-success') ?> fs-6">
+                                                        <?= number_format($barang['current_stock']) ?>
+                                                    </strong>
+                                                    <?php if (($barang['stock_baik'] ?? 0) > 0 || ($barang['stock_rusak'] ?? 0) > 0): ?>
+                                                        <div class="mt-1" style="font-size: 0.75rem;">
+                                                            <span class="text-success" title="Barang Kondisi Baik"><i class="bi bi-check-circle"></i> Baik: <?= number_format($barang['stock_baik'] ?? $barang['current_stock']) ?></span><br>
+                                                            <?php if (($barang['stock_rusak'] ?? 0) > 0): ?>
+                                                                <span class="text-danger" title="Barang Kondisi Rusak"><i class="bi bi-x-circle"></i> Rusak: <?= number_format($barang['stock_rusak']) ?></span>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
                                             </td>
                                             <td>
                                                 <span class="text-muted"><?= number_format($barang['min_stock']) ?></span>
@@ -405,78 +366,8 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
             </div>
         </div>
     </div>
-<?php endif; ?>
 
-<?php if ($reportMode === 'opname'): ?>
-    <?php // Section khusus ringkasan hasil stock opname per barang. 
-    ?>
-    <!-- Section Stock Opname -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="mb-0"><i class="bi bi-clipboard2-check text-primary me-2"></i>Section Stock Opname</h5>
-                        <small class="text-muted">Ringkasan hasil opname per barang</small>
-                    </div>
-                    <small class="text-muted">Total: <?= number_format(count($products)) ?> barang</small>
-                </div>
-                <div class="card-body">
-                    <?php if (!empty($products)): ?>
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle" id="stockOpnameSectionTable">
-                                <thead class="table-light text-uppercase small">
-                                    <tr>
-                                        <th width="50" class="text-center">#</th>
-                                        <th>Informasi Barang</th>
-                                        <th class="text-center">Kategori</th>
-                                        <th class="text-center">Baik</th>
-                                        <th class="text-center">Rusak</th>
-                                        <th class="text-center">Total</th>
-                                        <th class="text-end">Harga</th>
-                                        <th class="text-end">Total Nilai</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($products as $index => $barang): ?>
-                                        <?php
-                                        $stokBaik = (int) ($barang['stock_baik'] ?? $barang['current_stock'] ?? 0);
-                                        $stokRusak = (int) ($barang['stock_rusak'] ?? 0);
-                                        $stokTotal = (int) ($barang['current_stock'] ?? 0);
-                                        $hargaSatuan = (float) ($barang['price'] ?? 0);
-                                        $totalNilai = (float) ($barang['stock_value'] ?? ($stokTotal * $hargaSatuan));
-                                        ?>
-                                        <tr>
-                                            <td class="text-center"><?= $index + 1 ?></td>
-                                            <td>
-                                                <div class="fw-semibold"><?= esc($barang['name']) ?></div>
-                                                <small class="text-muted"><?= esc($barang['sku'] ?? '-') ?> | <?= esc($barang['unit'] ?? 'Pcs') ?></small>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-light text-dark border"><?= esc($barang['category_name'] ?? 'Uncategorized') ?></span>
-                                            </td>
-                                            <td class="text-center"><?= number_format($stokBaik) ?></td>
-                                            <td class="text-center"><?= number_format($stokRusak) ?></td>
-                                            <td class="text-center fw-bold <?= $stokTotal <= 0 ? 'text-danger' : 'text-primary' ?>">
-                                                <?= number_format($stokTotal) ?>
-                                            </td>
-                                            <td class="text-end">Rp <?= number_format($hargaSatuan, 0, ',', '.') ?></td>
-                                            <td class="text-end fw-bold text-success">Rp <?= number_format($totalNilai, 0, ',', '.') ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    <?php else: ?>
-                        <div class="text-center py-4 text-muted">
-                            Tidak ada data stock opname untuk periode yang dipilih.
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </div>
-<?php endif; ?>
+
 
 <?= $this->endSection(); ?>
 <?= $this->section('breadcrumb'); ?>
@@ -491,7 +382,7 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
 <script>
     $(document).ready(function() {
         // Initialize DataTable for Laporan Stok mode
-        if ($('#stockReportTable').length) {
+        if ($.fn.DataTable && $('#stockReportTable').length) {
             $('#stockReportTable').DataTable({
                 responsive: true,
                 pageLength: 50,
@@ -526,20 +417,15 @@ $opnameTabUrl = current_url() . '?' . http_build_query(array_filter($opnameQuery
             });
         }
 
-        // Initialize DataTable for Stock Opname mode
-        if ($('#stockOpnameSectionTable').length) {
-            $('#stockOpnameSectionTable').DataTable({
-                responsive: true,
-                pageLength: 50,
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
-                }
-            });
-        }
+
 
         // Category breakdown chart
-        <?php if ($reportMode === 'stock' && !empty($category_breakdown)): ?>
+        <?php if (!empty($category_breakdown)): ?>
             // Dataset chart diambil dari breakdown kategori yang sama dengan tabel ringkasan.
+            function formatCurrency(value) {
+                return 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(value));
+            }
+
             const categoryData = {
                 labels: <?= json_encode(array_keys($category_breakdown)) ?>,
                 datasets: [{

@@ -51,17 +51,6 @@ $errorMsg = static function (string $field): string {
 
     <!-- Info Panel -->
     <div class="col-12 col-lg-4">
-        <div class="card shadow-sm border-0 mb-4 bg-primary text-white">
-            <div class="card-body p-4">
-                <h5 class="fw-bold mb-3"><i class="bi bi-lightbulb me-2"></i>Petunjuk</h5>
-                <ul class="mb-0 ps-3 small">
-                    <li class="mb-2">Gunakan <strong>Kode Barang</strong> yang konsisten agar mudah dalam pencarian.</li>
-                    <li class="mb-2"><strong>Stok Minimum</strong> digunakan oleh sistem untuk memberikan notifikasi jika persediaan hampir habis.</li>
-                    <li>Harga dapat diupdate sewaktu-waktu jika ada perubahan dari supplier.</li>
-                </ul>
-            </div>
-        </div>
-
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white">
                 <h5 class="mb-0">Preview Barang</h5>

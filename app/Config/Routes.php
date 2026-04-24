@@ -44,11 +44,6 @@ $routes->group('products', ['filter' => 'auth'], function ($routes) {
     $routes->get('edit/(:num)', 'BarangController::ubah/$1', ['filter' => 'auth']);
     $routes->match(['post', 'delete'], 'delete/(:num)', 'BarangController::hapus/$1', ['filter' => 'auth']);
     $routes->post('generate-sku', 'BarangController::generateKodeBarang', ['filter' => 'auth']);
-
-    // Ekspor barang
-    $routes->get('export/excel', 'BarangController::exportExcel', ['filter' => 'auth']);
-    $routes->get('export/pdf', 'BarangController::exportPDF', ['filter' => 'auth']);
-    $routes->get('export/(:num)', 'BarangController::exportSingle/$1', ['filter' => 'auth']);
 });
 
 // ── Manajemen Stok ───────────────────────────────────────────────────
@@ -64,6 +59,7 @@ $routes->group('stock', ['filter' => 'auth'], function ($routes) {
     $routes->get('history/export/(:alpha)', 'StokController::exportHistory/$1', ['filter' => 'auth']);
     $routes->get('adjustment', 'StokController::adjustment', ['filter' => 'auth']);
     $routes->post('adjustment/store', 'StokController::storeAdjustment', ['filter' => 'auth']);
+
     $routes->get('alerts', 'StokController::alerts', ['filter' => 'auth']);
     $routes->get('product/(:num)', 'StokController::getProductStock/$1', ['filter' => 'auth']);
 });
@@ -123,6 +119,8 @@ $routes->group('users', ['filter' => 'role:superadmin'], function ($routes) {
 // ── Pengaturan ───────────────────────────────────────────────────────
 $routes->get('settings', 'PengaturanController::index', ['filter' => 'auth']);
 $routes->post('settings/update', 'PengaturanController::update', ['filter' => 'auth']);
+$routes->post('settings/update-appearance', 'PengaturanController::updateAppearance', ['filter' => 'role:superadmin']);
+
 
 // ── Notifikasi ───────────────────────────────────────────────────────
 $routes->group('notifications', ['filter' => 'auth'], function ($routes) {

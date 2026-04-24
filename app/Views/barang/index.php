@@ -2,58 +2,6 @@
 
 <?= $this->section('content') ?>
 
-<!-- Filter & Pencarian -->
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="bi bi-funnel text-primary me-2"></i> Filter & Pencarian</h5>
-            </div>
-            <div class="card-body">
-                <form method="GET" id="filterForm">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="search" class="form-label fw-bold">Cari Barang</label>
-                            <input type="text" class="form-control" id="search" name="search"
-                                value="<?= $filterCari ?>" placeholder="Ketik nama, kode barang, atau deskripsi...">
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="category" class="form-label fw-bold">Kategori</label>
-                            <select class="form-select" id="category" name="category">
-                                <option value="">Semua Kategori</option>
-                                <?php foreach ($daftarKategori as $kat): ?>
-                                    <option value="<?= $kat['id'] ?>"
-                                        <?= $filterKategori == $kat['id'] ? 'selected' : '' ?>>
-                                        <?= esc($kat['name']) ?>
-                                    </option>
-                                <?php endforeach ?>
-                            </select>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="stock_status" class="form-label fw-bold">Status Stok</label>
-                            <select class="form-select" id="stock_status" name="stock_status">
-                                <option value="">Semua Status</option>
-                                <option value="normal" <?= $filterStok == 'normal' ? 'selected' : '' ?>>Normal</option>
-                                <option value="rendah" <?= $filterStok == 'rendah' ? 'selected' : '' ?>>Stok Rendah</option>
-                                <option value="habis" <?= $filterStok == 'habis' ? 'selected' : '' ?>>Stok Habis</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3 d-flex align-items-end">
-                            <div class="w-100">
-                                <button type="submit" class="btn btn-primary w-100 mb-2">
-                                    <i class="bi bi-search me-1"></i> Cari
-                                </button>
-                                <a href="<?= base_url('/products') ?>" class="btn btn-light w-100">
-                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Tabel Barang -->
 <div class="row">
@@ -68,15 +16,6 @@
                     <a href="<?= base_url('/products/create') ?>" class="btn btn-success">
                         <i class="bi bi-plus-lg me-1"></i> Tambah Barang
                     </a>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-download me-1"></i> Export
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="<?= base_url('/products/export/excel') ?>"><i class="bi bi-file-earmark-excel text-success me-2"></i> Excel</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url('/products/export/pdf') ?>"><i class="bi bi-file-earmark-pdf text-danger me-2"></i> PDF</a></li>
-                        </ul>
-                    </div>
                 </div>
             </div>
             <div class="card-body">

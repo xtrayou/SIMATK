@@ -2,56 +2,7 @@
 
 <?= $this->section('content') ?>
 
-<!-- Filter Panel -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3">
-                <h6 class="mb-0 fw-bold"><i class="bi bi-funnel me-2"></i>Filter Riwayat Stok</h6>
-            </div>
-            <div class="card-body">
-                <form method="GET" action="<?= base_url('/stock/history') ?>" class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold text-muted">Barang</label>
-                        <select name="product" class="form-select select2">
-                            <option value="">Semua Barang</option>
-                            <?php foreach ($daftarBarang as $p): ?>
-                                <option value="<?= $p['id'] ?>" <?= $filterBarang == $p['id'] ? 'selected' : '' ?>>
-                                    <?= esc($p['name']) ?> (<?= $p['sku'] ?>)
-                                </option>
-                            <?php endforeach ?>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label small fw-bold text-muted">Tipe Pergerakan</label>
-                        <select name="type" class="form-select">
-                            <option value="">Semua</option>
-                            <option value="IN" <?= $filterTipe == 'IN' ? 'selected' : '' ?>>Barang Masuk</option>
-                            <option value="OUT" <?= $filterTipe == 'OUT' ? 'selected' : '' ?>>Barang Keluar</option>
-                            <option value="ADJUSTMENT" <?= $filterTipe == 'ADJUSTMENT' ? 'selected' : '' ?>>Penyesuaian</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label small fw-bold text-muted">Mulai Dari</label>
-                        <input type="date" name="start_date" class="form-control" value="<?= $tglMulai ?>">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label small fw-bold text-muted">Sampai Dengan</label>
-                        <input type="date" name="end_date" class="form-control" value="<?= $tglSelesai ?>">
-                    </div>
-                    <div class="col-md-3 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-primary flex-grow-1">
-                            <i class="bi bi-search me-1"></i> Cari
-                        </button>
-                        <a href="<?= base_url('/stock/history') ?>" class="btn btn-light border" title="Reset Filter">
-                            <i class="bi bi-arrow-counterclockwise"></i>
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Data Tabel -->
 <div class="row">
@@ -143,14 +94,16 @@
 <?= $this->section('scripts') ?>
 <script>
     $(document).ready(function() {
-        $('#historyTable').DataTable({
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
-            },
-            order: [
-                [0, 'desc']
-            ]
-        });
+        if ($.fn.DataTable && $('#historyTable').length) {
+            $('#historyTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+                },
+                order: [
+                    [0, 'desc']
+                ]
+            });
+        }
     });
 </script>
 <?= $this->endSection() ?>

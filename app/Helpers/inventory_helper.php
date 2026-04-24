@@ -232,3 +232,22 @@ if (!function_exists('get_total_laporan_bulanan')) {
         return $count;
     }
 }
+
+/* =========================
+ * 9) Baca App Setting dari Session
+ * ========================= */
+if (!function_exists('app_setting')) {
+    /**
+     * Ambil nilai pengaturan aplikasi dari session.
+     * Digunakan di view untuk membaca konfigurasi tampilan secara real-time.
+     *
+     * @param string $key     Kunci pengaturan (contoh: 'app_name', 'hero_title')
+     * @param mixed  $default Nilai default jika kunci tidak ditemukan
+     * @return mixed
+     */
+    function app_setting(string $key, mixed $default = null): mixed
+    {
+        $settings = session('app_settings') ?? [];
+        return $settings[$key] ?? $default;
+    }
+}

@@ -49,6 +49,13 @@ class PengaturanController extends BaseController
             'notify_email_overdue'      => 1,
             'notify_dashboard'          => 1,
             'notify_due_reminder_days'  => 1,
+
+            // 6. Tampilan (Appearance)
+            'hero_title'    => 'Sistem Inventaris ATK',
+            'hero_subtitle' => 'Kelola alat tulis kantor dengan mudah, efisien, dan terintegrasi.',
+            'hero_accent'   => 'Inventaris',
+            'hero_bg'       => '',
+            'logo_name'     => 'Sistem Inventaris ATK',
         ];
     }
 
@@ -186,5 +193,45 @@ class PengaturanController extends BaseController
             ],
             default => [],
         };
+    }
+
+    /**
+     * Update tampilan / appearance (hanya superadmin)
+     * Dipanggil dari floating panel di setiap halaman admin
+     */
+    public function updateAppearance()
+    {
+        $current = $this->loadSettings();
+
+        $fields = ['app_name', 'institution', 'logo_name', 'email', 'address',
+                   'hero_title', 'hero_subtitle', 'hero_accent'];
+
+        foreach ($fields as $field) {
+            $val = $this->request->getPost($field);
+            if ($val !== null) {
+                $current[$field] = trim($val);
+            }
+        }
+
+        // Handle logo upload
+        $logo = $this->request->getFile('logo');
+        if ($logo && $logo->isValid() && !$logo->hasMoved()) {
+            $newLogoName = 'logo_' . time() . '.' . $logo->getExtension();
+            $logo->move(FCPATH . 'img', $newLogoName);
+            $current['logo'] = $newLogoName;
+        }
+
+        // Handle hero background upload
+        $heroBg = $this->request->getFile('hero_bg');
+        if ($heroBg && $heroBg->isValid() && !$heroBg->hasMoved()) {
+            $newBgName = 'hero_' . time() . '.' . $heroBg->getExtension();
+            $heroBg->move(FCPATH . 'img', $newBgName);
+            $current['hero_bg'] = $newBgName;
+        }
+
+        session()->set('app_settings', $current);
+
+        return redirect()->back()
+            ->with('sukses', 'Pengaturan tampilan berhasil disimpan.');
     }
 }

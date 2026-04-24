@@ -140,6 +140,8 @@ class LaporanService
                 stock_opname_archives.product_id,
                 stock_opname_archives.product_name as name,
                 stock_opname_archives.quantity as current_stock,
+                stock_opname_archives.good_quantity as stock_baik,
+                stock_opname_archives.damaged_quantity as stock_rusak,
                 stock_opname_archives.unit_price as price,
                 stock_opname_archives.total_value as stock_value,
                 "archived" as stock_status,
@@ -832,18 +834,23 @@ class LaporanService
         $totalHarga = 0;
 
         foreach ($products as $index => $barang) {
-            $hargaSatuan = (float)($barang['price'] ?? 0);
-            $jumlah = (int)($barang['current_stock'] ?? 0);
-            $nilaiTotal = $jumlah * $hargaSatuan;
-            $kondisi = $jumlah > 0 ? 'V' : '';
+            $hargaSatuan  = (float) ($barang['price'] ?? 0);
+            $jumlah       = (int) ($barang['current_stock'] ?? 0);
+            $stokBaik     = (int) ($barang['stock_baik'] ?? $jumlah);
+            $stokRusak    = (int) ($barang['stock_rusak'] ?? 0);
+            $nilaiTotal   = $jumlah * $hargaSatuan;
+
+            // Kolom F: tanda centang jika ada stok baik; Kolom G: angka stok rusak (kosong jika 0)
+            $kondisiBaik  = $stokBaik > 0 ? 'V' : '';
+            $kondisiRusak = $stokRusak > 0 ? $stokRusak : '';
 
             $sheet->setCellValue('A' . $row, $index + 1);
             $sheet->setCellValue('B' . $row, $barang['name']);
             $sheet->setCellValue('C' . $row, $jumlah);
             $sheet->setCellValue('D' . $row, $hargaSatuan);
             $sheet->setCellValue('E' . $row, $nilaiTotal);
-            $sheet->setCellValue('F' . $row, $kondisi);
-            $sheet->setCellValue('G' . $row, '');
+            $sheet->setCellValue('F' . $row, $kondisiBaik);
+            $sheet->setCellValue('G' . $row, $kondisiRusak);
 
             // Alignment
             $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal($alignment::HORIZONTAL_CENTER);
@@ -856,7 +863,7 @@ class LaporanService
             $sheet->getStyle('E' . $row)->getNumberFormat()->setFormatCode('#,##0');
 
             $totalHargaSatuan += $hargaSatuan;
-            $totalHarga += $nilaiTotal;
+            $totalHarga       += $nilaiTotal;
             $row++;
         }
 
@@ -889,7 +896,7 @@ class LaporanService
         // ── Generate file ──
         $bulan = strtoupper($this->getNamaBulan((int)$month));
         $filename = $bulan . ' - STOCK OPNAME PERSEDIAAN FASILKOM ' . $year . '.xlsx';
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');
@@ -976,10 +983,14 @@ class LaporanService
         $totalHarga = 0;
 
         foreach ($products as $index => $barang) {
-            $hargaSatuan = (float)($barang['price'] ?? 0);
-            $jumlah = (int)($barang['current_stock'] ?? 0);
-            $nilaiTotal = $jumlah * $hargaSatuan;
-            $kondisi = $jumlah > 0 ? 'V' : '';
+            $hargaSatuan  = (float) ($barang['price'] ?? 0);
+            $jumlah       = (int) ($barang['current_stock'] ?? 0);
+            $stokBaik     = (int) ($barang['stock_baik'] ?? $jumlah);
+            $stokRusak    = (int) ($barang['stock_rusak'] ?? 0);
+            $nilaiTotal   = $jumlah * $hargaSatuan;
+
+            $kondisiBaik  = $stokBaik > 0 ? 'V' : '';
+            $kondisiRusak = $stokRusak > 0 ? number_format($stokRusak) : '';
 
             $html .= '<tr>
                 <td class="center">' . ($index + 1) . '</td>
@@ -987,12 +998,12 @@ class LaporanService
                 <td class="center">' . number_format($jumlah) . '</td>
                 <td class="right">' . number_format($hargaSatuan) . '</td>
                 <td class="right">' . number_format($nilaiTotal) . '</td>
-                <td class="center">' . $kondisi . '</td>
-                <td class="center"></td>
+                <td class="center">' . $kondisiBaik . '</td>
+                <td class="center">' . $kondisiRusak . '</td>
             </tr>';
 
             $totalHargaSatuan += $hargaSatuan;
-            $totalHarga += $nilaiTotal;
+            $totalHarga       += $nilaiTotal;
         }
 
         $html .= '<tr class="total">
@@ -1113,23 +1124,37 @@ class LaporanService
                     $total = $qty * $price;
                 }
 
-                $goodQty = strtoupper($goodRaw) === 'V' ? $qty : 0;
+                // Kolom F: 'V' berarti baik; jika bukan V, mungkin berisi angka barang baik.
+                if (strtoupper($goodRaw) === 'V') {
+                    $goodQty = $qty;
+                } elseif (is_numeric($goodRaw)) {
+                    $goodQty = (int) round((float) $goodRaw);
+                } else {
+                    $goodQty = $qty; // default: semua baik
+                }
+
+                // Kolom G: angka barang rusak/usang
                 $damagedQty = is_numeric($damagedRaw) ? (int) round((float) $damagedRaw) : 0;
 
+                // Pastikan baik + rusak tidak melebihi total stok
+                if (($goodQty + $damagedQty) > $qty) {
+                    $goodQty = max(0, $qty - $damagedQty);
+                }
+
                 $rows[] = [
-                    'product_id' => null,
-                    'name' => $name,
+                    'product_id'    => null,
+                    'name'          => $name,
                     'current_stock' => $qty,
-                    'price' => $price,
-                    'stock_value' => $total,
-                    'stock_status' => $qty <= 0 ? 'out_of_stock' : 'normal',
-                    'min_stock' => 0,
+                    'price'         => $price,
+                    'stock_value'   => $total,
+                    'stock_status'  => $qty <= 0 ? 'out_of_stock' : 'normal',
+                    'min_stock'     => 0,
                     'category_name' => 'Arsip Stock Opname',
-                    'category_id' => null,
-                    'unit' => 'Pcs',
-                    'sku' => '-',
-                    'stock_baik' => $goodQty,
-                    'stock_rusak' => $damagedQty,
+                    'category_id'   => null,
+                    'unit'          => 'Pcs',
+                    'sku'           => '-',
+                    'stock_baik'    => $goodQty,
+                    'stock_rusak'   => $damagedQty,
                 ];
             }
 
@@ -1389,7 +1414,7 @@ class LaporanService
         $sheet->setCellValue('B' . $sigRow, 'NIP. 198910232018032001');
 
         $filename = 'MUTASI_STOK_' . date('Ymd') . '.xlsx';
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');

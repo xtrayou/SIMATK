@@ -2,34 +2,18 @@
     // ── Inisialisasi ─────────────────────────────────────────────────
     AOS.init({ once: true, offset: 100 });
 
-    // Data dari PHP
-    const kodeResiBaru        = <?= json_encode(session()->getFlashdata('kode_resi') ?: service('request')->getGet('resi')) ?>;
+    // Data dari PHP – semua modal trigger dikontrol dari sini
+    const bukaModalResi       = <?= json_encode(session()->has('reference_no')) ?>;
     const bukaModalCekStatus  = <?= json_encode((bool) session('_open_track_modal')) ?>;
     const bukaModalHasilTrack = <?= json_encode((bool) session('_open_track_result_modal')) ?>;
 
-    // ── Modal: Kode Resi ─────────────────────────────────────────────
-    if (kodeResiBaru) {
+    // ── Modal: Kode Resi (konten sudah dirender oleh modal_resi.php) ─
+    if (bukaModalResi) {
         setTimeout(() => {
-            const modalEl    = document.getElementById('modalKodeResi');
-            const resiText   = document.getElementById('resiCodeText');
-            const btnSalin   = document.getElementById('btnSalinResi');
-
-            if (resiText) resiText.textContent = kodeResiBaru;
-
-            if (btnSalin) {
-                btnSalin.addEventListener('click', async () => {
-                    try {
-                        await navigator.clipboard.writeText(kodeResiBaru);
-                        btnSalin.innerHTML = '<i class="bi bi-check2 me-1"></i>Tersalin';
-                    } catch {
-                        btnSalin.innerHTML = '<i class="bi bi-x-circle me-1"></i>Gagal Salin';
-                    }
-                }, { once: true });
-            }
-
+            const modalEl = document.getElementById('modalKodeResi');
             if (modalEl) new bootstrap.Modal(modalEl).show();
 
-            // Hapus ?resi= dari URL agar tidak muncul lagi saat refresh
+            // Hapus ?resi= dari URL agar tidak muncul ulang saat refresh
             const url = new URL(window.location.href);
             if (url.searchParams.has('resi')) {
                 url.searchParams.delete('resi');
@@ -211,5 +195,20 @@
         const isPass  = inputPw.type === 'password';
         inputPw.type  = isPass ? 'text'    : 'password';
         ikon.className = isPass ? 'bi bi-eye-slash' : 'bi bi-eye';
+    }
+
+    // ── Salin kode resi ke clipboard (dipanggil oleh modal_resi.php) ─
+    function salinResi(teks, btn) {
+        navigator.clipboard.writeText(teks).then(() => {
+            const icon = btn.querySelector('.bi-clipboard');
+            if (icon) {
+                icon.classList.replace('bi-clipboard', 'bi-check2');
+            }
+            const ori = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check2 me-2"></i>Tersalin!';
+            setTimeout(() => { btn.innerHTML = ori; }, 3000);
+        }).catch(() => {
+            alert('Gagal menyalin resi. Coba salin manual.');
+        });
     }
 </script>
