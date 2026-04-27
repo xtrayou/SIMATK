@@ -145,7 +145,3 @@ $routes->get('ask/success', 'PermintaanController::askSuccess');
 // ── Halaman Publik - Lacak Status Permintaan ─────────────────────────
 $routes->get('track', 'PermintaanController::trackForm');
 $routes->post('track-status', 'PermintaanController::lacakStatus');
-
-// ── Maintenance Routes ────────────────────────────────────────────────
-// Route maintenance (fix-request-status, fix-session) telah dihapus.
-// Jika diperlukan kembali, buat controller MaintenanceController yang proper.

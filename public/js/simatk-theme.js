@@ -5,8 +5,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function initSidebarToggle() {
     var sidebarToggle = document.getElementById('sidebarToggle');
+    var overlay = document.getElementById('sidebarOverlay');
     if (!sidebarToggle) {
         return;
+    }
+
+    function closeMobileSidebar() {
+        document.body.classList.remove('sidebar-open');
     }
 
     sidebarToggle.addEventListener('click', function (event) {
@@ -20,17 +25,15 @@ function initSidebarToggle() {
         document.body.classList.toggle('sidebar-hidden');
     });
 
-    document.addEventListener('click', function (event) {
-        if (window.innerWidth > 992 || !document.body.classList.contains('sidebar-open')) {
-            return;
-        }
+    // Tutup sidebar mobile saat klik overlay
+    if (overlay) {
+        overlay.addEventListener('click', closeMobileSidebar);
+    }
 
-        var sidebar = document.getElementById('sidebar');
-        var clickedInSidebar = sidebar && sidebar.contains(event.target);
-        var clickedToggle = sidebarToggle.contains(event.target);
-
-        if (!clickedInSidebar && !clickedToggle) {
-            document.body.classList.remove('sidebar-open');
+    // Tutup sidebar mobile saat resize ke desktop
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 992) {
+            closeMobileSidebar();
         }
     });
 }

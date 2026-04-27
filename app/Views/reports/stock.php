@@ -27,15 +27,21 @@ $reportIconClass = 'bi-box-seam';
                     </div>
                     <div class="col-md-4 text-md-end">
                         <div class="btn-group">
-                            <button class="btn btn-success" onclick="exportReport('excel')">
-                                <i class="bi bi-file-earmark-excel"></i> Excel
+                            <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-download me-2"></i>Export
                             </button>
-                            <button class="btn btn-danger" onclick="exportReport('pdf')">
-                                <i class="bi bi-file-earmark-pdf"></i> PDF
-                            </button>
-                            <button class="btn btn-info" onclick="window.print()">
-                                <i class="bi bi-printer"></i> Print
-                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" onclick="exportReport('excel'); return false;">
+                                    <i class="bi bi-file-earmark-excel me-2"></i>Excel
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" onclick="exportReport('pdf'); return false;">
+                                    <i class="bi bi-file-earmark-pdf me-2"></i>PDF
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="window.print(); return false;">
+                                    <i class="bi bi-printer me-2"></i>Print
+                                </a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -119,40 +125,43 @@ $reportIconClass = 'bi-box-seam';
 <!-- Filters -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5><i class="bi bi-funnel"></i> Filter & Sorting</h5>
-            </div>
-            <div class="card-body">
-                <form method="GET" id="filterForm">
-                                        <div class="row">
-                        <div class="col-md-2 mb-3">
-                            <label for="month" class="form-label">Bulan</label>
-                            <select class="form-select" id="month" name="month">
-                                <?php for ($m = 1; $m <= 12; $m++): ?>
-                                    <option value="<?= sprintf('%02d', $m) ?>" <?= ($filters['month'] ?? date('m')) == sprintf('%02d', $m) ? 'selected' : '' ?>>
-                                        <?= $m ?>
-                                    </option>
-                                <?php endfor; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="year" class="form-label">Tahun</label>
-                            <input type="number" class="form-control" id="year" name="year" value="<?= $filters['year'] ?? date('Y') ?>">
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="category" class="form-label">Kategori</label>
-                            <select class="form-select" id="category" name="category">
-                                <option value="">Semua Kategori</option>
-                                <?php foreach ($categories as $category): ?>
-                                    <option value="<?= $category['id'] ?>"
-                                        <?= $filters['category'] == $category['id'] ? 'selected' : '' ?>>
-                                        <?= esc($category['name']) ?>
-                                    </option>
-                                <?php endforeach ?>
-                            </select>
-                        </div>
-                                                    <div class="col-md-3 mb-3">
+        <div>
+            <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                <i class="bi bi-funnel me-2"></i>Filter & Sorting
+            </button>
+
+            <!-- Filter Form -->
+            <div class="collapse" id="filterCollapse">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="GET" id="filterForm" class="row g-3">
+                            <div class="col-md-2">
+                                <label for="month" class="form-label">Bulan</label>
+                                <select class="form-select" id="month" name="month">
+                                    <?php for ($m = 1; $m <= 12; $m++): ?>
+                                        <option value="<?= sprintf('%02d', $m) ?>" <?= ($filters['month'] ?? date('m')) == sprintf('%02d', $m) ? 'selected' : '' ?>>
+                                            <?= $m ?>
+                                        </option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="year" class="form-label">Tahun</label>
+                                <input type="number" class="form-control" id="year" name="year" value="<?= $filters['year'] ?? date('Y') ?>">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="category" class="form-label">Kategori</label>
+                                <select class="form-select" id="category" name="category">
+                                    <option value="">Semua Kategori</option>
+                                    <?php foreach ($categories as $category): ?>
+                                        <option value="<?= $category['id'] ?>"
+                                            <?= $filters['category'] == $category['id'] ? 'selected' : '' ?>>
+                                            <?= esc($category['name']) ?>
+                                        </option>
+                                    <?php endforeach ?>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
                                 <label for="stock_status" class="form-label">Status Stok</label>
                                 <select class="form-select" id="stock_status" name="stock_status">
                                     <option value="">Semua Status</option>
@@ -170,36 +179,33 @@ $reportIconClass = 'bi-box-seam';
                                     </option>
                                 </select>
                             </div>
-
-                        <div class="col-md-2 mb-3">
-                            <label for="sort_by" class="form-label">Urutkan</label>
-                            <select class="form-select" id="sort_by" name="sort_by">
-                                <option value="name" <?= $filters['sort_by'] == 'name' ? 'selected' : '' ?>>Nama</option>
-                                <option value="current_stock" <?= $filters['sort_by'] == 'current_stock' ? 'selected' : '' ?>>Stok</option>
-                                <option value="stock_value" <?= $filters['sort_by'] == 'stock_value' ? 'selected' : '' ?>>Nilai</option>
-                                <option value="category_name" <?= $filters['sort_by'] == 'category_name' ? 'selected' : '' ?>>Kategori</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="sort_order" class="form-label">Arah</label>
-                            <select class="form-select" id="sort_order" name="sort_order">
-                                <option value="ASC" <?= $filters['sort_order'] == 'ASC' ? 'selected' : '' ?>>A-Z / Kecil-Besar</option>
-                                <option value="DESC" <?= $filters['sort_order'] == 'DESC' ? 'selected' : '' ?>>Z-A / Besar-Kecil</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label class="form-label">&nbsp;</label>
-                            <div class="d-grid gap-2">
+                            <div class="col-md-2">
+                                <label for="sort_by" class="form-label">Urutkan</label>
+                                <select class="form-select" id="sort_by" name="sort_by">
+                                    <option value="name" <?= $filters['sort_by'] == 'name' ? 'selected' : '' ?>>Nama</option>
+                                    <option value="current_stock" <?= $filters['sort_by'] == 'current_stock' ? 'selected' : '' ?>>Stok</option>
+                                    <option value="stock_value" <?= $filters['sort_by'] == 'stock_value' ? 'selected' : '' ?>>Nilai</option>
+                                    <option value="category_name" <?= $filters['sort_by'] == 'category_name' ? 'selected' : '' ?>>Kategori</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="sort_order" class="form-label">Arah</label>
+                                <select class="form-select" id="sort_order" name="sort_order">
+                                    <option value="ASC" <?= $filters['sort_order'] == 'ASC' ? 'selected' : '' ?>>A-Z / Kecil-Besar</option>
+                                    <option value="DESC" <?= $filters['sort_order'] == 'DESC' ? 'selected' : '' ?>>Z-A / Besar-Kecil</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-search"></i> Filter
+                                    <i class="bi bi-search me-2"></i> Filter
                                 </button>
-                                <a href="<?= base_url('/reports/stock') ?>" class="btn btn-outline-secondary btn-sm">
+                                <a href="<?= base_url('/reports/stock') ?>" class="btn btn-outline-secondary">
                                     Reset
                                 </a>
                             </div>
-                        </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>

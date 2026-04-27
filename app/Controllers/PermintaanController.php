@@ -30,7 +30,7 @@ class PermintaanController extends BaseController
         $this->modelBarang           = new BarangModel();
         $this->modelNotifikasi       = new NotifikasiModel();
 
-        // Get the service from the container
+        // Ambil service utama agar logika bisnis permintaan terpusat di service.
         $this->permintaanService     = service('permintaan');
     }
 
@@ -41,10 +41,12 @@ class PermintaanController extends BaseController
     {
         $fragment = '';
         if (str_contains($url, '#')) {
+            // Simpan fragment (#...) agar tidak hilang setelah query resi ditambahkan.
             [$url, $frag] = explode('#', $url, 2);
             $fragment = '#' . $frag;
         }
 
+        // Gunakan separator sesuai kondisi URL: ? jika belum ada query, & jika sudah ada.
         $separator = str_contains($url, '?') ? '&' : '?';
         return $url . $separator . 'resi=' . rawurlencode($kodeResi) . $fragment;
     }
@@ -76,7 +78,7 @@ class PermintaanController extends BaseController
             $postData = $this->request->getPost();
             [$requestId, $kodeResi] = $this->permintaanService->buatPermintaan($postData);
 
-            // Handle redirection
+            // Tentukan tujuan akhir setelah simpan: form publik atau halaman internal.
             $redirectUrl = $this->request->getPost('_redirect');
             $isPublicForm = str_contains((string)$redirectUrl, 'ask');
 
@@ -100,6 +102,7 @@ class PermintaanController extends BaseController
 
     private function findByReference(string $referenceNo): ?array
     {
+        // Support 2 format referensi: "REQ-123" atau kode resi timestamp.
         if (preg_match('/^REQ-(\d+)$/i', $referenceNo, $matches)) {
             return $this->modelPermintaan->find((int) $matches[1]);
         }
@@ -148,6 +151,7 @@ class PermintaanController extends BaseController
     public function index()
     {
         $this->setPageData('Daftar Permintaan', 'Manajemen permintaan dan distribusi ATK');
+        // Backfill otomatis untuk data lama yang belum memiliki kode resi.
         $this->permintaanService->isiKodeResiKosong();
 
         $status = $this->request->getGet('status');
@@ -159,6 +163,7 @@ class PermintaanController extends BaseController
         }
 
         if ($filterResi !== '') {
+            // Pencarian fleksibel: bisa berdasarkan receipt_code atau ID numerik.
             $builder->groupStart()
                 ->like('receipt_code', $filterResi)
                 ->orLike('id', preg_replace('/\D+/', '', $filterResi))
@@ -248,7 +253,7 @@ class PermintaanController extends BaseController
     }
 
     /**
-     * Distribusikan barang dan kurangi stok (AJAX)
+     * Distribusikan permintaan barang dan kurangi stok (AJAX)
      */
     public function distribusikan($id)
     {
@@ -360,6 +365,7 @@ class PermintaanController extends BaseController
         $referenceNo = trim((string) ($this->request->getPost('reference_no') ?? ''));
         $emailRaw = trim((string) ($this->request->getPost('email') ?? ''));
         $email = strtolower($emailRaw);
+        // Jika request datang dari modal beranda, respons diarahkan untuk membuka modal hasil.
         $fromHomeModal = (string) ($this->request->getPost('_from') ?? '') === 'home-modal';
 
         $kirimError = static function (string $pesan, bool $bukaModal = false) {
@@ -386,7 +392,7 @@ class PermintaanController extends BaseController
             return $kirimError('Permintaan tidak ditemukan.', $fromHomeModal);
         }
 
-        // Email bersifat opsional. Jika diisi, harus cocok dengan data permintaan.
+        // Email bersifat opsional. Jika diisi, nilainya harus sama dengan email pada permintaan.
         if ($email !== '' && strtolower((string) ($dataPermintaan['email'] ?? '')) !== $email) {
             return $kirimError('Email tidak sesuai dengan data permintaan.', $fromHomeModal);
         }

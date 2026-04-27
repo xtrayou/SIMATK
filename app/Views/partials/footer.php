@@ -13,6 +13,16 @@
                     <a href="#permintaan" class="footer-nav-link">Permintaan</a>
                     <a href="#kontak" class="footer-nav-link">Kontak</a>
                 </div>
+                <div class="mt-3 d-flex flex-column gap-1">
+                    <div>
+                        <span class="footer-text fw-bold">Website UNSIKA!</span><br>
+                        <a href="https://www.unsika.ac.id" target="_blank" class="footer-link-ext">www.unsika.ac.id</a>
+                    </div>
+                    <div>
+                        <span class="footer-text fw-bold">Website Fasilkom!</span><br>
+                        <a href="https://cs.unsika.ac.id" target="_blank" class="footer-link-ext">cs.unsika.ac.id</a>
+                    </div>
+                </div>
             </div>
             <div class="col-lg-3">
                 <div class="social-links justify-content-lg-end">

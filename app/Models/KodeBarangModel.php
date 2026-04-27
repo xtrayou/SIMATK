@@ -2,41 +2,14 @@
 
 namespace App\Models;
 
-use CodeIgniter\Model;
-
-/**
- * KodeBarangModel - Referensi kode barang
- *
- * Setelah refactor, data kode barang dibaca langsung dari tabel products (SKU + Name).
- * Tabel kode_barang sudah dihapus untuk menghilangkan duplikasi.
- */
-class KodeBarangModel extends Model
+class KodeBarangModel
 {
-    protected $table            = 'barang';
-    protected $primaryKey       = 'id';
-    protected $useAutoIncrement = true;
-    protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
-    protected $protectFields    = true;
-    protected $allowedFields    = [];
-
-    protected bool $allowEmptyInserts = false;
-
-    // Dates
-    protected $useTimestamps = true;
-    protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
-
     /**
-     * Get all item codes (SKU + name) from products, ordered by SKU
+     * Get all item codes from the JSON file
      */
     public function getAll(): array
     {
-        return $this->select('id, sku AS kode, name AS nama')
-            ->where('is_active', true)
-            ->orderBy('sku', 'ASC')
-            ->findAll();
+        return $this->loadFromJson();
     }
 
     /**
@@ -44,16 +17,40 @@ class KodeBarangModel extends Model
      */
     public function cariKodeBarang(string $keyword = ''): array
     {
-        $builder = $this->select('id, sku AS kode, name AS nama')
-            ->where('is_active', true);
+        $data = $this->loadFromJson();
 
-        if ($keyword !== '') {
-            $builder->groupStart()
-                ->like('sku', $keyword)
-                ->orLike('name', $keyword)
-                ->groupEnd();
+        if ($keyword === '') {
+            return $data;
         }
 
-        return $builder->orderBy('sku', 'ASC')->findAll();
+        $keyword = strtolower(trim($keyword));
+        
+        return array_filter($data, function ($item) use ($keyword) {
+            $kodeMatch = strpos(strtolower($item['kode']), $keyword) !== false;
+            $namaMatch = strpos(strtolower($item['nama']), $keyword) !== false;
+            
+            return $kodeMatch || $namaMatch;
+        });
+    }
+
+    /**
+     * Load JSON data
+     */
+    private function loadFromJson(): array
+    {
+        $filePath = FCPATH . 'dataexport/kode_barang.json';
+        
+        if (!file_exists($filePath)) {
+            return [];
+        }
+
+        $json = file_get_contents($filePath);
+        $data = json_decode($json, true);
+
+        if (!is_array($data)) {
+            return [];
+        }
+
+        return $data;
     }
 }

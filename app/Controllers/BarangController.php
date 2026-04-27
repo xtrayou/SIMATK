@@ -121,11 +121,6 @@ class BarangController extends BaseController
             (int) ($data['category_id'] ?? 0)
         );
 
-        $duplicateSku = $this->modelBarang->where('sku', $resolvedSku)->first();
-        if ($duplicateSku && (!$isUpdate || (int) $duplicateSku['id'] !== $productId)) {
-            return redirect()->back()->withInput()->with('error', 'Kode barang ' . $resolvedSku . ' sudah digunakan. Silakan gunakan kode lain.');
-        }
-
         $data['sku'] = $resolvedSku;
 
         $db = \Config\Database::connect();

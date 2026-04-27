@@ -54,7 +54,7 @@
                             </div>
                         </div>
                         <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                            <h6 class="text-muted font-semibold">Nilai Inventory</h6>
+                            <h6 class="text-muted font-semibold">Nilai Inventaris</h6>
                             <h6 class="font-extrabold mb-0"><?= format_currency($inventory_value) ?></h6>
                             <small class="text-muted">Total valuasi</small>
                         </div>
@@ -70,7 +70,8 @@
                 <div class="row">
                     <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
                         <div class="stats-icon <?= $low_stock_count > 0 ? 'red' : 'green' ?> mb-2">
-                            <i class="bi bi-<?= $low_stock_count > 0 ? 'exclamation-triangle-fill' : 'check-circle-fill' ?>"></i>
+                            <i
+                                class="bi bi-<?= $low_stock_count > 0 ? 'exclamation-triangle-fill' : 'check-circle-fill' ?>"></i>
                         </div>
                     </div>
                     <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
@@ -206,7 +207,9 @@
                 <h5><i class="bi bi-pie-chart"></i> Status Stok</h5>
             </div>
             <div class="card-body">
-                <canvas id="grafikStatusStok"></canvas>
+                <div style="position:relative; max-height:280px;">
+                    <canvas id="grafikStatusStok"></canvas>
+                </div></canvas>
                 <div class="mt-3">
                     <div class="row text-center">
                         <div class="col-4">
@@ -220,14 +223,16 @@
                             <div class="stock-legend">
                                 <div class="legend-color bg-warning"></div>
                                 <small>Rendah</small>
-                                <strong class="d-block text-warning"><?= $chart_data['stock_status_pie']['data'][1] ?></strong>
+                                <strong
+                                    class="d-block text-warning"><?= $chart_data['stock_status_pie']['data'][1] ?></strong>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="stock-legend">
                                 <div class="legend-color bg-danger"></div>
                                 <small>Habis</small>
-                                <strong class="d-block text-danger"><?= $chart_data['stock_status_pie']['data'][0] ?></strong>
+                                <strong
+                                    class="d-block text-danger"><?= $chart_data['stock_status_pie']['data'][0] ?></strong>
                             </div>
                         </div>
                     </div>
@@ -278,7 +283,7 @@
                                         </td>
                                         <td>
                                             <strong class="<?= $mutasi['type'] === 'IN' ? 'text-success' : 'text-danger' ?>">
-                                                <?= $mutasi['type'] === 'IN' ? '+' : '-' ?><?= number_format($mutasi['quantity']) ?>
+                                                <?= $mutasi['type'] === 'IN' ? '+' : '-' ?>        <?= number_format($mutasi['quantity']) ?>
                                             </strong>
                                         </td>
                                     </tr>
@@ -329,12 +334,14 @@
                                                 </div>
                                                 <div>
                                                     <strong><?= esc($barang['name']) ?></strong>
-                                                    <small class="d-block text-muted"><?= esc($barang['category_name']) ?></small>
+                                                    <small
+                                                        class="d-block text-muted"><?= esc($barang['category_name']) ?></small>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <strong class="<?= $barang['current_stock'] == 0 ? 'text-danger' : 'text-warning' ?>">
+                                            <strong
+                                                class="<?= $barang['current_stock'] == 0 ? 'text-danger' : 'text-warning' ?>">
                                                 <?= number_format($barang['current_stock']) ?>
                                             </strong>
                                         </td>
@@ -389,7 +396,8 @@
                                         <div class="card-body">
                                             <div class="d-flex align-items-center">
                                                 <div class="rank-badge me-3">
-                                                    <span class="badge bg-<?= $peringkat == 0 ? 'warning' : ($peringkat == 1 ? 'secondary' : 'dark') ?> fs-6">
+                                                    <span
+                                                        class="badge bg-<?= $peringkat == 0 ? 'warning' : ($peringkat == 1 ? 'secondary' : 'dark') ?> fs-6">
                                                         #<?= $peringkat + 1 ?>
                                                     </span>
                                                 </div>
@@ -400,7 +408,8 @@
                                                         <div class="row">
                                                             <div class="col-6">
                                                                 <small class="text-muted">Stok:</small>
-                                                                <strong class="d-block"><?= number_format($barangTeratas['current_stock']) ?></strong>
+                                                                <strong
+                                                                    class="d-block"><?= number_format($barangTeratas['current_stock']) ?></strong>
                                                             </div>
                                                             <div class="col-6">
                                                                 <small class="text-muted">Nilai:</small>
@@ -433,7 +442,7 @@
 
 <?= $this->section('scripts') ?>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
 
         // ── Grafik Pergerakan Stok (Line Chart) ──────────────────────
         const ctxPergerakan = document.getElementById('grafikPergerakanStok').getContext('2d');
@@ -469,7 +478,7 @@
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: function(nilai) {
+                            callback: function (nilai) {
                                 return nilai.toLocaleString('id-ID');
                             }
                         }
@@ -497,10 +506,10 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: true
+                        display: false
                     }
                 }
             }
@@ -522,7 +531,7 @@
         }
 
         // ── Ekspor Grafik ────────────────────────────────────────────
-        window.eksporGrafik = function(jenis) {
+        window.eksporGrafik = function (jenis) {
             let grafik, namaFile;
 
             if (jenis === 'pergerakan') {

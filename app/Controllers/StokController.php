@@ -146,6 +146,10 @@ class StokController extends BaseController
                 continue;
             }
 
+            //kode allert minimum stok
+            //stok dicek terhadap min_stock jika min_stock > 0 
+            //dan stok saat ini <= min_stock maka buat notifikasi stok rendah
+
             $minStock = (int) ($barang['min_stock'] ?? 0);
             if ($minStock > 0 && $stokBaikSaatIni <= $minStock) {
                 $this->modelNotifikasi->createLowStockNotification($barangUntukNotifikasi);

@@ -7,7 +7,7 @@ use App\Models\ItemPermintaanModel;
 use App\Models\MutasiStokModel;
 use App\Models\NotifikasiModel;
 use App\Models\PermintaanModel;
-use CodeIgniter\Database\ConnectionInterface;
+use CodeIgniter\Database\BaseConnection;
 use Exception;
 
 class PermintaanService
@@ -17,7 +17,7 @@ class PermintaanService
     protected BarangModel $modelBarang;
     protected MutasiStokModel $modelMutasiStok;
     protected NotifikasiModel $modelNotifikasi;
-    protected ConnectionInterface $db;
+    protected BaseConnection $db;
 
     public function __construct(
         PermintaanModel $permintaanModel,
@@ -25,7 +25,7 @@ class PermintaanService
         BarangModel $barangModel,
         MutasiStokModel $mutasiStokModel,
         NotifikasiModel $notifikasiModel,
-        ?ConnectionInterface $db = null
+        ?BaseConnection $db = null
     ) {
         $this->modelPermintaan     = $permintaanModel;
         $this->modelItemPermintaan = $itemPermintaanModel;
@@ -46,8 +46,14 @@ class PermintaanService
         $this->db->transStart();
 
         try {
+            // Generate kode resi unik untuk permintaan baru
             $kodeResi = $this->generateKodeResiUnik();
-
+            //penjelasan kode resi unik: untuk memastikan 
+            // setiap permintaan memiliki kode resi yang unik, 
+            //  menggunakan pendekatan berbasis timestamp dengan format YYYYMMDD-HHMMSS. 
+            //Namun, karena ada kemungkinan (meskipun kecil) bahwa dua permintaan bisa dibuat 
+            //dalam detik yang sama, kita tambahkan loop untuk memastikan keunikan kode resi di database. 
+            //Jika kode yang dihasilkan sudah ada, sistem akan menunggu 1 detik dan mencoba generate kode baru hingga menemukan kode yang unik.
             $requestData = [
                 'user_id'             => session('userId') ?: null,
                 'borrower_name'       => $data['borrower_name'],
@@ -256,7 +262,7 @@ class PermintaanService
             if ($this->db->transStatus() === false) {
                 throw new Exception('Gagal memproses mutasi stok. Silakan coba lagi.');
             }
-
+            // Cek stok setelah distribusi untuk notifikasi
             $this->cekNotifikasiStok($daftarItem);
             return ['success' => true, 'message' => 'Barang berhasil didistribusikan dan stok telah terpotong.'];
         } catch (Exception $e) {
@@ -333,16 +339,28 @@ class PermintaanService
             $stokBaikSaatIni = (int) ($barang['stock_baik'] ?? $barang['current_stock']);
             $barang['current_stock'] = $stokBaikSaatIni;
 
+            // Cek notifikasi stok setelah distribusi per item yang diproses.
+            // Urutan penting:
+            // 1) Jika stok sudah 0 atau kurang -> kirim notifikasi "stok habis".
+            // 2) Jika stok masih ada -> cek apakah sudah menyentuh/melewati batas minimum.
             if ($stokBaikSaatIni <= 0) {
                 $this->modelNotifikasi->createOutOfStockNotification($barang);
             } elseif ($stokBaikSaatIni <= (int) ($barang['min_stock'] ?? 0)) {
+                // min_stock menjadi ambang "stok rendah".
+                // Saat stok <= min_stock, sistem kirim notifikasi peringatan restok.
                 $this->modelNotifikasi->createLowStockNotification($barang);
             }
         }
     }
 
+    // --- Kode Resi Unik ---
     private function generateKodeResiUnik(): string
     {
+        // Generate kode resi berbasis timestamp dengan format YYYYMMDD-HHMMSS
+        // Tambahkan loop untuk memastikan keunikan kode resi di database
+        //penjelasan do while: untuk memastikan kode resi yang dihasilkan
+        //  benar-benar unik dengan cara mengecek ke database apakah kode tersebut sudah ada. Jika sudah ada
+        //  maka sistem akan menunggu 1 detik dan mencoba generate kode baru hingga menemukan kode yang unik.
         do {
             $kode = date('Ymd-His');
             $exists = $this->modelPermintaan->where('receipt_code', $kode)->countAllResults() > 0;

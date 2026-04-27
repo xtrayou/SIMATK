@@ -2,32 +2,52 @@
 
 <?= $this->section('content') ?>
 
-
+<!-- Report Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="mb-1">
+                            <i class="bi bi-clock-history text-primary"></i>
+                            Riwayat Stok
+                        </h4>
+                        <p class="text-muted mb-0">
+                            Menampilkan detail setiap transaksi barang masuk, keluar, dan penyesuaian stok
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="btn-group">
+                            <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-download me-2"></i>Export
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="<?= base_url('/stock/history/export/excel') . '?' . http_build_query($_GET) ?>">
+                                    <i class="bi bi-file-earmark-excel me-2"></i>Excel
+                                </a></li>
+                                <li><a class="dropdown-item" href="<?= base_url('/stock/history/export/pdf') . '?' . http_build_query($_GET) ?>">
+                                    <i class="bi bi-file-earmark-pdf me-2"></i>PDF
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="window.print(); return false;">
+                                    <i class="bi bi-printer me-2"></i>Print
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Data Tabel -->
 <div class="row">
     <div class="col-12">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <div class="card-header bg-white py-3">
                 <h5 class="mb-0 fw-bold">Daftar Mutasi Stok</h5>
-                <div class="d-flex gap-2">
-                    <?php if (session()->get('role') === 'superadmin'): ?>
-                        <div class="btn-group me-2">
-                            <a href="<?= base_url('/stock/history/export/excel') . '?' . http_build_query($_GET) ?>" class="btn btn-sm btn-outline-success">
-                                <i class="bi bi-file-earmark-excel"></i> Excel
-                            </a>
-                            <a href="<?= base_url('/stock/history/export/pdf') . '?' . http_build_query($_GET) ?>" class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-file-earmark-pdf"></i> PDF
-                            </a>
-                        </div>
-                    <?php endif; ?>
-                    <a href="<?= base_url('/stock/in') ?>" class="btn btn-sm btn-success">
-                        <i class="bi bi-plus-lg me-1"></i> Barang Masuk
-                    </a>
-                    <a href="<?= base_url('/stock/out') ?>" class="btn btn-sm btn-warning">
-                        <i class="bi bi-dash-lg me-1"></i> Barang Keluar
-                    </a>
-                </div>
             </div>
             <div class="card-body p-0">
                 <?php if (!empty($daftarMutasi)): ?>

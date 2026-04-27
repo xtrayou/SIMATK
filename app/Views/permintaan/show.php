@@ -298,7 +298,7 @@
                 const isJson = contentType.includes('application/json');
                 const data = isJson ? await response.json() : {};
 
-                if (response.ok && data.status) {
+                if (response.ok && data.success) {
                     showAlert(data.message || 'Aksi berhasil diproses.', 'success');
                     setTimeout(() => location.reload(), 1500);
                     return;

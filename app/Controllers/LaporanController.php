@@ -46,7 +46,7 @@ class LaporanController extends BaseController
      */
     public function valuation()
     {
-        $this->setPageData('Nilai Persediaan', 'Analisis nilai inventory dan profitability');
+        $this->setPageData('Nilai Persediaan', 'Analisis nilai Inventaris dan profitability');
 
         $data = $this->laporanService->valuation($this->request);
 

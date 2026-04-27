@@ -48,20 +48,31 @@ class LaporanService
             $year = (int) date('Y');
         }
 
-        // Mode stock menampilkan data stok saat ini (realtime) agar selalu tersedia.
+        // Periode bulan/tahun selain saat ini diperlakukan sebagai periode arsip.
+        $isArchived = $this->isArchivedPeriod($month, $year);
+
         if ($reportMode === 'stock') {
-            $isArchived = false;
-            $archiveFound = true;
-            $products = $this->getCurrentStockReport($categoryFilter, $stockStatus, $sortBy, $sortOrder, $month, $year);
+            if ($isArchived) {
+                // Untuk periode lampau, prioritaskan arsip agar hasil pencarian sesuai dokumen bulanan.
+                $archiveSource = $this->getArchivedStockReport($month, $year, null, null, 'name', 'ASC');
+                $archiveFound = !empty($archiveSource);
+
+                $products = $archiveFound
+                    ? $this->getArchivedStockReport($month, $year, $categoryFilter, $stockStatus, $sortBy, $sortOrder)
+                    : $this->getCurrentStockReport($categoryFilter, $stockStatus, $sortBy, $sortOrder, $month, $year);
+            } else {
+                $archiveFound = true;
+                $products = $this->getCurrentStockReport($categoryFilter, $stockStatus, $sortBy, $sortOrder, $month, $year);
+            }
         } else {
             // Mode opname wajib membaca arsip asli untuk periode yang dipilih.
             $isArchived = true;
             // Cek ketersediaan arsip periode secara independen dari filter kategori.
-            $archiveSource = $this->getArchivedStockReport($month, $year, null, 'name', 'ASC');
+            $archiveSource = $this->getArchivedStockReport($month, $year, null, null, 'name', 'ASC');
             $archiveFound = !empty($archiveSource);
 
             $products = $archiveFound
-                ? $this->getArchivedStockReport($month, $year, $categoryFilter, $sortBy, $sortOrder)
+                ? $this->getArchivedStockReport($month, $year, $categoryFilter, $stockStatus, $sortBy, $sortOrder)
                 : [];
         }
 
@@ -126,7 +137,7 @@ class LaporanService
     /**
      * Ambil data stok dari stock_opname_archives untuk periode tertentu
      */
-    private function getArchivedStockReport(int $month, int $year, ?string $categoryFilter, string $sortBy, string $sortOrder): array
+    private function getArchivedStockReport(int $month, int $year, ?string $categoryFilter, ?string $stockStatus, string $sortBy, string $sortOrder): array
     {
         $sortOrder = strtoupper($sortOrder) === 'DESC' ? 'DESC' : 'ASC';
         $validSorts = ['name', 'current_stock', 'stock_value', 'category_name'];
@@ -144,7 +155,11 @@ class LaporanService
                 stock_opname_archives.damaged_quantity as stock_rusak,
                 stock_opname_archives.unit_price as price,
                 stock_opname_archives.total_value as stock_value,
-                "archived" as stock_status,
+                CASE
+                    WHEN stock_opname_archives.quantity = 0 THEN "out_of_stock"
+                    WHEN stock_opname_archives.quantity <= COALESCE(barang.min_stock, 0) THEN "low_stock"
+                    ELSE "normal"
+                END as stock_status,
                 COALESCE(barang.min_stock, 0) as min_stock,
                 COALESCE(categories.name, "Uncategorized") as category_name,
                 COALESCE(barang.unit, "Pcs") as unit,
@@ -158,6 +173,25 @@ class LaporanService
         // Filter kategori bisa di‑apply dengan JOIN ke products jika ada product_id
         if ($categoryFilter) {
             $builder->where('categories.id', $categoryFilter);
+        }
+
+        if ($stockStatus) {
+            switch ($stockStatus) {
+                case 'out_of_stock':
+                    $builder->where('stock_opname_archives.quantity', 0);
+                    break;
+                case 'low_stock':
+                    $builder->where('stock_opname_archives.quantity <= COALESCE(barang.min_stock, 0)', null, false)
+                        ->where('stock_opname_archives.quantity >', 0);
+                    break;
+                case 'normal':
+                    $builder->where('stock_opname_archives.quantity > COALESCE(barang.min_stock, 0)', null, false);
+                    break;
+                case 'overstocked':
+                    $builder->where('COALESCE(barang.min_stock, 0) >', 0)
+                        ->where('stock_opname_archives.quantity > (COALESCE(barang.min_stock, 0) * 3)', null, false);
+                    break;
+            }
         }
 
         if (in_array($sortBy, $validSorts, true)) {
@@ -178,6 +212,26 @@ class LaporanService
         if ($categoryFilter) {
             $excelRows = array_values(array_filter($excelRows, static function (array $item) use ($categoryFilter): bool {
                 return isset($item['category_id']) && (string) $item['category_id'] === (string) $categoryFilter;
+            }));
+        }
+
+        if ($stockStatus) {
+            $excelRows = array_values(array_filter($excelRows, static function (array $item) use ($stockStatus): bool {
+                $qty = (int) ($item['current_stock'] ?? 0);
+                $min = (int) ($item['min_stock'] ?? 0);
+
+                switch ($stockStatus) {
+                    case 'out_of_stock':
+                        return $qty === 0;
+                    case 'low_stock':
+                        return $qty > 0 && $qty <= $min;
+                    case 'normal':
+                        return $qty > $min;
+                    case 'overstocked':
+                        return $min > 0 && $qty > ($min * 3);
+                    default:
+                        return true;
+                }
             }));
         }
 
@@ -1056,7 +1110,7 @@ class LaporanService
         $sortOrder      = $this->request->getGet('sort_order') ?: 'ASC';
 
         if ($reportMode === 'opname') {
-            return $this->getArchivedStockReport($month, $year, $categoryFilter, $sortBy, $sortOrder);
+            return $this->getArchivedStockReport($month, $year, $categoryFilter, $stockStatus, $sortBy, $sortOrder);
         }
 
         return $this->getCurrentStockReport($categoryFilter, $stockStatus, $sortBy, $sortOrder, $month, $year);

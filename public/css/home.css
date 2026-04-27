@@ -565,6 +565,18 @@
     color: white;
 }
 
+.footer-link-ext {
+    color: #4fc3f7;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.2s ease;
+}
+
+.footer-link-ext:hover {
+    color: #81d4fa;
+    text-decoration: underline;
+}
+
 .social-links {
     display: flex;
     gap: 12px;

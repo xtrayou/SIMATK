@@ -20,6 +20,9 @@
 
     <div id="app">
 
+        <!-- Sidebar Overlay (mobile) -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
         <!-- Sidebar -->
         <?= $this->include('layouts/components/sidebar') ?>
 
@@ -29,7 +32,7 @@
             <?= $this->include('layouts/components/navbar') ?>
 
             <!-- Content -->
-            <div class="container mt-4">
+            <div class="container-fluid p-0">
 
                 <div class="mb-3">
                     <h4><?= $page_title ?? '' ?></h4>
