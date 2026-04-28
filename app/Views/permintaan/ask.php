@@ -140,6 +140,7 @@
                                                 <label class="form-label small">Pilih Barang</label>
                                                 <select name="product_id[]" class="form-select select-product" required>
                                                     <option value="">— Pilih Barang —</option>
+                                                    <option value="999_other" class="fw-bold text-primary">➕ Barang Lainnya (Tulis detail di Keterangan)</option>
                                                     <?php foreach ($daftarBarang as $p): ?>
                                                         <option value="<?= $p['id'] ?>"
                                                             data-unit="<?= esc($p['unit']) ?>"

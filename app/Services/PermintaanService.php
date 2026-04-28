@@ -272,11 +272,49 @@ class PermintaanService
         }
     }
 
+    private function getOrCreateBarangLainnya(): int
+    {
+        $barang = $this->modelBarang->where('sku', '999')->first();
+        if ($barang) {
+            return (int)$barang['id'];
+        }
+
+        $kategoriModel = new \App\Models\MasterData\KategoriModel();
+        $kategori = $kategoriModel->where('name', 'Lainnya')->first();
+        if (!$kategori) {
+            $katId = $kategoriModel->insert([
+                'name' => 'Lainnya',
+                'description' => 'Kategori untuk barang di luar master data'
+            ]);
+        } else {
+            $katId = $kategori['id'];
+        }
+
+        $prodId = $this->modelBarang->insert([
+            'name'          => 'Barang Lainnya',
+            'sku'           => '999',
+            'category_id'   => $katId,
+            'description'   => 'ATK di luar daftar sistem',
+            'current_stock' => 0,
+            'min_stock'     => 0,
+            'price'         => 0,
+            'cost_price'    => 0,
+            'unit'          => 'Pcs',
+            'is_active'     => 1,
+        ]);
+
+        return (int)$prodId;
+    }
+
     private function saveItems(int $requestId, array $productIds, array $quantities): void
     {
         foreach ($productIds as $index => $pid) {
             if (empty($pid) || empty($quantities[$index])) {
                 continue;
+            }
+
+            if ($pid === '999_other') {
+                $pid = $this->getOrCreateBarangLainnya();
             }
 
             $this->modelItemPermintaan->insert([
