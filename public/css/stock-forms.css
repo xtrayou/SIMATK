@@ -1,0 +1,31 @@
+/* stock-forms.css — Styles shared form Barang Masuk / Keluar / Adjustment / History */
+
+/* Ukuran kecil untuk label input-group */
+.small-text { font-size: 0.8rem; }
+
+/* Teks miring (italic helper) */
+.italic { font-style: italic; }
+
+/* Autocomplete dropdown */
+.item-row td:first-child { position: relative; }
+.autocomplete-menu {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 44px;
+    z-index: 1050;
+    max-height: 230px;
+    overflow-y: auto;
+    display: none;
+}
+
+/* History page — status warna ringan */
+.bg-success-light { background-color: rgba(25,  135,  84, 0.1); }
+.bg-danger-light  { background-color: rgba(220,  53,  69, 0.1); }
+.bg-info-light    { background-color: rgba(13,  202, 240, 0.1); }
+
+/* Adjustment page — panel info */
+.bg-light-warning {
+    background-color: rgba(255, 193, 7, 0.05);
+    border-left: 4px solid #ffc107;
+}

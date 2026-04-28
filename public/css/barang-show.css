@@ -1,0 +1,16 @@
+/* barang-show.css — Style untuk detail barang */
+.bg-primary-light {
+    background-color: rgba(67, 94, 190, 0.1);
+}
+
+.bg-success-light {
+    background-color: rgba(25, 135, 84, 0.1);
+}
+
+.bg-danger-light {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.italic {
+    font-style: italic;
+}

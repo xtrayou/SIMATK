@@ -3,7 +3,7 @@
 namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
-use App\Models\BarangModel;
+use App\Models\MasterData\BarangModel;
 
 class BarangController extends BaseController
 {

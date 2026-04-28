@@ -92,39 +92,20 @@ function initNavbarNotifications() {
         badge.classList.toggle('d-none', safeCount <= 0);
     }
 
+    // Source - https://stackoverflow.com/a/10107418
+    // Posted by Timo Ernst, modified by community. See post 'Timeline' for change history
+    // Retrieved 2026-04-28, License - CC BY-SA 4.0
+    function playSound(url) {
+        const audio = new Audio(url);
+        audio.play().catch(function(e) {
+            console.warn("Audio autoplay ditolak browser:", e);
+        });
+    }
+
     function playNotificationSound() {
-        try {
-            if (!audioContext) {
-                var AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) {
-                    return;
-                }
-                audioContext = new AudioCtx();
-            }
-
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-
-            var now = audioContext.currentTime;
-            var oscillator = audioContext.createOscillator();
-            var gainNode = audioContext.createGain();
-
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(880, now);
-
-            gainNode.gain.setValueAtTime(0.0001, now);
-            gainNode.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-
-            oscillator.start(now);
-            oscillator.stop(now + 0.24);
-        } catch (error) {
-            // Abaikan error audio agar tidak mengganggu fungsi utama notifikasi.
-        }
+        // Menggunakan URL sound notification yang "light". 
+        // Bisa diganti dengan URL aset lokal seperti: '/audio/notification.mp3'
+        playSound('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
     }
 
     function renderNotificationItems(items) {

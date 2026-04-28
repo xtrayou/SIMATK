@@ -34,11 +34,8 @@ $reportIconClass = 'bi-box-seam';
                                 <li><a class="dropdown-item" href="#" onclick="exportReport('excel'); return false;">
                                     <i class="bi bi-file-earmark-excel me-2"></i>Excel
                                 </a></li>
-                                <li><a class="dropdown-item" href="#" onclick="exportReport('pdf'); return false;">
-                                    <i class="bi bi-file-earmark-pdf me-2"></i>PDF
-                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#" onclick="window.print(); return false;">
+                                <li><a class="dropdown-item" href="#" onclick="printReport(); return false;">
                                     <i class="bi bi-printer me-2"></i>Print
                                 </a></li>
                             </ul>
@@ -385,213 +382,29 @@ $reportIconClass = 'bi-box-seam';
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts'); ?>
+<?php
+// Data PHP yang dibutuhkan JS diinjeksi via window.SIMATK_STOCK
+$chartLabels = json_encode(array_keys($category_breakdown ?? []));
+$chartData   = json_encode(array_column($category_breakdown ?? [], 'total_value'));
+$hasChart    = !empty($category_breakdown);
+?>
 <script>
-    $(document).ready(function() {
-        // Initialize DataTable for Laporan Stok mode
-        if ($.fn.DataTable && $('#stockReportTable').length) {
-            $('#stockReportTable').DataTable({
-                responsive: true,
-                pageLength: 50,
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
-                },
-                dom: 'Bfrtip',
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ],
-                footerCallback: function(row, data, start, end, display) {
-                    var api = this.api();
-
-                    // Remove the formatting to get integer data for summation
-                    var intVal = function(i) {
-                        return typeof i === 'string' ?
-                            i.replace(/[\$,]/g, '') * 1 :
-                            typeof i === 'number' ?
-                            i : 0;
-                    };
-
-                    // Hitung total kolom stok pada halaman aktif (dipakai sebagai validasi cepat di footer callback).
-                    api
-                        .column(4, {
-                            page: 'current'
-                        })
-                        .data()
-                        .reduce(function(a, b) {
-                            return intVal(a) + intVal(b);
-                        }, 0);
-                }
-            });
-        }
-
-
-
-        // Category breakdown chart
-        <?php if (!empty($category_breakdown)): ?>
-            // Dataset chart diambil dari breakdown kategori yang sama dengan tabel ringkasan.
-            function formatCurrency(value) {
-                return 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(value));
-            }
-
-            const categoryData = {
-                labels: <?= json_encode(array_keys($category_breakdown)) ?>,
-                datasets: [{
-                    data: <?= json_encode(array_column($category_breakdown, 'total_value')) ?>,
-                    backgroundColor: [
-                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
-                        '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'
-                    ],
-                    borderWidth: 2,
-                    borderColor: '#fff'
-                }]
-            };
-
-            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-            new Chart(categoryCtx, {
-                type: 'doughnut',
-                data: categoryData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const value = context.parsed;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    return context.label + ': ' + formatCurrency(value) + ' (' + percentage + '%)';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        <?php endif ?>
-
-        // Kirim ulang filter otomatis saat dropdown filter berubah.
-        $('#category, #stock_status, #sort_by, #sort_order, #month, #year').on('change', function() {
-            $('#filterForm').submit();
-        });
-    });
-
-    // Ekspor laporan mengikuti parameter filter yang sedang aktif di URL.
-    function exportReport(format) {
-        const params = new URLSearchParams(window.location.search);
-        const url = `<?= base_url('/reports/stock/export/') ?>${format}?${params.toString()}`;
-        window.open(url, '_blank');
-    }
-
-    // Print-specific styles
-    window.addEventListener('beforeprint', function() {
-        document.body.classList.add('printing');
-    });
-
-    window.addEventListener('afterprint', function() {
-        document.body.classList.remove('printing');
-    });
+    // Injeksi data PHP ke namespace global agar reports-stock.js bisa membacanya
+    window.SIMATK_STOCK = {
+        exportBaseUrl: '<?= base_url('/reports/stock/export/') ?>',
+        currentMonth:  '<?= date('m') ?>',
+        currentYear:   '<?= date('Y') ?>',
+        hasChart:      <?= $hasChart ? 'true' : 'false' ?>,
+        chartLabels:   <?= $chartLabels ?>,
+        chartData:     <?= $chartData ?>
+    };
 </script>
+
+<!-- JS murni dipisah ke file eksternal -->
+<script src="<?= base_url('js/reports-stock.js') ?>"></script>
 <?= $this->endSection(); ?>
 
 <?= $this->section('styles') ?>
-<style>
-    .stats-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        margin: 0 auto;
-    }
-
-    .stats-icon.blue {
-        background-color: rgba(13, 110, 253, 0.1);
-        color: #0d6efd;
-    }
-
-    .stats-icon.green {
-        background-color: rgba(25, 135, 84, 0.1);
-        color: #198754;
-    }
-
-    .stats-icon.purple {
-        background-color: rgba(102, 16, 242, 0.1);
-        color: #6610f2;
-    }
-
-    .stats-icon.red {
-        background-color: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
-    }
-
-    .stats-icon.orange {
-        background-color: rgba(255, 193, 7, 0.1);
-        color: #ffc107;
-    }
-
-    .avatar-content {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        font-weight: bold;
-    }
-
-    .table-danger {
-        background-color: rgba(220, 53, 69, 0.1);
-    }
-
-    .table-warning {
-        background-color: rgba(255, 193, 7, 0.1);
-    }
-
-    code {
-        font-size: 0.9rem;
-        color: #6f42c1;
-        background-color: rgba(111, 66, 193, 0.1);
-        padding: 2px 6px;
-        border-radius: 4px;
-    }
-
-    /* Print styles */
-    @media print {
-        .card {
-            border: 1px solid #000 !important;
-            box-shadow: none !important;
-        }
-
-        .btn-group,
-        .card-header .btn {
-            display: none !important;
-        }
-
-        .table {
-            font-size: 12px;
-        }
-
-        .stats-icon {
-            background-color: #f8f9fa !important;
-            border: 1px solid #000;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .stats-icon {
-            width: 50px;
-            height: 50px;
-            font-size: 20px;
-        }
-
-        .table-responsive {
-            font-size: 0.85rem;
-        }
-    }
-</style>
+<!-- CSS dipisah ke file eksternal -->
+<link rel="stylesheet" href="<?= base_url('css/reports-stock.css') ?>">
 <?= $this->endSection() ?>

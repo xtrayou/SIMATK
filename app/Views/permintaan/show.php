@@ -244,108 +244,17 @@
 
 <?= $this->section('scripts') ?>
 <script>
-    function showAlert(message, type = 'success') {
-        const alertHtml = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        `;
-
-        // Insert alert at top of first card
-        const firstCard = document.querySelector('.card');
-        if (firstCard) {
-            firstCard.insertAdjacentHTML('afterbegin', alertHtml);
-        }
-
-        // Auto dismiss after 5 seconds
-        setTimeout(() => {
-            document.querySelectorAll('.alert').forEach((el) => {
-                el.classList.remove('show');
-                setTimeout(() => el.remove(), 500);
-            });
-        }, 5000);
-    }
-
-    async function jalankanAksi(url, pesanCek, tombol) {
-        if (confirm(pesanCek)) {
-            const btn = tombol;
-            if (!btn) return;
-            const originalHtml = btn.innerHTML;
-
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
-
-            const reasonEl = document.getElementById('admin_reason');
-            const reason = reasonEl ? reasonEl.value : '';
-
-            const payload = new URLSearchParams();
-            payload.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
-            payload.append('reason', reason);
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                    body: payload.toString(),
-                    credentials: 'same-origin',
-                });
-
-                const contentType = response.headers.get('content-type') || '';
-                const isJson = contentType.includes('application/json');
-                const data = isJson ? await response.json() : {};
-
-                if (response.ok && data.success) {
-                    showAlert(data.message || 'Aksi berhasil diproses.', 'success');
-                    setTimeout(() => location.reload(), 1500);
-                    return;
-                }
-
-                showAlert((data && data.message) ? data.message : 'Terjadi kesalahan server.', 'danger');
-                btn.disabled = false;
-                btn.innerHTML = originalHtml;
-            } catch (error) {
-                console.error(error);
-                showAlert('Terjadi kesalahan jaringan atau server.', 'danger');
-                btn.disabled = false;
-                btn.innerHTML = originalHtml;
-            }
-        }
-    }
-
-    document.getElementById('btn-approve')?.addEventListener('click', function() {
-        jalankanAksi('<?= base_url('requests/approve/' . $pinjaman['id']) ?>', 'Setujui permintaan ini?', this);
-    });
-
-    document.getElementById('btn-distribute')?.addEventListener('click', function() {
-        jalankanAksi('<?= base_url('requests/distribute/' . $pinjaman['id']) ?>', 'Lanjutkan distribusi? Tindakan ini akan memotong stok barang.', this);
-    });
-
-    document.getElementById('btn-cancel')?.addEventListener('click', function() {
-        jalankanAksi('<?= base_url('requests/cancel/' . $pinjaman['id']) ?>', 'Apakah Anda yakin ingin membatalkan permintaan ini?', this);
-    });
+    window.SIMATK_REQ_URL = {
+        approve: '<?= base_url('requests/approve/' . $pinjaman['id']) ?>',
+        distribute: '<?= base_url('requests/distribute/' . $pinjaman['id']) ?>',
+        cancel: '<?= base_url('requests/cancel/' . $pinjaman['id']) ?>',
+        csrf_token: '<?= csrf_token() ?>',
+        csrf_hash: '<?= csrf_hash() ?>'
+    };
 </script>
+<script src="<?= base_url('js/permintaan-show.js') ?>"></script>
 <?= $this->endSection() ?>
 
 <?= $this->section('styles') ?>
-<style>
-    .bg-light-info {
-        background-color: rgba(13, 202, 240, 0.1);
-    }
-
-    .bg-light-warning {
-        background-color: rgba(255, 193, 7, 0.1);
-    }
-
-    .bg-light-success {
-        background-color: rgba(25, 135, 84, 0.1);
-    }
-
-    .italic {
-        font-style: italic;
-    }
-</style>
+<link rel="stylesheet" href="<?= base_url('css/permintaan-show.css') ?>">
 <?= $this->endSection() ?>

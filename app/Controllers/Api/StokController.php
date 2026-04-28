@@ -3,8 +3,8 @@
 namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
-use App\Models\MutasiStokModel;
-use App\Models\BarangModel;
+use App\Models\Stok\MutasiStokModel;
+use App\Models\MasterData\BarangModel;
 use Exception;
 
 class StokController extends BaseController

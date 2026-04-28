@@ -135,33 +135,63 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-3 mb-2">
-                        <a href="<?= base_url('/stock/in') ?>" class="btn btn-info w-100 btn-lg">
-                            <i class="bi bi-arrow-down-circle"></i>
-                            <div class="d-block">
-                                <strong>Barang Masuk</strong>
-                                <small class="d-block">Input stok baru</small>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <a href="<?= base_url('/stock/out') ?>" class="btn btn-warning w-100 btn-lg">
-                            <i class="bi bi-arrow-up-circle"></i>
-                            <div class="d-block">
-                                <strong>Barang Keluar</strong>
-                                <small class="d-block">Keluarkan stok</small>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <a href="<?= base_url('/requests') ?>" class="btn btn-primary w-100 btn-lg">
-                            <i class="bi bi-clipboard-check"></i>
-                            <div class="d-block">
-                                <strong>Permintaan</strong>
-                                <small class="d-block">Kelola permintaan</small>
-                            </div>
-                        </a>
-                    </div>
+                    <?php if ($userRole === 'admin'): ?>
+                        <div class="col-md-3 mb-2">
+                            <a href="<?= base_url('/stock/in') ?>" class="btn btn-info w-100 btn-lg">
+                                <i class="bi bi-arrow-down-circle"></i>
+                                <div class="d-block">
+                                    <strong>Barang Masuk</strong>
+                                    <small class="d-block">Input stok baru</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="<?= base_url('/stock/out') ?>" class="btn btn-warning w-100 btn-lg">
+                                <i class="bi bi-arrow-up-circle"></i>
+                                <div class="d-block">
+                                    <strong>Barang Keluar</strong>
+                                    <small class="d-block">Keluarkan stok</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="<?= base_url('/requests') ?>" class="btn btn-primary w-100 btn-lg">
+                                <i class="bi bi-clipboard-check"></i>
+                                <div class="d-block">
+                                    <strong>Permintaan</strong>
+                                    <small class="d-block">Kelola permintaan</small>
+                                </div>
+                            </a>
+                        </div>
+                    <?php elseif ($userRole === 'superadmin'): ?>
+                        <div class="col-md-3 mb-2">
+                            <a href="<?= base_url('/users') ?>" class="btn btn-primary w-100 btn-lg text-white">
+                                <i class="bi bi-people"></i>
+                                <div class="d-block">
+                                    <strong>Pengguna</strong>
+                                    <small class="d-block text-white-50">Kelola hak akses</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="<?= base_url('/reports/movements') ?>" class="btn btn-info w-100 btn-lg text-white">
+                                <i class="bi bi-arrow-repeat"></i>
+                                <div class="d-block">
+                                    <strong>Pergerakan</strong>
+                                    <small class="d-block text-white-50">Laporan mutasi</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="<?= base_url('/reports/stock') ?>" class="btn btn-success w-100 btn-lg text-white">
+                                <i class="bi bi-box-seam"></i>
+                                <div class="d-block">
+                                    <strong>Stok</strong>
+                                    <small class="d-block text-white-50">Laporan stok</small>
+                                </div>
+                            </a>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -441,267 +471,33 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+<?php
+$chartLabels   = json_encode($chart_data['monthly_movements']['labels']);
+$chartIn       = json_encode($chart_data['monthly_movements']['stock_in']);
+$chartOut      = json_encode($chart_data['monthly_movements']['stock_out']);
+$pieLabels     = json_encode($chart_data['stock_status_pie']['labels']);
+$pieData       = json_encode($chart_data['stock_status_pie']['data']);
+$pieColors     = json_encode($chart_data['stock_status_pie']['colors']);
+$lowStockCount = (int) $low_stock_count;
+$apiStatsUrl   = base_url('/api/dashboard/stats');
+$faviconUrl    = base_url('assets/static/images/logo/favicon.png');
+?>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-
-        // ── Grafik Pergerakan Stok (Line Chart) ──────────────────────
-        const ctxPergerakan = document.getElementById('grafikPergerakanStok').getContext('2d');
-        const grafikPergerakan = new Chart(ctxPergerakan, {
-            type: 'line',
-            data: {
-                labels: <?= json_encode($chart_data['monthly_movements']['labels']) ?>,
-                datasets: [{
-                    label: 'Barang Masuk',
-                    data: <?= json_encode($chart_data['monthly_movements']['stock_in']) ?>,
-                    borderColor: '#198754',
-                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }, {
-                    label: 'Barang Keluar',
-                    data: <?= json_encode($chart_data['monthly_movements']['stock_out']) ?>,
-                    borderColor: '#dc3545',
-                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function (nilai) {
-                                return nilai.toLocaleString('id-ID');
-                            }
-                        }
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
-                }
-            }
-        });
-
-        // ── Grafik Status Stok (Doughnut) ───────────────────────────
-        const ctxStatus = document.getElementById('grafikStatusStok').getContext('2d');
-        const grafikStatus = new Chart(ctxStatus, {
-            type: 'doughnut',
-            data: {
-                labels: <?= json_encode($chart_data['stock_status_pie']['labels']) ?>,
-                datasets: [{
-                    data: <?= json_encode($chart_data['stock_status_pie']['data']) ?>,
-                    backgroundColor: <?= json_encode($chart_data['stock_status_pie']['colors']) ?>,
-                    borderWidth: 0,
-                    cutout: '70%'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-
-        // ── Pembaruan otomatis setiap 30 detik ──────────────────────
-        setInterval(perbaruiStatistik, 30000);
-
-        function perbaruiStatistik() {
-            fetch('<?= base_url('/api/dashboard/stats') ?>')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status) {
-                        document.getElementById('totalBarang').textContent =
-                            data.stats.total_products.toLocaleString('id-ID');
-                    }
-                })
-                .catch(() => console.warn('Gagal memperbarui statistik dashboard'));
-        }
-
-        // ── Ekspor Grafik ────────────────────────────────────────────
-        window.eksporGrafik = function (jenis) {
-            let grafik, namaFile;
-
-            if (jenis === 'pergerakan') {
-                grafik = grafikPergerakan;
-                namaFile = 'grafik-pergerakan-stok.png';
-            } else if (jenis === 'status') {
-                grafik = grafikStatus;
-                namaFile = 'grafik-status-stok.png';
-            }
-
-            if (grafik) {
-                const tautan = document.createElement('a');
-                tautan.download = namaFile;
-                tautan.href = grafik.toBase64Image();
-                tautan.click();
-            }
-        };
-
-        // ── Notifikasi stok rendah ───────────────────────────────────
-        <?php if ($low_stock_count > 0): ?>
-            if ('Notification' in window) {
-                Notification.requestPermission().then(izin => {
-                    if (izin === 'granted') {
-                        setInterval(() => {
-                            new Notification('Peringatan Inventori', {
-                                body: '<?= $low_stock_count ?> barang memiliki stok rendah',
-                                icon: '<?= base_url("assets/static/images/logo/favicon.png") ?>'
-                            });
-                        }, 300000); // tiap 5 menit
-                    }
-                });
-            }
-        <?php endif ?>
-    });
+    window.DASHBOARD_CFG = {
+        chartLabels: <?= $chartLabels ?>,
+        chartIn: <?= $chartIn ?>,
+        chartOut: <?= $chartOut ?>,
+        pieLabels: <?= $pieLabels ?>,
+        pieData: <?= $pieData ?>,
+        pieColors: <?= $pieColors ?>,
+        lowStockCount: <?= $lowStockCount ?>,
+        apiStatsUrl: '<?= $apiStatsUrl ?>',
+        faviconUrl: '<?= $faviconUrl ?>'
+    };
 </script>
+<script src="<?= base_url('js/dashboard.js') ?>"></script>
 <?= $this->endSection() ?>
 
 <?= $this->section('styles') ?>
-<style>
-    .inventory-card .card-body>.row>div {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-
-    .inventory-card .card-body>.row>div:first-child {
-        display: flex;
-        justify-content: center !important;
-    }
-
-    .inventory-card .card-body>.row>div:last-child {
-        text-align: center;
-    }
-
-    .inventory-card .stats-icon {
-        float: none !important;
-        width: 4.25rem;
-        height: 4.25rem;
-        margin: 0 auto 0.85rem !important;
-    }
-
-    .inventory-card .stats-icon i {
-        font-size: 2rem !important;
-    }
-
-    .inventory-card h6.font-semibold {
-        margin-bottom: 0.25rem;
-    }
-
-    .quick-stat h4 {
-        font-size: 2rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-
-    .btn-lg .d-block {
-        line-height: 1.2;
-    }
-
-    .btn-lg strong {
-        font-size: 1rem;
-    }
-
-    .btn-lg small {
-        font-size: 0.8rem;
-        opacity: 0.8;
-    }
-
-    .stock-legend {
-        text-align: center;
-    }
-
-    .legend-color {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        display: inline-block;
-        margin-bottom: 8px;
-    }
-
-    .avatar-content {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-        font-weight: bold;
-    }
-
-    .rank-badge .badge {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-size: 1rem;
-        font-weight: bold;
-    }
-
-    .card {
-        transition: transform 0.2s ease-in-out;
-    }
-
-    .card:hover {
-        transform: translateY(-2px);
-    }
-
-    .loading-skeleton {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: skeleton-loading 1.5s infinite;
-    }
-
-    @keyframes skeleton-loading {
-        0% {
-            background-position: 200% 0;
-        }
-
-        100% {
-            background-position: -200% 0;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .inventory-card .stats-icon {
-            width: 3.5rem;
-            height: 3.5rem;
-        }
-
-        .inventory-card .stats-icon i {
-            font-size: 1.6rem !important;
-        }
-
-        .quick-stat h4 {
-            font-size: 1.5rem;
-        }
-
-        .btn-lg {
-            padding: 0.75rem;
-        }
-
-        .btn-lg strong {
-            font-size: 0.9rem;
-        }
-
-        .btn-lg small {
-            font-size: 0.75rem;
-        }
-    }
-</style>
-<?= $this->endSection() ?>
+<link rel="stylesheet" href="<?= base_url('css/dashboard.css') ?>">
+<?= $this->endSection() ?>

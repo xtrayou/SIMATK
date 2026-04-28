@@ -1,0 +1,61 @@
+/* ============================================================
+   reports-stock.css — Styles khusus halaman Laporan Stok
+   ============================================================ */
+
+/* Stats icon */
+.stats-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin: 0 auto;
+}
+
+.stats-icon.blue   { background-color: rgba(13,  110, 253, 0.1); color: #0d6efd; }
+.stats-icon.green  { background-color: rgba(25,  135,  84, 0.1); color: #198754; }
+.stats-icon.purple { background-color: rgba(102,  16, 242, 0.1); color: #6610f2; }
+.stats-icon.red    { background-color: rgba(220,  53,  69, 0.1); color: #dc3545; }
+.stats-icon.orange { background-color: rgba(255, 193,   7, 0.1); color: #ffc107; }
+
+/* Avatar */
+.avatar-content {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Table row highlight */
+.table-danger  { background-color: rgba(220, 53,  69, 0.1); }
+.table-warning { background-color: rgba(255, 193,  7, 0.1); }
+
+/* Inline code chip */
+code {
+    font-size: 0.9rem;
+    color: #6f42c1;
+    background-color: rgba(111, 66, 193, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Print */
+@media print {
+    .card         { border: 1px solid #000 !important; box-shadow: none !important; }
+    .btn-group,
+    .card-header .btn { display: none !important; }
+    .table        { font-size: 12px; }
+    .stats-icon   { background-color: #f8f9fa !important; border: 1px solid #000; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stats-icon       { width: 50px; height: 50px; font-size: 20px; }
+    .table-responsive { font-size: 0.85rem; }
+}

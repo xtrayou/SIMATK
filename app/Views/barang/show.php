@@ -210,21 +210,5 @@ $movementValueClass = static function (string $type): string {
 <?= $this->endSection() ?>
 
 <?= $this->section('styles') ?>
-<style>
-    .bg-primary-light {
-        background-color: rgba(67, 94, 190, 0.1);
-    }
-
-    .bg-success-light {
-        background-color: rgba(25, 135, 84, 0.1);
-    }
-
-    .bg-danger-light {
-        background-color: rgba(220, 53, 69, 0.1);
-    }
-
-    .italic {
-        font-style: italic;
-    }
-</style>
+<link rel="stylesheet" href="<?= base_url('css/barang-show.css') ?>">
 <?= $this->endSection() ?>

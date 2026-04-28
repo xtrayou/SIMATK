@@ -3,7 +3,7 @@
 namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
-use App\Models\NotifikasiModel;
+use App\Models\Notifikasi\NotifikasiModel;
 
 class NotifikasiController extends BaseController
 {

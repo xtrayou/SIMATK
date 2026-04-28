@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\BarangModel;
-use App\Models\ItemPermintaanModel;
-use App\Models\MutasiStokModel;
-use App\Models\NotifikasiModel;
-use App\Models\PermintaanModel;
+use App\Models\MasterData\BarangModel;
+use App\Models\Permintaan\ItemPermintaanModel;
+use App\Models\Stok\MutasiStokModel;
+use App\Models\Notifikasi\NotifikasiModel;
+use App\Models\Permintaan\PermintaanModel;
 use CodeIgniter\Database\BaseConnection;
 use Exception;
 

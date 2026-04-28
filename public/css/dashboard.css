@@ -1,0 +1,84 @@
+/* dashboard.css — Styles khusus halaman Dashboard */
+
+.inventory-card .card-body > .row > div {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+.inventory-card .card-body > .row > div:first-child {
+    display: flex;
+    justify-content: center !important;
+}
+.inventory-card .card-body > .row > div:last-child {
+    text-align: center;
+}
+.inventory-card .stats-icon {
+    float: none !important;
+    width: 4.25rem;
+    height: 4.25rem;
+    margin: 0 auto 0.85rem !important;
+}
+.inventory-card .stats-icon i { font-size: 2rem !important; }
+.inventory-card h6.font-semibold { margin-bottom: 0.25rem; }
+
+.quick-stat h4 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.btn-lg .d-block { line-height: 1.2; }
+.btn-lg strong   { font-size: 1rem; }
+.btn-lg small    { font-size: 0.8rem; opacity: 0.8; }
+
+.stock-legend { text-align: center; }
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.avatar-content {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.rank-badge .badge {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.card { transition: transform 0.2s ease-in-out; }
+.card:hover { transform: translateY(-2px); }
+
+.loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+@keyframes skeleton-loading {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+@media (max-width: 768px) {
+    .inventory-card .stats-icon   { width: 3.5rem; height: 3.5rem; }
+    .inventory-card .stats-icon i { font-size: 1.6rem !important; }
+    .quick-stat h4                { font-size: 1.5rem; }
+    .btn-lg                       { padding: 0.75rem; }
+    .btn-lg strong                { font-size: 0.9rem; }
+    .btn-lg small                 { font-size: 0.75rem; }
+}

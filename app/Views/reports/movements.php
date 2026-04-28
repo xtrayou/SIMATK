@@ -108,8 +108,9 @@
                                             <li><a class="dropdown-item" href="<?= base_url('reports/export/movements?format=excel') ?>">
                                                     <i class="fas fa-file-excel me-2"></i>Excel
                                                 </a></li>
-                                            <li><a class="dropdown-item" href="<?= base_url('reports/export/movements?format=pdf') ?>">
-                                                    <i class="fas fa-file-pdf me-2"></i>PDF
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item" href="#" onclick="printMovements(); return false;">
+                                                    <i class="fas fa-print me-2"></i>Print
                                                 </a></li>
                                         </ul>
                                     </div>
@@ -262,4 +263,8 @@
     </div>
 </div>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script src="<?= base_url('js/reports-movements.js') ?>"></script>
 <?= $this->endSection() ?>

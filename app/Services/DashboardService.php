@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\BarangModel;
-use App\Models\KategoriModel;
-use App\Models\MutasiStokModel;
+use App\Models\MasterData\BarangModel;
+use App\Models\MasterData\KategoriModel;
+use App\Models\Stok\MutasiStokModel;
 
 class DashboardService
 {

@@ -26,11 +26,8 @@
                                 <li><a class="dropdown-item" href="<?= base_url('/stock/history/export/excel') . '?' . http_build_query($_GET) ?>">
                                     <i class="bi bi-file-earmark-excel me-2"></i>Excel
                                 </a></li>
-                                <li><a class="dropdown-item" href="<?= base_url('/stock/history/export/pdf') . '?' . http_build_query($_GET) ?>">
-                                    <i class="bi bi-file-earmark-pdf me-2"></i>PDF
-                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#" onclick="window.print(); return false;">
+                                <li><a class="dropdown-item" href="#" onclick="printHistory(); return false;">
                                     <i class="bi bi-printer me-2"></i>Print
                                 </a></li>
                             </ul>
@@ -112,38 +109,9 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script>
-    $(document).ready(function() {
-        if ($.fn.DataTable && $('#historyTable').length) {
-            $('#historyTable').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
-                },
-                order: [
-                    [0, 'desc']
-                ]
-            });
-        }
-    });
-</script>
+<script src="<?= base_url('js/stock-history.js') ?>"></script>
 <?= $this->endSection() ?>
 
 <?= $this->section('styles') ?>
-<style>
-    .bg-success-light {
-        background-color: rgba(25, 135, 84, 0.1);
-    }
-
-    .bg-danger-light {
-        background-color: rgba(220, 53, 69, 0.1);
-    }
-
-    .bg-info-light {
-        background-color: rgba(13, 202, 240, 0.1);
-    }
-
-    .italic {
-        font-style: italic;
-    }
-</style>
+<link rel="stylesheet" href="<?= base_url('css/stock-forms.css') ?>">
 <?= $this->endSection() ?>

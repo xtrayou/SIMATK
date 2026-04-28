@@ -148,9 +148,5 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script>
-    function refreshAlerts() {
-        location.reload();
-    }
-</script>
+<script src="<?= base_url('js/stock-alerts.js') ?>"></script>
 <?= $this->endSection() ?>

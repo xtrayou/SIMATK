@@ -123,30 +123,12 @@
 </div>
 
 <script>
-    const csrfName = '<?= csrf_token() ?>';
-    const csrfHash = '<?= csrf_hash() ?>';
-
-    function deleteNotification(id) {
-        if (!confirm('Hapus notifikasi ini?')) return;
-
-        fetch(`<?= base_url('/notifications/delete') ?>/${id}`, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    [csrfName]: csrfHash
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status) {
-                    location.reload();
-                }
-            })
-            .catch(err => console.error(err));
-    }
+    window.NOTIF_CFG = {
+        csrfName: '<?= csrf_token() ?>',
+        csrfHash: '<?= csrf_hash() ?>',
+        deleteUrl: '<?= base_url('/notifications/delete') ?>'
+    };
 </script>
+<script src="<?= base_url('js/notifications.js') ?>"></script>
 
 <?= $this->endSection() ?>

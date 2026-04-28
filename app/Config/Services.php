@@ -49,11 +49,11 @@ class Services extends BaseService
         if ($getShared) {
             if (! isset(static::$instances['permintaan'])) {
                 static::$instances['permintaan'] = new \App\Services\PermintaanService(
-                    model(\App\Models\PermintaanModel::class),
-                    model(\App\Models\ItemPermintaanModel::class),
-                    model(\App\Models\BarangModel::class),
-                    model(\App\Models\MutasiStokModel::class),
-                    model(\App\Models\NotifikasiModel::class)
+                    model(\App\Models\Permintaan\PermintaanModel::class),
+                    model(\App\Models\Permintaan\ItemPermintaanModel::class),
+                    model(\App\Models\MasterData\BarangModel::class),
+                    model(\App\Models\Stok\MutasiStokModel::class),
+                    model(\App\Models\Notifikasi\NotifikasiModel::class)
                 );
             }
 
@@ -61,11 +61,11 @@ class Services extends BaseService
         }
 
         return new \App\Services\PermintaanService(
-            model(\App\Models\PermintaanModel::class),
-            model(\App\Models\ItemPermintaanModel::class),
-            model(\App\Models\BarangModel::class),
-            model(\App\Models\MutasiStokModel::class),
-            model(\App\Models\NotifikasiModel::class)
+            model(\App\Models\Permintaan\PermintaanModel::class),
+            model(\App\Models\Permintaan\ItemPermintaanModel::class),
+            model(\App\Models\MasterData\BarangModel::class),
+            model(\App\Models\Stok\MutasiStokModel::class),
+            model(\App\Models\Notifikasi\NotifikasiModel::class)
         );
     }
 }
