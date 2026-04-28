@@ -1,69 +1,119 @@
-# CodeIgniter 4 Application Starter
+# 📦 SIMATK - Sistem Informasi Manajemen Alat Tulis Kantor
 
-## What is CodeIgniter?
+![SIMATK Dashboard](public/img/dashboard.png)
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+**SIMATK** adalah sebuah aplikasi web berbasis **CodeIgniter 4** yang dirancang secara khusus untuk mempermudah manajemen inventaris Alat Tulis Kantor (ATK) dalam sebuah instansi/fakultas. Sistem ini melacak secara real-time pergerakan masuk-keluarnya barang, memproses alur permintaan dari peminjam, dan menyediakan laporan rekapitulasi yang komprehensif.
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+---
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## 🚀 Fitur Utama
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+### 1. 📊 Dashboard Interaktif
+Menyediakan ringkasan total barang, peringatan stok rendah/habis, *quick actions* berdasarkan hak akses, serta visualisasi grafik pergerakan stok bulanan menggunakan **Chart.js**.
 
-## Installation & updates
+### 2. 🗃️ Manajemen Master Data
+- **Kategori & Kode Barang**: Pengklasifikasian ATK secara terstruktur.
+- **Barang (Products)**: Manajemen pendataan ATK dengan fitur penentuan batas stok minimum (untuk men-trigger notifikasi stok menipis).
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+### 3. 📦 Manajemen Stok (In/Out & Opname)
+- **Barang Masuk**: Mencatat penambahan stok baru ke dalam gudang inventaris.
+- **Barang Keluar**: Mengeluarkan stok secara manual.
+- **Penyesuaian (Stock Opname)**: Melakukan sinkronisasi antara stok fisik dan kalkulasi sistem.
+- **Riwayat Stok**: Melacak seluruh pergerakan barang secara detail (mutasi stok masuk, keluar, dan distribusi).
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+### 4. 📝 Sistem Permintaan (Request Workflow)
+- **Form Permintaan Publik (`/ask`)**: Staf/Pengguna dapat meminta ATK tanpa harus *login*. Cukup mengisi form biodata peminjam dan memilih barang (bahkan dapat me-request barang baru di luar sistem dengan opsi "Barang Lainnya").
+- **Kode Resi Track**: Sistem melacak permintaan menggunakan **Kode Resi** unik, sehingga staf dapat mengecek status permintaan secara mandiri.
+- **Persetujuan Admin**: Admin meninjau permintaan dan dapat memberikan **Persetujuan (Approve)**, **Membatalkan (Cancel)**, atau **Mendistribusikan** (langsung memotong stok sistem).
 
-## Setup
+### 5. 👥 Manajemen Pengguna & Multi-Role
+Sistem keamanan berbasis *Role-Based Access Control* (RBAC):
+- **Superadmin**: Memiliki akses ke manajemen pengguna, pengubahan hak akses, serta pengaturan *Appearance* antarmuka halaman publik (Logo, Instansi, Banner).
+- **Admin**: Bertugas mengelola master data ATK, operasional stok gudang harian, dan melayani persetujuan permintaan ATK.
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+### 6. 📈 Pelaporan & Ekspor (Reporting)
+- Laporan Stok Saat Ini.
+- Laporan Pergerakan Barang (Mutasi).
+- Ekspor grafik dan cetak log aktivitas yang siap digunakan sebagai dokumen pertanggungjawaban.
 
-## Important Change with index.php
+---
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+## 🛠️ Tech Stack
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+Sistem SIMATK dibangun dengan pendekatan **MVC (Model-View-Controller)** menggunakan teknologi mutakhir:
 
-**Please** read the user guide for a better explanation of how CI4 works!
+### Backend
+- **PHP 8.2+**
+- **CodeIgniter 4** (Web Framework utama)
+- **MySQL / MariaDB** (Database Relasional)
 
-## Repository Management
+### Frontend
+- **HTML5 & CSS3** (Custom UI / `simatk-theme.css`)
+- **JavaScript Biasa** (Modular, Non-jQuery dependent design pattern)
+- **Bootstrap 5** (CSS Framework & Responsiveness)
+- **Bootstrap Icons** (Tipografi icon)
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+### Library & Plugins Eksternal
+- **Chart.js**: Rendering grafik interaktif di Dashboard dan Laporan.
+- **SweetAlert2**: Notifikasi dialog konfirmasi yang modern.
+- **DataTables**: Fitur tabel data *client-side* yang interaktif (Search, Sort, Pagination).
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+---
 
-## Server Requirements
+## 📸 Cuplikan Layar (Screenshots)
 
-PHP version 8.2 or higher is required, with the following extensions installed:
+### 1. Tampilan Dashboard Utama
+![Dashboard SIMATK](public/img/dashboard.png)
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+### 2. Manajemen Kategori & Tampilan Tabel
+![Kategori SIMATK](public/img/kategori.png)
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - The end of life date for PHP 8.1 was December 31, 2025.
-> - If you are still using below PHP 8.2, you should upgrade immediately.
-> - The end of life date for PHP 8.2 will be December 31, 2026.
+---
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+## ⚙️ Persyaratan Sistem (Server Requirements)
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+- PHP `^8.2`
+- Database MySQL atau MariaDB
+- Ekstensi PHP diaktifkan: `intl`, `mbstring`, `json`, `mysqlnd`, `curl`
+- Composer 
+
+## 🏗️ Cara Instalasi (Setup)
+
+1. **Clone repositori**
+   ```bash
+   git clone https://github.com/xtrayou/SIMATK.git
+   cd simatk
+   ```
+
+2. **Instal Dependensi**
+   ```bash
+   composer install
+   ```
+
+3. **Konfigurasi Environment**
+   Salin file `env` menjadi `.env`. Buka file `.env` lalu sesuaikan konfigurasi *Database* dan *Base URL*:
+   ```env
+   CI_ENVIRONMENT = development
+   app.baseURL = 'http://localhost:8080/'
+
+   database.default.hostname = localhost
+   database.default.database = nama_db_simatk
+   database.default.username = root
+   database.default.password = 
+   database.default.DBDriver = MySQLi
+   ```
+
+4. **Jalankan Migrasi & Seeder Database**
+   ```bash
+   php spark migrate
+   php spark db:seed ProdukExcelSeeder
+   ```
+
+5. **Jalankan Server Lokal**
+   ```bash
+   php spark serve
+   ```
+   Buka web browser dan akses aplikasi melalui `http://localhost:8080/`.
+
+---
+*Dikembangkan oleh @xtrayou sebagai tugas akhir/skripsi.*

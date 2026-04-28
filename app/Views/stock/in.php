@@ -59,7 +59,7 @@
                                     </td>
                                     <td>
                                         <div class="input-group mb-2">
-                                            <input type="number" class="form-control quantity-input" name="movements[0][quantity]" min="1" placeholder="0" required>
+                                            <input type="number" class="form-control quantity-input" name="movements[0][quantity]" min="0" value="0" placeholder="0" required>
                                             <span class="input-group-text small-text">Baik</span>
                                             <span class="input-group-text small-text unit-label">Pcs</span>
                                         </div>

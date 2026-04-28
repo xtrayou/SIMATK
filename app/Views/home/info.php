@@ -30,7 +30,22 @@
                 <p class="mt-1 small text-muted">Akses layanan student services di <a href="https://unsika.link/layananfasilkom" target="_blank">Layanan Fasilkom</a></p>
             </div>
         </div>
+        
         <hr style="opacity:0.2;">
+
+        <!-- Tracking Banner -->
+        <div class="track-request-banner mb-4 p-3 rounded" style="background: rgba(0, 163, 255, 0.1); border: 1px solid rgba(0, 163, 255, 0.2);">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="mb-1 fw-bold" style="color:var(--primary-color);"><i class="bi bi-search me-2"></i>Lacak Permintaan</h6>
+                    <p class="mb-0 small text-light">Cek status pengajuan Anda dengan kode resi</p>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm px-3 rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCekStatus">
+                    Lacak
+                </button>
+            </div>
+        </div>
+
         <h6 class="mb-3"><i class="bi bi-tags me-2"></i>Kategori Tersedia:</h6>
 
         <div class="kategori-preview">

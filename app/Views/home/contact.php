@@ -35,19 +35,6 @@
             </div>
         </div>
 
-        <div class="social-bar" data-aos="fade-up" data-aos-delay="200">
-            <a href="https://www.instagram.com/fasilkomunsika" target="_blank" class="sb-ig" title="@fasilkomunsika">
-                <i class="bi bi-instagram"></i>
-            </a>
-            <a href="https://www.facebook.com/fasilkom.unsika/" target="_blank" class="sb-fb" title="Facebook Fasilkom">
-                <i class="bi bi-facebook"></i>
-            </a>
-            <a href="https://cs.unsika.ac.id/" target="_blank" class="sb-web" title="cs.unsika.ac.id">
-                <i class="bi bi-globe"></i>
-            </a>
-            <a href="https://unsika.link/layananfasilkom" target="_blank" class="sb-link" title="Layanan Mahasiswa">
-                <i class="bi bi-link-45deg"></i>
-            </a>
-        </div>
+
     </div>
 </section>

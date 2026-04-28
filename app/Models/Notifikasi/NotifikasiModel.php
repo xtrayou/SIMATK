@@ -41,7 +41,7 @@ class NotifikasiModel extends Model
         $role = strtolower(trim($role));
 
         if ($role === 'superadmin') {
-            return ['superadmin', 'admin', 'all'];
+            return ['superadmin', 'all'];
         }
 
         if (in_array($role, ['admin', 'staff', 'user'], true)) {

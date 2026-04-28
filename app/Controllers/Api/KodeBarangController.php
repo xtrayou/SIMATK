@@ -3,7 +3,7 @@
 namespace App\Controllers\Api;
 
 use CodeIgniter\RESTful\ResourceController;
-use App\Models\KodeBarangModel;
+use App\Models\MasterData\KodeBarangModel;
 
 class KodeBarangController extends ResourceController
 {

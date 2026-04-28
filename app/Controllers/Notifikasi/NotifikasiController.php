@@ -22,7 +22,7 @@ class NotifikasiController extends BaseController
     private function getRoleScopes(string $role): array
     {
         return $role === 'superadmin'
-            ? ['superadmin', 'admin', 'all']
+            ? ['superadmin', 'all']
             : [$role, 'all'];
     }
 

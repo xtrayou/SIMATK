@@ -2,14 +2,26 @@
 
 namespace App\Models\MasterData;
 
-class KodeBarangModel
+use CodeIgniter\Model;
+
+class KodeBarangModel extends Model
 {
+    protected $table = 'kode_barang';
+    protected $primaryKey = 'id';
+    
+    protected $allowedFields = [
+        'kode',
+        'nama',
+    ];
+
+    protected $useTimestamps = true;
+
     /**
-     * Get all item codes from the JSON file
+     * Get all item codes
      */
     public function getAll(): array
     {
-        return $this->loadFromJson();
+        return $this->orderBy('kode', 'ASC')->findAll();
     }
 
     /**
@@ -17,40 +29,15 @@ class KodeBarangModel
      */
     public function cariKodeBarang(string $keyword = ''): array
     {
-        $data = $this->loadFromJson();
-
         if ($keyword === '') {
-            return $data;
+            return $this->getAll();
         }
 
-        $keyword = strtolower(trim($keyword));
-        
-        return array_filter($data, function ($item) use ($keyword) {
-            $kodeMatch = strpos(strtolower($item['kode']), $keyword) !== false;
-            $namaMatch = strpos(strtolower($item['nama']), $keyword) !== false;
-            
-            return $kodeMatch || $namaMatch;
-        });
-    }
-
-    /**
-     * Load JSON data
-     */
-    private function loadFromJson(): array
-    {
-        $filePath = FCPATH . 'dataexport/kode_barang.json';
-        
-        if (!file_exists($filePath)) {
-            return [];
-        }
-
-        $json = file_get_contents($filePath);
-        $data = json_decode($json, true);
-
-        if (!is_array($data)) {
-            return [];
-        }
-
-        return $data;
+        return $this->groupStart()
+            ->like('kode', $keyword)
+            ->orLike('nama', $keyword)
+            ->groupEnd()
+            ->orderBy('kode', 'ASC')
+            ->findAll();
     }
 }

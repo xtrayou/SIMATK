@@ -118,7 +118,7 @@ class BarangModel extends Model
      * @param int    $categoryId   ID Kategori (untuk referensi)
      * @return string SKU yang telah divalidasi
      */
-    public function resolveSku(string $requestedSku, int $categoryId): string
+    public function resolveSku(string $requestedSku, int $categoryId, int $excludeId = 0): string
     {
         $requestedSku = trim($requestedSku);
         if ($requestedSku === '') {

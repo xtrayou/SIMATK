@@ -21,7 +21,8 @@
             <div class="card-body">
                 <?php // Tampilkan notifikasi ketika aksi sebelumnya (tambah, ubah, hapus) berhasil. 
                 ?>
-                <?php if (session()->getFlashdata('success')): ?>
+                <?php 
+                if (session()->getFlashdata('success')): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <?= session()->getFlashdata('success') ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -39,7 +40,8 @@
                                     <th class="align-middle border">Informasi Barang</th>
                                     <th class="align-middle border text-center">Kategori</th>
                                     <th class="align-middle border text-end">Harga Estimasi</th>
-                                    <th class="align-middle border text-center">Stok Minimum</th>
+                                    <th class="align-middle border text-center">Stok & Kondisi</th>
+                                    <th class="align-middle border text-center">Status</th>
                                     <th width="130" class="text-center align-middle border">Aksi</th>
                                 </tr>
                             </thead>
@@ -60,7 +62,30 @@
                                             <span class="badge bg-light text-dark border-0 small"><?= esc($p['category_name']) ?></span>
                                         </td>
                                         <td class="text-end pe-3 border-end">Rp <?= number_format($p['price'], 0, ',', '.') ?></td>
-                                        <td class="text-center border-end\"><?= number_format((int) ($p['min_stock'] ?? 0)) ?></td>
+                                        <td class="text-center border-end">
+                                            <?php 
+                                            $stokTersedia = (int) ($p['stock_baik'] ?? $p['current_stock'] ?? 0);
+                                            $minStok = (int) ($p['min_stock'] ?? 0);
+                                            $stokRusak = (int) ($p['stock_rusak'] ?? 0);
+                                            ?>
+                                            <div class="fw-bold fs-6 <?= ($stokTersedia <= 0) ? 'text-danger' : (($stokTersedia <= $minStok) ? 'text-warning' : 'text-success') ?>">
+                                                <?= number_format($stokTersedia) ?>
+                                            </div>
+                                            <?php if ($stokRusak > 0): ?>
+                                                <div class="small text-danger mt-1" title="Stok Rusak (Tidak bisa digunakan)">
+                                                    <i class="bi bi-x-circle"></i> Rusak: <?= number_format($stokRusak) ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-center border-end">
+                                            <?php if ($stokTersedia <= 0): ?>
+                                                <span class="badge bg-danger">Habis</span>
+                                            <?php elseif ($stokTersedia <= $minStok): ?>
+                                                <span class="badge bg-warning text-dark">Stok Rendah</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-success">Aman</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="text-center border-end">
                                             <div class="btn-group">
                                                 <a href="<?= base_url('/products/show/' . $p['id']) ?>" class="btn btn-sm btn-outline-info" title="Detail">

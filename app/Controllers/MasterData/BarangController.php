@@ -118,7 +118,8 @@ class BarangController extends BaseController
         $data = $this->request->getPost();
         $resolvedSku = $this->modelBarang->resolveSku(
             (string) ($data['sku'] ?? ''),
-            (int) ($data['category_id'] ?? 0)
+            (int) ($data['category_id'] ?? 0),
+            $isUpdate ? $productId : 0
         );
 
         $data['sku'] = $resolvedSku;
@@ -134,10 +135,14 @@ class BarangController extends BaseController
                 $data['current_stock'] = $initialStock;
                 $data['stock_baik'] = $initialStock;
                 $data['stock_rusak'] = 0;
+                $data['cost_price'] = $data['price'] ?? 0;
+                $data['is_active'] = 1;
 
                 $savedProductId = (int) $this->modelBarang->insert($data, true);
                 if ($savedProductId <= 0) {
-                    throw new \Exception('Gagal menyimpan data barang ke database.');
+                    $errors = $this->modelBarang->errors();
+                    $errorMsg = !empty($errors) ? implode(', ', $errors) : 'Gagal menyimpan data barang ke database (kemungkinan duplikat Kode Barang atau kesalahan sistem).';
+                    throw new \Exception($errorMsg);
                 }
 
                 if ($initialStock > 0) {
@@ -188,24 +193,16 @@ class BarangController extends BaseController
             'total_keluar' => $this->modelMutasiStok->where('product_id', $id)->where('type', 'OUT')->selectSum('quantity', 'total')->first()['total'] ?? 0,
         ];
 
-        $currentStock = (int) ($barang['current_stock'] ?? 0);
+        $currentStock = (int) ($barang['stock_baik'] ?? $barang['current_stock'] ?? 0);
         $minStock = (int) ($barang['min_stock'] ?? 0);
-        $statusClass = $currentStock <= $minStock ? 'text-danger' : 'text-success';
-
-        $margin = null;
-        $price = (float) ($barang['price'] ?? 0);
-        $costPrice = (float) ($barang['cost_price'] ?? 0);
-        if ($price > 0) {
-            $margin = (($price - $costPrice) / $price) * 100;
-        }
+        $statusClass = $currentStock <= 0 ? 'text-danger' : ($currentStock <= $minStock ? 'text-warning' : 'text-success');
 
         $data = [
             'barang'      => $barang,
             'riwayatStok' => $stockHistory,
             'statistik'   => $stats,
             'statusClass' => $statusClass,
-            'netMutasi' => (int) $stats['total_masuk'] - (int) $stats['total_keluar'],
-            'margin' => $margin,
+            'netMutasi' => (int) $stats['total_masuk'] - (int) $stats['total_keluar']
         ];
 
         return $this->render('barang/show', $data);

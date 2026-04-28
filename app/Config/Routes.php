@@ -35,17 +35,17 @@ $routes->group('kode-barang', ['filter' => 'auth'], function ($routes) {
 });
 
 // ── Barang ───────────────────────────────────────────────────────────
-$routes->group('products', ['filter' => 'auth'], function ($routes) {
-    $routes->get('/', 'MasterData\BarangController::index', ['filter' => 'auth']);
-    $routes->get('create', 'MasterData\BarangController::tambah', ['filter' => 'auth']);
-    $routes->get('show/(:num)', 'MasterData\BarangController::detail/$1', ['filter' => 'auth']);
-    $routes->post('save', 'MasterData\BarangController::simpan', ['filter' => 'auth']);
-    $routes->get('edit/(:num)', 'MasterData\BarangController::ubah/$1', ['filter' => 'auth']);
-    $routes->match(['post', 'delete'], 'delete/(:num)', 'MasterData\BarangController::hapus/$1', ['filter' => 'auth']);
-    $routes->post('generate-sku', 'MasterData\BarangController::generateKodeBarang', ['filter' => 'auth']);
-    $routes->get('export/excel', 'MasterData\BarangController::exportExcel', ['filter' => 'auth']);
-    $routes->get('export/pdf', 'MasterData\BarangController::exportPdf', ['filter' => 'auth']);
-    $routes->get('export/single/(:num)', 'MasterData\BarangController::exportSingle/$1', ['filter' => 'auth']);
+$routes->group('products', ['filter' => 'role:admin'], function ($routes) {
+    $routes->get('/', 'MasterData\BarangController::index');
+    $routes->get('create', 'MasterData\BarangController::tambah');
+    $routes->get('show/(:num)', 'MasterData\BarangController::detail/$1');
+    $routes->post('save', 'MasterData\BarangController::simpan');
+    $routes->get('edit/(:num)', 'MasterData\BarangController::ubah/$1');
+    $routes->match(['post', 'delete'], 'delete/(:num)', 'MasterData\BarangController::hapus/$1');
+    $routes->post('generate-sku', 'MasterData\BarangController::generateKodeBarang');
+    $routes->get('export/excel', 'MasterData\BarangController::exportExcel');
+    $routes->get('export/pdf', 'MasterData\BarangController::exportPdf');
+    $routes->get('export/single/(:num)', 'MasterData\BarangController::exportSingle/$1');
 });
 
 // ── Manajemen Stok ───────────────────────────────────────────────────

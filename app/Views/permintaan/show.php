@@ -91,7 +91,7 @@
                             <?php foreach (($pinjaman['items'] ?? []) as $item): ?>
                                 <?php
                                 // Get current stock for the product
-                                $barangModel = new \App\Models\BarangModel();
+                                $barangModel = new \App\Models\MasterData\BarangModel();
                                 $product = $barangModel->find($item['product_id']);
                                 $currentStock = $product ? (int) ($product['stock_baik'] ?? $product['current_stock']) : 0;
                                 $requestedQty = (int)$item['quantity'];
@@ -127,7 +127,7 @@
                 $currentStatus = $pinjaman['status'] ?? 'requested';
 
                 // Check stock availability
-                $barangModel = new \App\Models\BarangModel();
+                $barangModel = new \App\Models\MasterData\BarangModel();
                 $stockIssues = [];
                 foreach (($pinjaman['items'] ?? []) as $item) {
                     $product = $barangModel->find($item['product_id']);

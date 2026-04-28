@@ -45,7 +45,10 @@ class StokController extends BaseController
             }
 
             $quantity = (int) ($m['quantity'] ?? 0);
-            if ($quantity <= 0) {
+            $damaged = (int) ($m['damaged_quantity'] ?? 0);
+            
+            // Lompati jika tidak ada penambahan stok baik maupun rusak
+            if ($quantity <= 0 && $damaged <= 0 && !array_key_exists('adjusted_good_stock', $m)) {
                 continue;
             }
 
@@ -59,7 +62,7 @@ class StokController extends BaseController
             ];
 
             if (array_key_exists('damaged_quantity', $m)) {
-                $payload['damaged_quantity'] = (int) ($m['damaged_quantity'] ?? 0);
+                $payload['damaged_quantity'] = $damaged;
             }
             if (array_key_exists('adjusted_good_stock', $m)) {
                 $payload['adjusted_good_stock'] = (int) ($m['adjusted_good_stock'] ?? 0);
@@ -186,7 +189,7 @@ class StokController extends BaseController
         $rules = [
             'movements' => 'required',
             'movements.*.product_id' => 'required',
-            'movements.*.quantity'   => 'required|integer|greater_than[0]',
+            'movements.*.quantity'   => 'required|integer|greater_than_equal_to[0]',
         ];
 
         if ($withDamaged) {

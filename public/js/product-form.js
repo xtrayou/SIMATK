@@ -48,12 +48,15 @@ $(document).ready(function () {
         $('body').append(skuList).append(nameList);
 
         $('#sku').on('change', function () {
-            const val = $(this).val();
-            const matched = data.find((item) => item.kode === val);
+            const val = $(this).val().trim().toLowerCase();
+            if (!val) return;
+            
+            const matched = data.find((item) => item.kode.toLowerCase() === val || item.nama.toLowerCase() === val);
             if (!matched) {
                 return;
             }
 
+            $(this).val(matched.kode); // Set input to the actual code
             if ($('#name').val() === '') {
                 $('#name').val(matched.nama).trigger('input');
             }
@@ -62,12 +65,15 @@ $(document).ready(function () {
         });
 
         $('#name').on('change', function () {
-            const val = $(this).val();
-            const matched = data.find((item) => item.nama === val);
+            const val = $(this).val().trim().toLowerCase();
+            if (!val) return;
+            
+            const matched = data.find((item) => item.nama.toLowerCase() === val || item.kode.toLowerCase() === val);
             if (!matched) {
                 return;
             }
 
+            $(this).val(matched.nama); // Set input to the actual name
             if ($('#sku').val() === '') {
                 $('#sku').val(matched.kode).trigger('change');
             }

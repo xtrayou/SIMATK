@@ -70,9 +70,14 @@ $movementValueClass = static function (string $type): string {
                     <div class="card-body p-4 text-center">
                         <p class="text-muted mb-2 fw-bold text-uppercase small">Sisa Stok Saat Ini</p>
                         <h1 class="display-4 fw-bold mb-0 <?= $statusClass ?>">
-                            <?= $angka($barang['current_stock']) ?>
+                            <?= $angka($barang['stock_baik'] ?? $barang['current_stock'] ?? 0) ?>
                         </h1>
                         <p class="mb-0 text-muted"><?= $barang['unit'] ?></p>
+                        <?php if ((int)($barang['stock_rusak'] ?? 0) > 0): ?>
+                            <div class="mt-2 text-danger small fw-bold">
+                                <i class="bi bi-x-circle"></i> Terdapat <?= $angka($barang['stock_rusak']) ?> <?= $barang['unit'] ?> rusak
+                            </div>
+                        <?php endif; ?>
                         <hr>
                         <div class="row small">
                             <div class="col-6 border-end">
@@ -185,22 +190,10 @@ $movementValueClass = static function (string $type): string {
                 </div>
                 <hr>
                 <div class="row g-3">
-                    <div class="col-6">
-                        <label class="text-muted small d-block mb-1">HPP (Beli)</label>
-                        <p class="fw-bold mb-0"><?= $rupiah($barang['cost_price']) ?></p>
+                    <div class="col-12">
+                        <label class="text-muted small d-block mb-1">Harga Barang</label>
+                        <p class="fw-bold mb-0 fs-5"><?= $rupiah($barang['price']) ?></p>
                     </div>
-                    <div class="col-6">
-                        <label class="text-muted small d-block mb-1">Harga Jual</label>
-                        <p class="fw-bold mb-0"><?= $rupiah($barang['price']) ?></p>
-                    </div>
-                    <?php if ($margin !== null): ?>
-                        <div class="col-12">
-                            <div class="p-2 border rounded bg-light text-center">
-                                <small class="text-muted d-block">Margin Keuntungan</small>
-                                <span class="fw-bold text-success fs-5"><?= number_format($margin, 1) ?>%</span>
-                            </div>
-                        </div>
-                    <?php endif; ?>
                 </div>
             </div>
         </div>

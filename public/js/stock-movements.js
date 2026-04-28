@@ -30,18 +30,25 @@ function addMovementItem() {
             <small class="text-muted" id="product-meta-${itemIndex}"></small>
         </div>
         <div class="col-md-2">
-            <label class="form-label">Jumlah</label>
+            <label class="form-label">${currentType === 'IN' ? 'Jml. Baik' : 'Jumlah'}</label>
             <input type="number" class="form-control" name="movements[${itemIndex}][quantity]" 
-                   min="1" required id="quantity-${itemIndex}">
+                   min="0" value="${currentType === 'IN' ? '0' : '1'}" required id="quantity-${itemIndex}">
             <small class="text-muted" id="stock-info-${itemIndex}"></small>
         </div>
-        <div class="col-md-4">
+        ${currentType === 'IN' ? `
+        <div class="col-md-2">
+            <label class="form-label text-danger">Jml. Rusak</label>
+            <input type="number" class="form-control" name="movements[${itemIndex}][damaged_quantity]" 
+                   min="0" value="0" id="damaged-${itemIndex}">
+        </div>
+        ` : ''}
+        <div class="${currentType === 'IN' ? 'col-md-3' : 'col-md-5'}">
             <label class="form-label">Catatan</label>
             <input type="text" class="form-control" name="movements[${itemIndex}][notes]" 
                    placeholder="Catatan item">
         </div>
-        <div class="col-md-2 d-flex align-items-end">
-            <button type="button" class="btn btn-outline-danger" onclick="removeMovementItem(${itemIndex})">
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="button" class="btn btn-outline-danger w-100" onclick="removeMovementItem(${itemIndex})">
                 <i class="fas fa-trash"></i>
             </button>
         </div>
