@@ -333,6 +333,14 @@
                 <div class="status-badge badge-<?= $badge['color'] ?>">
                     <i class="bi bi-<?= $badge['icon'] ?> me-1"></i> <?= $badge['text'] ?>
                 </div>
+                
+                <?php if ($currentStatus === 'cancelled' && !empty($permintaan['status_reason'])): ?>
+                    <div class="alert alert-danger border-0 mx-auto mt-2 mb-3" style="max-width: 400px; font-size: 0.9rem;">
+                        <h6 class="fw-bold small text-uppercase mb-1"><i class="bi bi-info-circle me-1"></i> Alasan Pembatalan:</h6>
+                        <p class="mb-0 italic"><?= nl2br(esc($permintaan['status_reason'])) ?></p>
+                    </div>
+                <?php endif; ?>
+
                 <p class="text-muted mb-0" style="font-size: 0.9rem;">
                     <i class="bi bi-calendar3 me-1"></i>
                     Diajukan: <strong><?= formatDate($permintaan['created_at']) ?></strong>

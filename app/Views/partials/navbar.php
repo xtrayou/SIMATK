@@ -2,7 +2,7 @@
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="<?= base_url('/') ?>">
             <i class="bi bi-box-seam-fill me-2" style="font-size:1.8rem;"></i>
-            <span>SIMA<span class="font-accent">TIK</span></span>
+            <span>SIMA<span class="font-accent">TK</span></span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">

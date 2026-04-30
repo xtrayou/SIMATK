@@ -3,7 +3,7 @@
         <div class="row align-items-center">
             <div class="col-lg-5 mb-4 mb-lg-0">
                 <div class="footer-brand">
-                    <i class="bi bi-box-seam-fill me-2"></i>SIMA<span class="font-accent" style="color:rgba(255,255,255,0.9);">TIK</span>
+                    <i class="bi bi-box-seam-fill me-2"></i>SIMA<span class="font-accent" style="color:rgba(255,255,255,0.9);">TK</span>
                 </div>
                 <p class="footer-text mb-0">Sistem Inventaris ATK — <span class="font-accent">Fakultas Ilmu Komputer</span>, Universitas Singaperbangsa Karawang.</p>
             </div>

@@ -490,6 +490,13 @@
                                     <?= esc((string) ($dataHasilTrack['status_text'] ?? 'Tidak Diketahui')) ?>
                                 </span>
                             </div>
+                            
+                            <?php if (!empty($dataHasilTrack['status_reason'])): ?>
+                                <div class="mt-3 p-2 bg-white rounded border small">
+                                    <span class="d-block fw-bold text-danger text-uppercase mb-1" style="font-size: 0.7rem;">Alasan Admin:</span>
+                                    <span class="text-muted italic"><?= nl2br(esc($dataHasilTrack['status_reason'])) ?></span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <button type="button" class="btn btn-primary w-100 mt-3" data-bs-dismiss="modal">
@@ -827,6 +834,64 @@
                 ikon.className = 'bi bi-eye';
             }
         }
+
+        // ── Success Modal: Permintaan Berhasil ───────────────────────
+        <?php if (session()->getFlashdata('_open_success_modal')): ?>
+        window.addEventListener('load', function() {
+            const resi = "<?= esc((string) session()->getFlashdata('kode_resi')) ?>";
+            
+            Swal.fire({
+                title: '<div class="mt-3"><i class="bi bi-check-circle-fill text-success display-4"></i></div><div class="mt-3 fw-bold">Permintaan Berhasil!</div>',
+                html: `
+                    <div class="text-start px-2" style="font-size: 0.95rem;">
+                        <p class="text-center text-muted mb-4">Permohonan Anda telah diterima dan tercatat dalam sistem.</p>
+                        
+                        <div class="p-3 mb-4 rounded-3 border-start border-4 border-primary bg-light position-relative">
+                            <label class="small text-muted text-uppercase fw-bold mb-1 d-block" style="letter-spacing: 0.5px;">Kode Resi:</label>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="fs-4 fw-bold font-monospace text-primary tracking-wider" id="resiCode">${resi}</span>
+                                <button type="button" class="btn btn-outline-primary btn-sm border-0" onclick="copyResi('${resi}')" title="Salin Kode">
+                                    <i class="bi bi-clipboard fs-5" id="copyIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 mb-3">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-chat-dots-fill text-primary fs-5"></i>
+                            </div>
+                            <div>
+                                <p class="mb-0 fw-bold small">Admin akan membalas permintaan Anda</p>
+                                <p class="mb-0 text-muted small">via chat atau email dalam 1-2 hari kerja.</p>
+                            </div>
+                        </div>
+
+                        <div class="p-2 text-center text-muted border-top pt-3 mt-3" style="font-size: 0.8rem;">
+                            Simpan kode resi di atas untuk referensi Anda.
+                        </div>
+                    </div>
+                `,
+                showConfirmButton: true,
+                confirmButtonText: 'Saya Mengerti',
+                confirmButtonColor: '#3B5BDB',
+                allowOutsideClick: false,
+                width: '450px',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg border-0 px-2'
+                }
+            });
+        });
+
+        window.copyResi = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const icon = document.getElementById('copyIcon');
+                icon.className = 'bi bi-check-lg text-success';
+                setTimeout(() => {
+                    icon.className = 'bi bi-clipboard';
+                }, 2000);
+            });
+        };
+        <?php endif; ?>
     </script>
 </body>
 

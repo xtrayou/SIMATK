@@ -280,7 +280,8 @@ class PermintaanController extends BaseController
      */
     public function batalkan($id)
     {
-        $result = $this->permintaanService->batalkanPermintaan((int)$id);
+        $reason = $this->request->getPost('reason');
+        $result = $this->permintaanService->batalkanPermintaan((int)$id, $reason);
 
         return $this->jsonResponse($result, $result['success'] ? 200 : 400);
     }
@@ -321,7 +322,8 @@ class PermintaanController extends BaseController
             $requestId = $result['data']['request_id'];
             $kodeResi = $result['data']['receipt_code'];
 
-            return redirect()->to('/ask/success')
+            return redirect()->to('/')
+                ->with('_open_success_modal', true)
                 ->with('request_id', $requestId)
                 ->with('borrower_name', $this->request->getPost('borrower_name'))
                 ->with('kode_resi', $kodeResi);
@@ -420,6 +422,7 @@ class PermintaanController extends BaseController
                     'status_text'    => (string) ($statusMeta['text'] ?? 'Tidak Diketahui'),
                     'status_color'   => (string) ($statusMeta['color'] ?? 'secondary'),
                     'status_icon'    => (string) ($statusMeta['icon'] ?? 'question-circle'),
+                    'status_reason'  => (string) ($dataPermintaan['status_reason'] ?? ''),
                 ]);
         }
 

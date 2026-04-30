@@ -83,6 +83,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('btn-cancel')?.addEventListener('click', function() {
+        const reasonEl = document.getElementById('admin_reason');
+        const reason = reasonEl ? reasonEl.value.trim() : '';
+
+        if (!reason) {
+            const userReason = prompt('Silakan berikan alasan pembatalan (Wajib):');
+            if (userReason === null) return; // User cancelled prompt
+            if (userReason.trim() === '') {
+                alert('Alasan pembatalan wajib diisi.');
+                return;
+            }
+            if (reasonEl) reasonEl.value = userReason;
+        }
+
         jalankanAksi(window.SIMATK_REQ_URL.cancel, 'Apakah Anda yakin ingin membatalkan permintaan ini?', this);
     });
 });

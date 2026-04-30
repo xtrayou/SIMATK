@@ -110,7 +110,7 @@
         <div class="container">
             <div class="d-flex align-items-center gap-2 mb-3">
                 <i class="bi bi-box-seam-fill fs-4"></i>
-                <span class="brand">SIMA<span style="color:#93b4ff">TIK</span></span>
+                <span class="brand">SIMA<span style="color:#93b4ff">TK</span></span>
                 <span class="badge bg-white text-primary ms-2" style="font-size:0.75rem;">Sistem Inventaris ATK</span>
             </div>
             <h2 class="fw-bold mb-1">Formulir Permintaan ATK</h2>

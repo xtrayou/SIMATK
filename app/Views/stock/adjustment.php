@@ -30,7 +30,17 @@
                             <select id="productPicker" class="form-select select2">
                                 <option value="">- Cari Nama Barang -</option>
                                 <?php foreach ($daftarBarang as $p): ?>
-                                    <option value="<?= $p['id'] ?>" data-name="<?= esc($p['name']) ?>" data-sku="<?= $p['sku'] ?>" data-stock="<?= $p['current_stock'] ?>" data-unit="<?= $p['unit'] ?>">
+                                    <?php 
+                                        $sBaik = (int)($p['stock_baik'] ?? $p['current_stock']);
+                                        $sRusak = (int)($p['stock_rusak'] ?? 0);
+                                    ?>
+                                    <option value="<?= $p['id'] ?>" 
+                                            data-name="<?= esc($p['name']) ?>" 
+                                            data-sku="<?= $p['sku'] ?>" 
+                                            data-stock="<?= $p['current_stock'] ?>" 
+                                            data-baik="<?= $sBaik ?>"
+                                            data-rusak="<?= $sRusak ?>"
+                                            data-unit="<?= $p['unit'] ?>">
                                         <?= esc($p['name']) ?> (Stok: <?= $p['current_stock'] ?> <?= $p['unit'] ?>)
                                     </option>
                                 <?php endforeach; ?>
@@ -47,9 +57,9 @@
                                 <tr>
                                     <th>Barang</th>
                                     <th width="120" class="text-center">Stok Sistem</th>
-                                    <th width="150" class="text-center">Stok Fisik</th>
-                                    <th width="120" class="text-center">Selisih</th>
-                                    <th width="80" class="text-center">Aksi</th>
+                                    <th width="150" class="text-center">Stok Baik</th>
+                                    <th width="150" class="text-center">Stok Rusak</th>
+                                    <th width="100" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="rows">

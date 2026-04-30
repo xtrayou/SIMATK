@@ -122,9 +122,10 @@ class PermintaanService
      * Membatalkan sebuah permintaan.
      *
      * @param int $id ID Permintaan
+     * @param string|null $reason Alasan pembatalan
      * @return array ['success' => bool, 'message' => string]
      */
-    public function batalkanPermintaan(int $id): array
+    public function batalkanPermintaan(int $id, ?string $reason = null): array
     {
         $dataPermintaan = $this->modelPermintaan->find($id);
         if (!$dataPermintaan) {
@@ -135,8 +136,15 @@ class PermintaanService
             return ['success' => false, 'message' => 'Tidak bisa membatalkan permintaan yang sudah didistribusikan.'];
         }
 
-        if ($this->modelPermintaan->update($id, ['status' => 'cancelled'])) {
+        $updateData = [
+            'status' => 'cancelled',
+            'status_reason' => $reason
+        ];
+
+        if ($this->modelPermintaan->update($id, $updateData)) {
             try {
+                // Tambahkan alasan ke data permintaan untuk notifikasi jika perlu
+                $dataPermintaan['status_reason'] = $reason;
                 $this->modelNotifikasi->createRequestCancelledNotification($dataPermintaan);
             } catch (\Throwable $e) {
                 log_message('error', 'Gagal kirim notifikasi cancel: ' . $e->getMessage());
