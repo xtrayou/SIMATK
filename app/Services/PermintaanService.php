@@ -306,7 +306,6 @@ class PermintaanService
             'current_stock' => 0,
             'min_stock'     => 0,
             'price'         => 0,
-            'cost_price'    => 0,
             'unit'          => 'Pcs',
             'is_active'     => 1,
         ]);

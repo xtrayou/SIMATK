@@ -403,7 +403,7 @@ class LaporanService
                 barang.*, 
                 categories.name as category_name,
                 (barang.current_stock * barang.price) as nilai_stok,
-                (barang.current_stock * barang.cost_price) as nilai_modal
+                (barang.current_stock * barang.price) as nilai_modal
             ')
             ->join('categories', 'categories.id = barang.category_id')
             ->where('barang.is_active', true)

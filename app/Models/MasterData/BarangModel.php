@@ -22,7 +22,6 @@ class BarangModel extends Model
         'category_id',
         'description',
         'price',
-        'cost_price',
         'min_stock',
         'current_stock',
         'stock_baik',
@@ -145,7 +144,6 @@ class BarangModel extends Model
                     barang.category_id, 
                     barang.description, 
                     barang.price, 
-                    barang.cost_price, 
                     barang.min_stock, 
                     barang.current_stock, 
                     barang.stock_baik,
@@ -214,7 +212,7 @@ class BarangModel extends Model
      */
     public function getBarangDenganKategoriById(int $id): ?array
     {
-        return $this->select('barang.id, barang.name, barang.sku, barang.category_id, barang.description, barang.price, barang.cost_price, barang.min_stock, barang.current_stock, barang.stock_baik, barang.stock_rusak, barang.unit, barang.is_active, categories.name as category_name')
+        return $this->select('barang.id, barang.name, barang.sku, barang.category_id, barang.description, barang.price, barang.min_stock, barang.current_stock, barang.stock_baik, barang.stock_rusak, barang.unit, barang.is_active, categories.name as category_name')
             ->join('categories', 'categories.id = barang.category_id')
             ->where('barang.id', $id)
             ->first();
@@ -227,7 +225,7 @@ class BarangModel extends Model
      */
     public function getTotalNilaiInventaris(): float
     {
-        $result = $this->select('SUM(current_stock * cost_price) as total_value', false)
+        $result = $this->select('SUM(current_stock * price) as total_value', false)
             ->where('is_active', true)
             ->first();
 
