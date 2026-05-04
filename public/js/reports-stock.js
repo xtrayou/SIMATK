@@ -80,7 +80,8 @@ function printReport() {
     var totalQty  = 0;
     var totalHarga = 0;
 
-    rows.forEach(function(tr, idx) {
+    var printIdx = 0;
+    rows.forEach(function(tr) {
         var cells = tr.querySelectorAll('td');
         if (!cells.length) return;
 
@@ -88,6 +89,11 @@ function printReport() {
         var stokRaw     = cells[4]?.querySelector('strong')?.innerText.trim()
                        || cells[4]?.innerText.trim().split('\n')[0];
         var jumlah      = parseIDNum(stokRaw);
+
+        // Hanya cetak barang dengan stok > 0
+        if (jumlah <= 0) return;
+        printIdx++;
+
         var nilaiLines  = (cells[7]?.innerText.trim() || '').split('\n');
         var nilaiTotal  = parseIDNum(nilaiLines[0]);
         var hargaLine   = nilaiLines.find(function(l) { return l.includes('@'); });
@@ -106,7 +112,7 @@ function printReport() {
 
         tableRows +=
             '<tr>' +
-            '<td style="text-align:center">' + (idx + 1) + '</td>' +
+            '<td style="text-align:center">' + printIdx + '</td>' +
             '<td>' + namaBarang + '</td>' +
             '<td style="text-align:center">' + jumlah.toLocaleString('id-ID') + '</td>' +
             '<td style="text-align:right">'  + (hargaSatuan > 0 ? Math.round(hargaSatuan).toLocaleString('id-ID') : '-') + '</td>' +

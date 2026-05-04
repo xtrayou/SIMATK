@@ -1,4 +1,5 @@
-/* ask.css — Style khusus halaman publik ask.php */
+/* ask.css — Gaya form public (ask.php) */
+
 body {
     background: linear-gradient(135deg, #eef2ff 0%, #f8faff 100%);
     min-height: 100vh;

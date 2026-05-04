@@ -32,6 +32,8 @@ $routes->group('categories', ['filter' => 'auth'], function ($routes) {
 // ── Kode Barang ──────────────────────────────────────────────────────
 $routes->group('kode-barang', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'MasterData\KodeBarangController::index');
+    $routes->post('store', 'MasterData\KodeBarangController::store');
+    $routes->post('delete/(:num)', 'MasterData\KodeBarangController::delete/$1');
 });
 
 // ── Barang ───────────────────────────────────────────────────────────
@@ -106,6 +108,9 @@ $routes->group('requests', ['filter' => 'auth'], function ($routes) {
     $routes->post('approve/(:num)', 'Permintaan\PermintaanController::setujui/$1', ['filter' => 'auth']);
     $routes->post('distribute/(:num)', 'Permintaan\PermintaanController::distribusikan/$1', ['filter' => 'auth']);
     $routes->post('cancel/(:num)', 'Permintaan\PermintaanController::batalkan/$1', ['filter' => 'auth']);
+    $routes->get('export/excel', 'Permintaan\PermintaanController::exportExcel', ['filter' => 'auth']);
+    $routes->get('export/pdf', 'Permintaan\PermintaanController::exportPdf', ['filter' => 'auth']);
+    $routes->get('export/print', 'Permintaan\PermintaanController::exportPrint', ['filter' => 'auth']);
 });
 
 // ── Manajemen Pengguna dan Hak Akses (Role Based) ───────────────────

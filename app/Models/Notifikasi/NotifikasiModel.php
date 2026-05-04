@@ -202,7 +202,7 @@ class NotifikasiModel extends Model
         return $this->create([
             'type'           => 'new_request',
             'title'          => 'Permintaan ATK Baru',
-            'message'        => "Permintaan baru dari {$request['borrower_name']} - Unit {$request['borrower_unit']}.",
+            'message'        => "Ada permintaan ATK baru (Unit {$request['borrower_unit']}).",
             'icon'           => 'bi-journal-arrow-down',
             'color'          => 'info',
             'url'            => "/requests/show/{$requestId}",
@@ -221,7 +221,7 @@ class NotifikasiModel extends Model
         return $this->create([
             'type'           => 'request_approved',
             'title'          => 'Permintaan Disetujui',
-            'message'        => "Permintaan #{$requestId} dari {$request['borrower_name']} telah disetujui.",
+            'message'        => "Permintaan #{$requestId} telah disetujui.",
             'icon'           => 'bi-check-circle-fill',
             'color'          => 'success',
             'url'            => "/requests/show/{$requestId}",
@@ -240,7 +240,7 @@ class NotifikasiModel extends Model
         return $this->create([
             'type'           => 'request_cancelled',
             'title'          => 'Permintaan Dibatalkan',
-            'message'        => "Permintaan #{$requestId} dari {$request['borrower_name']} telah dibatalkan.",
+            'message'        => "Permintaan #{$requestId} telah dibatalkan.",
             'icon'           => 'bi-x-circle',
             'color'          => 'secondary',
             'url'            => "/requests/show/{$requestId}",

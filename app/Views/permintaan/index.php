@@ -14,9 +14,11 @@
                     </div>
                     <div class="d-flex gap-2">
                         <form method="GET" class="d-flex gap-2 align-items-center" id="requestFilterForm">
+                            <input type="month" name="period" class="form-control form-control-sm"
+                                value="<?= esc($filterPeriod ?? '') ?>" onchange="this.form.submit()">
                             <input type="text" name="resi" class="form-control form-control-sm"
                                 style="min-width: 210px;"
-                                placeholder="Cari kode resi (contoh: 20260407-134530)"
+                                placeholder="Cari kode resi..."
                                 value="<?= esc($filterResi ?? '') ?>">
                             <select name="status" class="form-select form-select-sm" style="min-width: 150px;" id="statusFilterSelect" onchange="this.form.submit()">
                                 <option value="">Semua Status</option>
@@ -26,6 +28,17 @@
                                 <option value="cancelled" <?= $filterStatus == 'cancelled' ? 'selected' : '' ?>>Dibatalkan</option>
                             </select>
                         </form>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-download me-2"></i>Export
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="<?= base_url('/requests/export/excel?' . $_SERVER['QUERY_STRING']) ?>"><i class="bi bi-file-earmark-excel me-2"></i>Excel</a></li>
+                                <li><a class="dropdown-item" href="<?= base_url('/requests/export/pdf?' . $_SERVER['QUERY_STRING']) ?>"><i class="bi bi-file-earmark-pdf me-2"></i>PDF</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" target="_blank" href="<?= base_url('/requests/export/print?' . $_SERVER['QUERY_STRING']) ?>"><i class="bi bi-printer me-2"></i>Print</a></li>
+                            </ul>
+                        </div>
                         <a href="<?= base_url('/requests/create') ?>" class="btn btn-primary btn-sm px-3">
                             <i class="bi bi-plus-lg me-1"></i> Buat Baru
                         </a>

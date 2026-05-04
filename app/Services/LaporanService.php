@@ -250,8 +250,8 @@ class LaporanService
     }
 
     /**
-     * Ambil data stok dari database barang saat ini.
-     * Jika periode dipilih, hanya barang yang punya pergerakan pada periode tersebut yang ditampilkan.
+     * Ambil data stok real (stok sisa) dari database barang saat ini.
+     * Menampilkan semua barang aktif beserta stok aktual mereka.
      */
     private function getCurrentStockReport(?string $categoryFilter, ?string $stockStatus, string $sortBy, string $sortOrder, ?int $month = null, ?int $year = null): array
     {
@@ -261,45 +261,18 @@ class LaporanService
             $sortBy = 'name';
         }
 
-        $month = $month ?: (int) date('m');
-        $year  = $year ?: (int) date('Y');
-
-        $periodStart = sprintf('%04d-%02d-01', $year, $month);
-        $periodEnd = date('Y-m-t', strtotime($periodStart));
-        if ($year === (int) date('Y') && $month === (int) date('m')) {
-            $periodEnd = date('Y-m-d');
-        }
-
-        $movedProductRows = $this->modelMutasiStok
-            ->select('product_id')
-            ->where('DATE(created_at) >=', $periodStart)
-            ->where('DATE(created_at) <=', $periodEnd)
-            ->groupBy('product_id')
-            ->findAll();
-
-        $movedProductIds = array_values(array_unique(array_map(
-            static fn(array $row): int => (int) ($row['product_id'] ?? 0),
-            $movedProductRows
-        )));
-        $movedProductIds = array_values(array_filter($movedProductIds, static fn(int $id): bool => $id > 0));
-
-        if (empty($movedProductIds)) {
-            return [];
-        }
-
         $builder = $this->modelBarang->select("
-                barang.*, 
+                barang.*,
                 categories.name as category_name,
                 (barang.current_stock * barang.price) as stock_value,
-                CASE 
+                CASE
                     WHEN barang.current_stock = 0 THEN 'out_of_stock'
                     WHEN barang.current_stock <= barang.min_stock THEN 'low_stock'
                     ELSE 'normal'
                 END as stock_status
             ")
             ->join('categories', 'categories.id = barang.category_id')
-            ->where('barang.is_active', true)
-            ->whereIn('barang.id', $movedProductIds);
+            ->where('barang.is_active', true);
 
         if ($categoryFilter) {
             $builder->where('barang.category_id', $categoryFilter);
@@ -886,10 +859,16 @@ class LaporanService
         $row = 12;
         $totalHargaSatuan = 0;
         $totalHarga = 0;
+        $displayIndex = 0;
 
-        foreach ($products as $index => $barang) {
+        foreach ($products as $barang) {
+            $jumlah = (int) ($barang['current_stock'] ?? 0);
+            // Hanya ekspor barang dengan stok > 0
+            if ($jumlah <= 0) {
+                continue;
+            }
+            $displayIndex++;
             $hargaSatuan  = (float) ($barang['price'] ?? 0);
-            $jumlah       = (int) ($barang['current_stock'] ?? 0);
             $stokBaik     = (int) ($barang['stock_baik'] ?? $jumlah);
             $stokRusak    = (int) ($barang['stock_rusak'] ?? 0);
             $nilaiTotal   = $jumlah * $hargaSatuan;
@@ -898,7 +877,7 @@ class LaporanService
             $kondisiBaik  = $stokBaik > 0 ? 'V' : '';
             $kondisiRusak = $stokRusak > 0 ? $stokRusak : '';
 
-            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('A' . $row, $displayIndex);
             $sheet->setCellValue('B' . $row, $barang['name']);
             $sheet->setCellValue('C' . $row, $jumlah);
             $sheet->setCellValue('D' . $row, $hargaSatuan);
@@ -1035,10 +1014,16 @@ class LaporanService
 
         $totalHargaSatuan = 0;
         $totalHarga = 0;
+        $displayIndex = 0;
 
-        foreach ($products as $index => $barang) {
+        foreach ($products as $barang) {
+            $jumlah = (int) ($barang['current_stock'] ?? 0);
+            // Hanya ekspor barang dengan stok > 0
+            if ($jumlah <= 0) {
+                continue;
+            }
+            $displayIndex++;
             $hargaSatuan  = (float) ($barang['price'] ?? 0);
-            $jumlah       = (int) ($barang['current_stock'] ?? 0);
             $stokBaik     = (int) ($barang['stock_baik'] ?? $jumlah);
             $stokRusak    = (int) ($barang['stock_rusak'] ?? 0);
             $nilaiTotal   = $jumlah * $hargaSatuan;
@@ -1047,7 +1032,7 @@ class LaporanService
             $kondisiRusak = $stokRusak > 0 ? number_format($stokRusak) : '';
 
             $html .= '<tr>
-                <td class="center">' . ($index + 1) . '</td>
+                <td class="center">' . $displayIndex . '</td>
                 <td>' . esc($barang['name']) . '</td>
                 <td class="center">' . number_format($jumlah) . '</td>
                 <td class="right">' . number_format($hargaSatuan) . '</td>
@@ -1098,6 +1083,7 @@ class LaporanService
 
     /**
      * Get stock report data for export sesuai mode laporan.
+     * Untuk mode 'stock': hanya barang dengan current_stock > 0 yang diekspor.
      */
     private function getStockReportData(): array
     {
@@ -1113,7 +1099,9 @@ class LaporanService
             return $this->getArchivedStockReport($month, $year, $categoryFilter, $stockStatus, $sortBy, $sortOrder);
         }
 
-        return $this->getCurrentStockReport($categoryFilter, $stockStatus, $sortBy, $sortOrder, $month, $year);
+        // Untuk ekspor stok saat ini: hanya barang dengan stok > 0
+        $allProducts = $this->getCurrentStockReport($categoryFilter, $stockStatus, $sortBy, $sortOrder, $month, $year);
+        return array_values(array_filter($allProducts, static fn(array $p): bool => (int) ($p['current_stock'] ?? 0) > 0));
     }
 
     /**

@@ -265,6 +265,140 @@
     line-height: 1.8;
 }
 
+.section-heading .section-subtitle {
+    margin-bottom: 0;
+}
+
+.btn-panduan {
+    border-radius: 999px;
+    padding: 10px 20px;
+    font-weight: 600;
+}
+
+/* Barang Tersedia */
+.barang-tersedia-section {
+    padding: 90px 0;
+    background: white;
+}
+
+.barang-tersedia-scroll {
+    position: relative;
+    overflow: hidden;
+    padding: 10px 0 18px;
+}
+
+.barang-tersedia-scroll::before,
+.barang-tersedia-scroll::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.barang-tersedia-scroll::before {
+    left: 0;
+    background: linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.barang-tersedia-scroll::after {
+    right: 0;
+    background: linear-gradient(270deg, #ffffff 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.barang-track {
+    display: flex;
+    gap: 16px;
+    width: max-content;
+    animation: scrollBarang 28s linear infinite;
+}
+
+.barang-tersedia-scroll:hover .barang-track {
+    animation-play-state: paused;
+}
+
+.barang-track-static {
+    animation: none;
+    justify-content: center;
+    width: 100%;
+}
+
+.barang-item {
+    flex: 0 0 auto;
+    width: 260px;
+}
+
+.barang-card {
+    border-radius: 16px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.barang-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+.barang-badge-status {
+    font-size: 0.85rem;
+    border-radius: 8px;
+    padding: 8px 14px;
+    display: inline-block;
+    border: 1px solid transparent;
+}
+
+.badge-tersedia {
+    background: rgba(25, 135, 84, 0.1);
+    color: #198754;
+    border-color: rgba(25, 135, 84, 0.4);
+}
+
+.badge-terbatas {
+    background: rgba(255, 193, 7, 0.18);
+    color: #856404;
+    border-color: rgba(255, 193, 7, 0.5);
+}
+
+@keyframes scrollBarang {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Panduan Modal */
+.panduan-modal-content {
+    border-radius: 20px;
+    border: none;
+}
+
+.panduan-image-wrap {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.panduan-image {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+}
+
+.panduan-modal-list {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #dc3545;
+}
+
 /* Stats */
 .stats-section {
     padding: 80px 0;
@@ -789,7 +923,21 @@
         padding: 30px 20px;
     }
 
+    .barang-item {
+        width: 220px;
+    }
+
     .kategori-all-wrap {
         max-height: 150px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .barang-track {
+        animation: none;
+    }
+
+    .barang-tersedia-scroll {
+        overflow-x: auto;
     }
 }

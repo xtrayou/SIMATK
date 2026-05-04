@@ -15,3 +15,10 @@ $(function () {
         });
     });
 });
+
+function resetForm() {
+    document.getElementById('kode_id').value = '';
+    document.getElementById('kode').value = '';
+    document.getElementById('nama').value = '';
+    document.getElementById('kodeBarangModalLabel').innerText = 'Tambah Kode Barang';
+}

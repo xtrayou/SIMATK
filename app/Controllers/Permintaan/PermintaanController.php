@@ -9,6 +9,10 @@ use App\Models\MasterData\BarangModel;
 use App\Models\Notifikasi\NotifikasiModel;
 use App\Services\PermintaanService;
 use Exception;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 /**
  * PermintaanController - Controller untuk mengelola permintaan ATK
@@ -157,10 +161,15 @@ class PermintaanController extends BaseController
 
         $status = $this->request->getGet('status');
         $filterResi = trim((string) $this->request->getGet('resi'));
+        $filterPeriod = $this->request->getGet('period');
         $builder = $this->modelPermintaan->orderBy('created_at', 'DESC');
 
         if ($status) {
             $builder->where('status', $status);
+        }
+
+        if ($filterPeriod) {
+            $builder->like('request_date', $filterPeriod, 'after');
         }
 
         if ($filterResi !== '') {
@@ -177,6 +186,7 @@ class PermintaanController extends BaseController
             'daftarPinjaman' => $requests,
             'filterStatus'   => $status,
             'filterResi'     => $filterResi,
+            'filterPeriod'   => $filterPeriod,
         ];
 
         return $this->render('permintaan/index', $data);
@@ -435,5 +445,349 @@ class PermintaanController extends BaseController
         ];
 
         return view('permintaan/track_result', $data);
+    }
+
+    private function getExportData(): array
+    {
+        $status = $this->request->getGet('status');
+        $filterResi = trim((string) $this->request->getGet('resi'));
+        $filterPeriod = $this->request->getGet('period');
+        
+        $builder = $this->modelPermintaan->orderBy('created_at', 'DESC');
+
+        if ($status) {
+            $builder->where('status', $status);
+        }
+
+        if ($filterPeriod) {
+            $builder->like('request_date', $filterPeriod, 'after');
+        }
+
+        if ($filterResi !== '') {
+            $builder->groupStart()
+                ->like('receipt_code', $filterResi)
+                ->orLike('id', preg_replace('/\D+/', '', $filterResi))
+                ->groupEnd();
+        }
+
+        $requests = $builder->findAll();
+
+        $exportData = [];
+        foreach ($requests as $req) {
+            $items = $this->modelItemPermintaan->select('request_items.*, barang.name as product_name, barang.price as product_price')
+                ->join('barang', 'barang.id = request_items.product_id', 'left')
+                ->where('request_items.request_id', $req['id'])
+                ->findAll();
+                
+            foreach ($items as $item) {
+                $hargaSatuan = (float)($item['product_price'] ?? 0);
+                $jumlah = (int)$item['quantity'];
+                
+                $exportData[] = [
+                    'id' => $req['id'],
+                    'receipt_code' => $req['receipt_code'],
+                    'borrower_name' => $req['borrower_name'],
+                    'borrower_unit' => $req['borrower_unit'],
+                    'request_date' => $req['request_date'],
+                    'status' => $req['status'],
+                    'product_name' => $item['product_name'] ?? 'Unknown',
+                    'quantity' => $jumlah,
+                    'price' => $hargaSatuan,
+                    'total_price' => $jumlah * $hargaSatuan,
+                ];
+            }
+        }
+
+        return $exportData;
+    }
+
+    public function exportExcel()
+    {
+        $data = $this->getExportData();
+        $filterPeriod = $this->request->getGet('period');
+        $tanggalBulan = $filterPeriod ? date('F Y', strtotime($filterPeriod)) : date('F Y');
+        
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'LAMPIRAN BERITA ACARA BARANG KELUAR FISIK PERSEDIAAN');
+        $sheet->setCellValue('A2', 'Nomor: ........../UN64.7/LK/' . date('Y'));
+        $sheet->setCellValue('A3', 'Tanggal: ' . date('d F Y'));
+        $sheet->setCellValue('A4', 'Unit: Fakultas Ilmu Komputer');
+
+        $sheet->setCellValue('A6', 'LAPORAN BARANG KELUAR');
+        $sheet->setCellValue('A7', 'UNTUK PERIODE YANG BERAKHIR TANGGAL ' . strtoupper($tanggalBulan));
+        $sheet->setCellValue('A8', 'TAHUN ANGGARAN ' . date('Y', strtotime($filterPeriod ?: date('Y-m'))));
+
+        $sheet->setCellValue('A10', 'No')
+            ->setCellValue('B10', 'Nama Peminjam')
+            ->setCellValue('C10', 'Unit Peminjam')
+            ->setCellValue('D10', 'Tanggal Peminjam')
+            ->setCellValue('E10', 'Jenis Barang')
+            ->setCellValue('F10', 'Jumlah')
+            ->setCellValue('G10', 'Harga Satuan')
+            ->setCellValue('H10', 'Total Harga');
+
+        $rowNum = 11;
+        $idx = 1;
+        $totalQty = 0;
+        $totalHarga = 0;
+
+        foreach ($data as $row) {
+            $sheet->setCellValue('A' . $rowNum, $idx)
+                ->setCellValue('B' . $rowNum, $row['borrower_name'])
+                ->setCellValue('C' . $rowNum, $row['borrower_unit'])
+                ->setCellValue('D' . $rowNum, date('d/m/Y', strtotime($row['request_date'])))
+                ->setCellValue('E' . $rowNum, $row['product_name'])
+                ->setCellValue('F' . $rowNum, $row['quantity'])
+                ->setCellValue('G' . $rowNum, $row['price'])
+                ->setCellValue('H' . $rowNum, $row['total_price']);
+            
+            $totalQty += $row['quantity'];
+            $totalHarga += $row['total_price'];
+
+            $idx++;
+            $rowNum++;
+        }
+
+        $sheet->setCellValue('A' . $rowNum, 'TOTAL');
+        $sheet->mergeCells("A{$rowNum}:E{$rowNum}");
+        $sheet->setCellValue('F' . $rowNum, $totalQty);
+        $sheet->setCellValue('H' . $rowNum, $totalHarga);
+
+        $fileName = 'Laporan_Barang_Keluar_' . date('Ymd_His') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function exportPdf()
+    {
+        $data = $this->getExportData();
+        $filterPeriod = $this->request->getGet('period');
+        
+        $months = [
+            1 => 'JANUARI', 2 => 'FEBRUARI', 3 => 'MARET', 4 => 'APRIL', 5 => 'MEI', 6 => 'JUNI',
+            7 => 'JULI', 8 => 'AGUSTUS', 9 => 'SEPTEMBER', 10 => 'OKTOBER', 11 => 'NOVEMBER', 12 => 'DESEMBER'
+        ];
+        
+        if ($filterPeriod) {
+            $time = strtotime($filterPeriod);
+            $month = $months[(int)date('n', $time)];
+            $year = date('Y', $time);
+        } else {
+            $month = $months[(int)date('n')];
+            $year = date('Y');
+        }
+        
+        $periodeUpper = $month . ' ' . $year;
+        $tanggal = date('d ') . ucfirst(strtolower($month)) . ' ' . date('Y');
+
+        $html = '<!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { font-family: "Helvetica", "Arial", sans-serif; font-size: 10pt; line-height: 1.3; }
+                .header { margin-bottom: 20px; font-size: 9pt; }
+                .header-row { margin-bottom: 2px; }
+                .header-row span.label { display: inline-block; width: 80px; }
+                .title { text-align: center; font-weight: bold; font-size: 11pt; margin: 10px 0 5px; }
+                .subtitle { text-align: center; font-size: 9pt; margin-bottom: 15px; }
+                table { width: 100%; border-collapse: collapse; }
+                th { background-color: #f2f2f2; border: 1px solid #000; padding: 6px 4px; text-align: center; font-size: 8pt; font-weight: bold; }
+                td { border: 1px solid #000; padding: 4px; font-size: 8pt; }
+                td.center { text-align: center; }
+                td.right { text-align: right; }
+                tr.total td { font-weight: bold; border-top: 2px solid #000; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="header-row"><strong>LAMPIRAN BERITA ACARA BARANG KELUAR FISIK PERSEDIAAN</strong></div>
+                <div class="header-row"><span class="label">Nomor</span>: ........../UN64.7/LK/' . $year . '</div>
+                <div class="header-row"><span class="label">Tanggal</span>: ' . $tanggal . '</div>
+                <div class="header-row"><span class="label">Unit</span>: Fakultas Ilmu Komputer</div>
+            </div>
+
+            <div class="title">LAPORAN BARANG KELUAR</div>
+            <div class="subtitle">UNTUK PERIODE YANG BERAKHIR TANGGAL ' . $periodeUpper . '</div>
+            <div class="subtitle">TAHUN ANGGARAN ' . $year . '</div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th width="5%">No</th>
+                        <th width="18%">Nama Peminjam</th>
+                        <th width="12%">Tgl Peminjam</th>
+                        <th width="25%">Jenis Barang</th>
+                        <th width="8%">Jumlah</th>
+                        <th width="15%">Harga Satuan</th>
+                        <th width="15%">Total Harga</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+        $totalQty = 0;
+        $totalHarga = 0;
+        $idx = 1;
+
+        foreach ($data as $row) {
+            $qty = $row['quantity'];
+            $price = $row['price'];
+            $total = $row['total_price'];
+            $date = date('d/m/Y', strtotime($row['request_date']));
+
+            $html .= "<tr>
+                        <td class='center'>{$idx}</td>
+                        <td>{$row['borrower_name']} ({$row['borrower_unit']})</td>
+                        <td class='center'>{$date}</td>
+                        <td>{$row['product_name']}</td>
+                        <td class='center'>{$qty}</td>
+                        <td class='right'>" . number_format($price, 0, ',', '.') . "</td>
+                        <td class='right'>" . number_format($total, 0, ',', '.') . "</td>
+                      </tr>";
+            
+            $totalQty += $qty;
+            $totalHarga += $total;
+            $idx++;
+        }
+        
+        $html .= "<tr class='total'>
+                    <td colspan='4' class='center'>TOTAL</td>
+                    <td class='center'>{$totalQty}</td>
+                    <td></td>
+                    <td class='right'>" . number_format($totalHarga, 0, ',', '.') . "</td>
+                  </tr>";
+
+        $html .= '</tbody></table></body></html>';
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $dompdf->stream('Laporan_Barang_Keluar_' . date('Ymd_His') . '.pdf', ["Attachment" => true]);
+        exit;
+    }
+
+    public function exportPrint()
+    {
+        $data = $this->getExportData();
+        $filterPeriod = $this->request->getGet('period');
+        
+        $months = [
+            1 => 'JANUARI', 2 => 'FEBRUARI', 3 => 'MARET', 4 => 'APRIL', 5 => 'MEI', 6 => 'JUNI',
+            7 => 'JULI', 8 => 'AGUSTUS', 9 => 'SEPTEMBER', 10 => 'OKTOBER', 11 => 'NOVEMBER', 12 => 'DESEMBER'
+        ];
+        
+        if ($filterPeriod) {
+            $time = strtotime($filterPeriod);
+            $month = $months[(int)date('n', $time)];
+            $year = date('Y', $time);
+        } else {
+            $month = $months[(int)date('n')];
+            $year = date('Y');
+        }
+        
+        $periodeUpper = $month . ' ' . $year;
+        $tanggal = date('d ') . ucfirst(strtolower($month)) . ' ' . date('Y');
+
+        $html = '<!DOCTYPE html>
+        <html>
+        <head>
+            <title>Cetak Laporan Barang Keluar</title>
+            <style>
+                body { font-family: "Helvetica", "Arial", sans-serif; font-size: 10pt; line-height: 1.3; }
+                .header { margin-bottom: 20px; font-size: 9pt; }
+                .header-row { margin-bottom: 2px; }
+                .header-row span.label { display: inline-block; width: 80px; }
+                .title { text-align: center; font-weight: bold; font-size: 11pt; margin: 10px 0 5px; }
+                .subtitle { text-align: center; font-size: 9pt; margin-bottom: 15px; }
+                table { width: 100%; border-collapse: collapse; }
+                th { background-color: #f2f2f2; border: 1px solid #000; padding: 6px 4px; text-align: center; font-size: 8pt; font-weight: bold; }
+                td { border: 1px solid #000; padding: 4px; font-size: 8pt; }
+                td.center { text-align: center; }
+                td.right { text-align: right; }
+                tr.total td { font-weight: bold; border-top: 2px solid #000; }
+                @media print {
+                    @page { margin: 15mm; }
+                    body { -webkit-print-color-adjust: exact; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="header-row"><strong>LAMPIRAN BERITA ACARA BARANG KELUAR FISIK PERSEDIAAN</strong></div>
+                <div class="header-row"><span class="label">Nomor</span>: ........../UN64.7/LK/' . $year . '</div>
+                <div class="header-row"><span class="label">Tanggal</span>: ' . $tanggal . '</div>
+                <div class="header-row"><span class="label">Unit</span>: Fakultas Ilmu Komputer</div>
+            </div>
+
+            <div class="title">LAPORAN BARANG KELUAR</div>
+            <div class="subtitle">UNTUK PERIODE YANG BERAKHIR TANGGAL ' . $periodeUpper . '</div>
+            <div class="subtitle">TAHUN ANGGARAN ' . $year . '</div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th width="5%">No</th>
+                        <th width="18%">Nama Peminjam</th>
+                        <th width="12%">Tgl Peminjam</th>
+                        <th width="25%">Jenis Barang</th>
+                        <th width="8%">Jumlah</th>
+                        <th width="15%">Harga Satuan</th>
+                        <th width="15%">Total Harga</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+        $totalQty = 0;
+        $totalHarga = 0;
+        $idx = 1;
+
+        foreach ($data as $row) {
+            $qty = $row['quantity'];
+            $price = $row['price'];
+            $total = $row['total_price'];
+            $date = date('d/m/Y', strtotime($row['request_date']));
+
+            $html .= "<tr>
+                        <td class='center'>{$idx}</td>
+                        <td>{$row['borrower_name']} ({$row['borrower_unit']})</td>
+                        <td class='center'>{$date}</td>
+                        <td>{$row['product_name']}</td>
+                        <td class='center'>{$qty}</td>
+                        <td class='right'>" . number_format($price, 0, ',', '.') . "</td>
+                        <td class='right'>" . number_format($total, 0, ',', '.') . "</td>
+                      </tr>";
+            
+            $totalQty += $qty;
+            $totalHarga += $total;
+            $idx++;
+        }
+        
+        $html .= "<tr class='total'>
+                    <td colspan='4' class='center'>TOTAL</td>
+                    <td class='center'>{$totalQty}</td>
+                    <td></td>
+                    <td class='right'>" . number_format($totalHarga, 0, ',', '.') . "</td>
+                  </tr>";
+
+        $html .= '</tbody></table>
+            <script>
+                window.onload = function() {
+                    window.print();
+                }
+            </script>
+        </body></html>';
+
+        return $this->response->setBody($html);
     }
 }

@@ -25,6 +25,10 @@ class BerandaController extends BaseController
         $daftarBarang   = $this->modelBarang->getBarangAktif();
         $daftarKategori = $this->modelKategori->getKategoriAktif();
 
+        $daftarBarangTersedia = array_values(array_filter($daftarBarang, static function ($barang) {
+            return (int) ($barang['current_stock'] ?? 0) > 0;
+        }));
+
         // Tambahkan label status stok ke setiap barang
         foreach ($daftarBarang as &$barang) {
             $stok = (int) ($barang['current_stock'] ?? 0);
@@ -48,6 +52,7 @@ class BerandaController extends BaseController
 
         return view('home/index', [
             'daftarBarang'    => $daftarBarang,
+            'daftarBarangTersedia' => $daftarBarangTersedia,
             'daftarKategori'  => $daftarKategori,
             'unitKerja'       => config('App')->unitKerja ?? ['Sistem Informasi', 'Informatika', 'TU Fakultas', 'Lainnya'],
             'oldProductName'  => $oldProductName,

@@ -1,4 +1,5 @@
-/* track.css — Style untuk halaman lacak permintaan */
+/* track.css — Gaya halaman lacak permintaan (track.php) */
+
 body {
     background: linear-gradient(135deg, #eef2ff 0%, #f8faff 100%);
     min-height: 100vh;

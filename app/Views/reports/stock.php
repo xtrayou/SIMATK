@@ -34,12 +34,16 @@ $reportIconClass = 'bi-box-seam';
                                 <li><a class="dropdown-item" href="#" onclick="exportReport('excel'); return false;">
                                     <i class="bi bi-file-earmark-excel me-2"></i>Excel
                                 </a></li>
+                                <li><a class="dropdown-item" href="#" onclick="exportReport('pdf'); return false;">
+                                    <i class="bi bi-file-earmark-pdf me-2"></i>PDF
+                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#" onclick="printReport(); return false;">
                                     <i class="bi bi-printer me-2"></i>Print
                                 </a></li>
                             </ul>
                         </div>
+                        <small class="d-block text-muted mt-1"><i class="bi bi-info-circle me-1"></i>Export hanya memuat barang dengan stok &gt; 0</small>
                     </div>
                 </div>
             </div>
